@@ -8,7 +8,7 @@ using MonoMac.Foundation;
 
 #endregion
 
-namespace monogamemonomac
+namespace awkwardsimulator
 {
 	static class Program
 	{
