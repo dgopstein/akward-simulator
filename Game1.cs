@@ -58,6 +58,7 @@ namespace awkwardsimulator
 			whiteRectangle.SetData(new[] { Color.White });
 
 			p1 = new Player (1);
+			p2 = new Player (2);
 
 			//TODO: use this.Content to load your game content here 
 		}
@@ -86,6 +87,18 @@ namespace awkwardsimulator
 				Exit ();
 			}
 			#endif
+
+			Tuple<Input, Input> inputs = ReadKeyboardInputs (Keyboard.GetState ());
+
+			GameState gs = new GameState ();
+			gs.p1 = p1;
+			gs.p2 = p2;
+
+			ForwardModel fm = new ForwardModel ();
+			GameState newGs = fm.next (gs, inputs.Item1, inputs.Item2);
+			p1 = newGs.p1;
+			p2 = newGs.p2;
+
 			// TODO: Add your update logic here			
 			base.Update (gameTime);
 		}
@@ -118,7 +131,21 @@ namespace awkwardsimulator
 
 		protected void DrawPlayer(Player p) {
 			Point pt = Scale (p.Coords);
-			spriteBatch.Draw(whiteRectangle, new Rectangle(pt.X, pt.Y, pt.X + 40, pt.Y + 60), new Color(127, 127, 127));
+			spriteBatch.Draw(whiteRectangle, new Rectangle(pt.X, pt.Y, 40, 60), new Color(127, 127, 127));
+		}
+
+		protected Tuple<Input, Input> ReadKeyboardInputs(KeyboardState newKeyboardState) {
+			Input input1 = new Input(), input2 = new Input();
+
+			if (newKeyboardState.IsKeyDown (Keys.A    )) { input1.left  = true; }
+			if (newKeyboardState.IsKeyDown (Keys.D    )) { input1.right = true; }
+			if (newKeyboardState.IsKeyDown (Keys.W    )) { input1.up    = true; }
+
+			if (newKeyboardState.IsKeyDown (Keys.Left )) { input2.left  = true; }
+			if (newKeyboardState.IsKeyDown (Keys.Right)) { input2.right = true; }
+			if (newKeyboardState.IsKeyDown (Keys.Up   )) { input2.up    = true; }
+
+			return Tuple.Create (input1, input2);
 		}
 	}
 }

@@ -19,6 +19,12 @@ namespace awkwardsimulator
 
 			Coords = new Vector2 (0, 0);
 		}
+
+		public Player Clone() {
+			Player p = new Player(Id);
+			p.Coords = this.Coords; // I think Vector2s are immutable
+			return p;
+		}
 	}
 }
 
