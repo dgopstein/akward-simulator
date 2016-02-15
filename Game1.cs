@@ -19,7 +19,7 @@ namespace awkwardsimulator
 		SpriteBatch spriteBatch;
 		SpriteFont spriteFont;
 		Texture2D whiteRectangle; // http://stackoverflow.com/questions/5751732/draw-rectangle-in-xna-using-spritebatch
-		Player p1, p2;
+		GameState state;
 
 		public Game1 ()
 		{
@@ -57,8 +57,11 @@ namespace awkwardsimulator
 			whiteRectangle = new Texture2D(GraphicsDevice, 1, 1);
 			whiteRectangle.SetData(new[] { Color.White });
 
-			p1 = new Player (1);
-			p2 = new Player (2);
+			state = new GameState();
+			state.p1 = new Player (1);
+			state.p1.Coords = new Vector2 (0.1f, 0.2f);
+			state.p2 = new Player (2);
+			state.p2.Coords = new Vector2 (0.2f, 0.2f);
 
 			//TODO: use this.Content to load your game content here 
 		}
@@ -90,14 +93,8 @@ namespace awkwardsimulator
 
 			Tuple<Input, Input> inputs = ReadKeyboardInputs (Keyboard.GetState ());
 
-			GameState gs = new GameState ();
-			gs.p1 = p1;
-			gs.p2 = p2;
-
 			ForwardModel fm = new ForwardModel ();
-			GameState newGs = fm.next (gs, inputs.Item1, inputs.Item2);
-			p1 = newGs.p1;
-			p2 = newGs.p2;
+			state = fm.next (state, inputs.Item1, inputs.Item2);
 
 			// TODO: Add your update logic here			
 			base.Update (gameTime);
@@ -115,23 +112,37 @@ namespace awkwardsimulator
 			spriteBatch.Begin();
 			spriteBatch.DrawString(spriteFont, "FPS: " + Math.Round(1000 / (gameTime.ElapsedGameTime.TotalMilliseconds + 1)), new Vector2(100, 100), Color.Red);
 
-			DrawPlayer (p1);
+			DrawPlayer (state.p1);
+			DrawPlayer (state.p2);
 			
 			spriteBatch.End();
             
 			base.Draw (gameTime);
 		}
 
-		protected Point Scale(Vector2 v) {
+		protected Point Rasterize(Vector2 v) {
 			return new Point (
 				(int)Math.Round(v.X * GraphicsDevice.Viewport.Width),
-				(int)Math.Round(v.Y * GraphicsDevice.Viewport.Height)
+				(int)Math.Round((1.0 - v.Y) * GraphicsDevice.Viewport.Height)
 			);
 		}
 
 		protected void DrawPlayer(Player p) {
-			Point pt = Scale (p.Coords);
-			spriteBatch.Draw(whiteRectangle, new Rectangle(pt.X, pt.Y, 40, 60), new Color(127, 127, 127));
+			Point pt = Rasterize (p.Coords);
+			Color c1, c2;
+
+
+
+			if (p.Id == 1) {
+				c1 = Color.DarkSlateGray;
+				c2 = Color.LightGray;
+			} else { //Id == 2
+				c1 = Color.LightGray;
+				c2 = Color.DarkSlateGray;
+			}
+
+			spriteBatch.Draw (whiteRectangle, new Rectangle (pt.X, pt.Y, 40, 60), c1);
+			spriteBatch.DrawString(spriteFont, p.Id.ToString(), pt.ToVector2(), c2, 0, Vector2.Zero, 3, SpriteEffects.None, 0);
 		}
 
 		protected Tuple<Input, Input> ReadKeyboardInputs(KeyboardState newKeyboardState) {
