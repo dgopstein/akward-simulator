@@ -1,2 +1,0 @@
-2016-02-14 19:32:22.321 monogame-monomac[20383:444984] Failed to connect (colorGridView) outlet from (NSApplication) to (NSColorPickerGridView): missing setter or instance variable
-2016-02-14 19:32:22.321 monogame-monomac[20383:444984] Failed to connect (view) outlet from (NSApplication) to (NSColorPickerGridView): missing setter or instance variable
