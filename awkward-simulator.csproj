@@ -55,13 +55,16 @@
     <Reference Include="System.Drawing" />
     <Reference Include="MonoMac" />
     <Reference Include="MonoGame.Framework">
-      <HintPath>packages\MonoGame.Framework.MacOS.3.3.0.0\lib\MonoMac\MonoGame.Framework.dll</HintPath>
+      <HintPath>packages\MonoGame.Framework.MacOS.3.4.0.459\lib\net45\MonoGame.Framework.dll</HintPath>
     </Reference>
     <Reference Include="Tao.Sdl">
-      <HintPath>packages\MonoGame.Framework.MacOS.3.3.0.0\lib\MonoMac\Tao.Sdl.dll</HintPath>
+      <HintPath>packages\MonoGame.Framework.MacOS.3.4.0.459\lib\net45\Tao.Sdl.dll</HintPath>
     </Reference>
     <Reference Include="OpenTK">
-      <HintPath>packages\MonoGame.Framework.MacOS.3.3.0.0\lib\MonoMac\OpenTK.dll</HintPath>
+      <HintPath>packages\MonoGame.Framework.MacOS.3.4.0.459\lib\net45\OpenTK.dll</HintPath>
+    </Reference>
+    <Reference Include="FarseerPhysics MonoGame">
+      <HintPath>packages\FarseerPhysics.MonoGame.Unofficial.3.5.0\lib\FarseerPhysics MonoGame.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

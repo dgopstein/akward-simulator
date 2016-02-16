@@ -13,17 +13,14 @@ namespace awkwardsimulator
 
 		public int Id { get; }
 
-		public Player (int id)
+		public Player (int id, Vector2 coords)
 		{
 			Id = id;
-
-			Coords = new Vector2 (0, 0);
+			Coords = coords;
 		}
 
 		public Player Clone() {
-			Player p = new Player(Id);
-			p.Coords = this.Coords; // I think Vector2s are immutable
-			return p;
+			return new Player(Id, Coords);
 		}
 	}
 }

@@ -10,9 +10,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace awkwardsimulator
 {
-	/// <summary>
-	/// This is the main type for your game.
-	/// </summary>
+	// This is the main type for your game.
 	public class Game1 : Game
 	{
 		GraphicsDeviceManager graphics;
@@ -20,6 +18,7 @@ namespace awkwardsimulator
 		SpriteFont spriteFont;
 		Texture2D whiteRectangle; // http://stackoverflow.com/questions/5751732/draw-rectangle-in-xna-using-spritebatch
 		GameState state;
+		ForwardModel fm;
 
 		public Game1 ()
 		{
@@ -28,23 +27,23 @@ namespace awkwardsimulator
 			graphics.IsFullScreen = true;		
 		}
 
-		/// <summary>
-		/// Allows the game to perform any initialization it needs to before starting to run.
-		/// This is where it can query for any required services and load any non-graphic
-		/// related content.  Calling base.Initialize will enumerate through any components
+		// load any non-graphic related content.  Calling base.Initialize will enumerate through any components
 		/// and initialize them as well.
-		/// </summary>
 		protected override void Initialize ()
 		{
-			// TODO: Add your initialization logic here
+
+			state = new GameState(
+				new Player (1, new Vector2 (0.1f, 0.2f)),
+				new Player (2, new Vector2 (0.2f, 0.2f)),
+				0f, false, false
+			);
+
+			fm = new ForwardModel ();
+
 			base.Initialize ();
-				
 		}
 
-		/// <summary>
-		/// LoadContent will be called once per game and is the place to load
-		/// all of your content.
-		/// </summary>
+		// called once per game and is the place to load all of your content.
 		protected override void LoadContent ()
 		{
 			// Create a new SpriteBatch, which can be used to draw textures.
@@ -57,13 +56,6 @@ namespace awkwardsimulator
 			whiteRectangle = new Texture2D(GraphicsDevice, 1, 1);
 			whiteRectangle.SetData(new[] { Color.White });
 
-			state = new GameState();
-			state.p1 = new Player (1);
-			state.p1.Coords = new Vector2 (0.1f, 0.2f);
-			state.p2 = new Player (2);
-			state.p2.Coords = new Vector2 (0.2f, 0.2f);
-
-			//TODO: use this.Content to load your game content here 
 		}
 
 		protected override void UnloadContent()
@@ -74,36 +66,22 @@ namespace awkwardsimulator
 			// Content.Load) then you must Dispose of it
 			whiteRectangle.Dispose();
 		}
-
-		/// <summary>
-		/// Allows the game to run logic such as updating the world,
-		/// checking for collisions, gathering input, and playing audio.
-		/// </summary>
-		/// <param name="gameTime">Provides a snapshot of timing values.</param>
+			
+		// checking for collisions, gathering input, and playing audio.
 		protected override void Update (GameTime gameTime)
 		{
-			// For Mobile devices, this logic will close the Game when the Back button is pressed
-			// Exit() is obsolete on iOS
-			#if !__IOS__
-			if (GamePad.GetState (PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
-			    Keyboard.GetState ().IsKeyDown (Keys.Escape)) {
-				Exit ();
-			}
-			#endif
+			KeyboardState keyState = Keyboard.GetState ();
+			if (keyState.IsKeyDown(Keys.Escape)) { Exit (); }
 
-			Tuple<Input, Input> inputs = ReadKeyboardInputs (Keyboard.GetState ());
+			Tuple<Input, Input> inputs = ReadKeyboardInputs (keyState);
 
-			ForwardModel fm = new ForwardModel ();
+
 			state = fm.next (state, inputs.Item1, inputs.Item2);
 
-			// TODO: Add your update logic here			
 			base.Update (gameTime);
 		}
-
-		/// <summary>
+			
 		/// This is called when the game should draw itself.
-		/// </summary>
-		/// <param name="gameTime">Provides a snapshot of timing values.</param>
 		protected override void Draw (GameTime gameTime)
 		{
 			graphics.GraphicsDevice.Clear (Color.CornflowerBlue);
@@ -120,18 +98,16 @@ namespace awkwardsimulator
 			base.Draw (gameTime);
 		}
 
-		protected Point Rasterize(Vector2 v) {
+		private Point Rasterize(Vector2 v) {
 			return new Point (
 				(int)Math.Round(v.X * GraphicsDevice.Viewport.Width),
 				(int)Math.Round((1.0 - v.Y) * GraphicsDevice.Viewport.Height)
 			);
 		}
 
-		protected void DrawPlayer(Player p) {
+		private void DrawPlayer(Player p) {
 			Point pt = Rasterize (p.Coords);
 			Color c1, c2;
-
-
 
 			if (p.Id == 1) {
 				c1 = Color.DarkSlateGray;
@@ -145,7 +121,7 @@ namespace awkwardsimulator
 			spriteBatch.DrawString(spriteFont, p.Id.ToString(), pt.ToVector2(), c2, 0, Vector2.Zero, 3, SpriteEffects.None, 0);
 		}
 
-		protected Tuple<Input, Input> ReadKeyboardInputs(KeyboardState newKeyboardState) {
+		private Tuple<Input, Input> ReadKeyboardInputs(KeyboardState newKeyboardState) {
 			Input input1 = new Input(), input2 = new Input();
 
 			if (newKeyboardState.IsKeyDown (Keys.A    )) { input1.left  = true; }
