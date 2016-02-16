@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Storage;
 using Microsoft.Xna.Framework.Input;
+using FarseerPhysics.DebugView;
 
 #endregion
 
@@ -16,15 +17,25 @@ namespace awkwardsimulator
 		GraphicsDeviceManager graphics;
 		SpriteBatch spriteBatch;
 		SpriteFont spriteFont;
-		Texture2D whiteRectangle; // http://stackoverflow.com/questions/5751732/draw-rectangle-in-xna-using-spritebatch
 		GameState state;
-		ForwardModel fm;
+		ForwardModel forwardModel;
+		DebugDraw debugDraw;
+		Drawing drawing;
+		DebugViewXNA DebugView;
+
+//		DebugViewXNA DebugView;
+//		DebugView = new DebugViewXNA(World);
+//		DebugView.RemoveFlags(DebugViewFlags.Shape);
+//		DebugView.RemoveFlags(DebugViewFlags.Joint);
+//		DebugView.DefaultShapeColor = Color.White;
+//		DebugView.SleepingShapeColor = Color.LightGray;
+//		DebugView.LoadContent(ScreenManager.GraphicsDevice, ScreenManager.Content);
 
 		public Game1 ()
 		{
 			graphics = new GraphicsDeviceManager (this);
 			Content.RootDirectory = "Content";	            
-			graphics.IsFullScreen = true;		
+			graphics.IsFullScreen = true;
 		}
 
 		// load any non-graphic related content.  Calling base.Initialize will enumerate through any components
@@ -38,7 +49,7 @@ namespace awkwardsimulator
 				0f, false, false
 			);
 
-			fm = new ForwardModel ();
+			forwardModel = new ForwardModel ();
 
 			base.Initialize ();
 		}
@@ -48,14 +59,15 @@ namespace awkwardsimulator
 		{
 			// Create a new SpriteBatch, which can be used to draw textures.
 			spriteBatch = new SpriteBatch (GraphicsDevice);
-
 			spriteFont = Content.Load<SpriteFont>("Default");
 
-			// Create a 1px square rectangle texture that will be scaled to the
-			// desired size and tinted the desired color at draw time
-			whiteRectangle = new Texture2D(GraphicsDevice, 1, 1);
-			whiteRectangle.SetData(new[] { Color.White });
+			drawing = new Drawing (GraphicsDevice, spriteBatch, spriteFont);
+			debugDraw = new DebugDraw (drawing, forwardModel.World);
 
+			DebugView = new DebugViewXNA (forwardModel.World);
+			DebugView.DefaultShapeColor = Color.White;
+			DebugView.SleepingShapeColor = Color.LightGray;
+			DebugView.LoadContent(GraphicsDevice, Content);
 		}
 
 		protected override void UnloadContent()
@@ -64,7 +76,7 @@ namespace awkwardsimulator
 			spriteBatch.Dispose();
 			// If you are creating your texture (instead of loading it with
 			// Content.Load) then you must Dispose of it
-			whiteRectangle.Dispose();
+			drawing.BlankTexture.Dispose();
 		}
 			
 		// checking for collisions, gathering input, and playing audio.
@@ -76,7 +88,7 @@ namespace awkwardsimulator
 			Tuple<Input, Input> inputs = ReadKeyboardInputs (keyState);
 
 
-			state = fm.next (state, inputs.Item1, inputs.Item2);
+			state = forwardModel.next (state, inputs.Item1, inputs.Item2);
 
 			base.Update (gameTime);
 		}
@@ -88,37 +100,19 @@ namespace awkwardsimulator
 		
 			//TODO: Add your drawing code here
 			spriteBatch.Begin();
-			spriteBatch.DrawString(spriteFont, "FPS: " + Math.Round(1000 / (gameTime.ElapsedGameTime.TotalMilliseconds + 1)), new Vector2(100, 100), Color.Red);
+			spriteBatch.DrawString(drawing.SpriteFont, "FPS: " + Math.Round(1000 / (gameTime.ElapsedGameTime.TotalMilliseconds + 1)), new Vector2(100, 100), Color.Red);
 
-			DrawPlayer (state.p1);
-			DrawPlayer (state.p2);
+			drawing.DrawPlayer (state.p1);
+			drawing.DrawPlayer (state.p2);
 			
 			spriteBatch.End();
+
+			Matrix proj = Matrix.CreateOrthographicOffCenter(0f, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, 0f, 0f, 1f);
+//			Matrix view = GraphicsDevice.GetViewMatrix(Vector2.One);
+			Matrix view = Matrix.Identity;
+			DebugView.RenderDebugData(ref proj, ref view);
             
 			base.Draw (gameTime);
-		}
-
-		private Point Rasterize(Vector2 v) {
-			return new Point (
-				(int)Math.Round(v.X * GraphicsDevice.Viewport.Width),
-				(int)Math.Round((1.0 - v.Y) * GraphicsDevice.Viewport.Height)
-			);
-		}
-
-		private void DrawPlayer(Player p) {
-			Point pt = Rasterize (p.Coords);
-			Color c1, c2;
-
-			if (p.Id == 1) {
-				c1 = Color.DarkSlateGray;
-				c2 = Color.LightGray;
-			} else { //Id == 2
-				c1 = Color.LightGray;
-				c2 = Color.DarkSlateGray;
-			}
-
-			spriteBatch.Draw (whiteRectangle, new Rectangle (pt.X, pt.Y, 40, 60), c1);
-			spriteBatch.DrawString(spriteFont, p.Id.ToString(), pt.ToVector2(), c2, 0, Vector2.Zero, 3, SpriteEffects.None, 0);
 		}
 
 		private Tuple<Input, Input> ReadKeyboardInputs(KeyboardState newKeyboardState) {

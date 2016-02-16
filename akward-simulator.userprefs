@@ -14,4 +14,7 @@
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <DisabledProjects>
+    <String>../../opt/src/Farseer Physics Engine 3.5 Samples/Farseer Physics DebugView 3.5/DebugView MonoGame.csproj</String>
+  </DisabledProjects>
 </Properties>

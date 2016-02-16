@@ -8,10 +8,13 @@ using FarseerPhysics.Common;
 
 namespace awkwardsimulator
 {
+
 	public class ForwardModel
 	{
 		private World world;
 		Fixture p1Fix, p2Fix, plat;
+
+		public World World { get { return world; } }
 
 		private Shape rectShape(float width, float height) {
 			Vertices vs = new FarseerPhysics.Common.Vertices () {

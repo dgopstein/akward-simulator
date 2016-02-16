@@ -75,6 +75,10 @@
     <Compile Include="Input.cs" />
     <Compile Include="ForwardModel.cs" />
     <Compile Include="GameState.cs" />
+    <Compile Include="DebugDraw.cs" />
+    <Compile Include="Drawing.cs" />
+    <Compile Include="PrimitiveBatch.cs" />
+    <Compile Include="DebugViewXNA.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Info.plist" />
