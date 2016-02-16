@@ -505,7 +505,7 @@ namespace FarseerPhysics.DebugView
 
         public void DrawPolygon(Vector2[] vertices, int count, Color color, bool closed = true)
         {
-            if (!_primitiveBatch.IsReady())
+			if (!_primitiveBatch.IsReady())
                 throw new InvalidOperationException("BeginCustomDraw must be called before drawing anything.");
 
             for (int i = 0; i < count - 1; i++)

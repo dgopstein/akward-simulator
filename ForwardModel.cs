@@ -58,9 +58,6 @@ namespace awkwardsimulator
 			next.p1.Coords = p1Fix.Body.Position;
 			next.p2.Coords = p2Fix.Body.Position;
 
-			Console.WriteLine ("b p1: {0}", next.p1.Coords);
-			Console.WriteLine ("plat: {0}", plat.Body.Position);
-
 			return next;
 		}
 

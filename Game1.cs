@@ -107,8 +107,7 @@ namespace awkwardsimulator
 			
 			spriteBatch.End();
 
-			Matrix proj = Matrix.CreateOrthographicOffCenter(0f, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, 0f, 0f, 1f);
-//			Matrix view = GraphicsDevice.GetViewMatrix(Vector2.One);
+			Matrix proj = Matrix.CreateOrthographicOffCenter(0f, 1f, 0f, 1f, 0f, 1f);
 			Matrix view = Matrix.Identity;
 			DebugView.RenderDebugData(ref proj, ref view);
             
