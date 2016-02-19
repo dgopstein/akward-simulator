@@ -37,20 +37,26 @@ namespace awkwardsimulator
 
 		private void movePlayer(Fixture fix, Input input) {
 			//fix.Body.Position = fix.Body.Position + velocity(input);
-			Vector2 lv = fix.Body.LinearVelocity;
-			Vector2 delta = velocity (input);
+			Vector2 vel = fix.Body.LinearVelocity;
+			Vector2 pos = fix.Body.Position;
+			Vector2 dv = velocity (input);
+			//Vector2 df = force(input):
 
-			fix.Body.LinearVelocity = new Vector2 (delta.X, lv.Y);
-			fix.Body.ApplyForce (new Vector2 (0f, delta.Y));
+			fix.Body.LinearVelocity = new Vector2 (dv.X, vel.Y);
+			//fix.Body.ApplyForce (new Vector2 (0, df.Yf));
 		}
 
 		public ForwardModel ()
 		{
-			world = new World (new Vector2 (0f, -.8f));
+			world = new World (new Vector2 (0f, -20f));
 
-			p1Fix = playerFix (.21f, .5f);
-			p2Fix = playerFix (.2f, .4f);
-			/*plat =*/platformFix (0.1f, 0.2f, 0.7f);
+//			p1Fix = playerFix (.21f, .5f);
+//			p2Fix = playerFix (.2f, .4f);
+//			/*plat =*/platformFix (0.1f, 0.2f, 0.7f);
+
+			p1Fix = playerFix (21f, 50f, 1f, 2f);
+			p2Fix = playerFix (30f, 40f, 1f, 2f);
+			/*plat =*/platformFix (10f, 20f, 70f, 5f);
 		}
 
 		public GameState next(GameState state, Input input1, Input input2) {
@@ -67,7 +73,7 @@ namespace awkwardsimulator
 		}
 
 		private Vector2 velocity(Input i) {
-			double xspeed = 0.1, yspeed = 0.0005;
+			double xspeed = 15, yspeed = 1;
 			double x = 0, y = 0;
 
 			if (i.left ) { x -= xspeed; }
