@@ -12,7 +12,8 @@ namespace awkwardsimulator
 	public class ForwardModel
 	{
 		private World world;
-		Fixture p1Fix, p2Fix;//, plat;
+//		Fixture p1Fix, p2Fix;//, plat;
+		PlayerPhysics p1, p2;
 
 		public World World { get { return world; } }
 
@@ -24,6 +25,7 @@ namespace awkwardsimulator
 			Body body = FarseerPhysics.Factories.BodyFactory.CreateBody(world, new Vector2(x, y));
 			body.BodyType = BodyType.Dynamic;
 			body.FixedRotation = true;
+			body.Friction = 0.0f;
 
 			return body.CreateFixture(rectShape (width, height));
 		}
@@ -35,40 +37,28 @@ namespace awkwardsimulator
 			return body.CreateFixture(rectShape (width, height));
 		}
 
-		private void movePlayer(Fixture fix, Input input) {
-			//fix.Body.Position = fix.Body.Position + velocity(input);
-			Vector2 vel = fix.Body.LinearVelocity;
-			Vector2 pos = fix.Body.Position;
-			Vector2 dv = velocity (input);
-			//Vector2 df = force(input):
-
-			fix.Body.LinearVelocity = new Vector2 (dv.X, vel.Y);
-			//fix.Body.ApplyForce (new Vector2 (0, df.Yf));
-		}
 
 		public ForwardModel ()
 		{
-			world = new World (new Vector2 (0f, -20f));
+			world = new World (new Vector2 (0f, -100f));
 
-//			p1Fix = playerFix (.21f, .5f);
-//			p2Fix = playerFix (.2f, .4f);
-//			/*plat =*/platformFix (0.1f, 0.2f, 0.7f);
-
-			p1Fix = playerFix (21f, 50f, 1f, 2f);
-			p2Fix = playerFix (30f, 40f, 1f, 2f);
+			p1 = new PlayerPhysics(playerFix (21f, 50f, 1f, 2f));
+			p2 = new PlayerPhysics(playerFix (30f, 40f, 1f, 2f));
 			/*plat =*/platformFix (10f, 20f, 70f, 5f);
 		}
 
 		public GameState next(GameState state, Input input1, Input input2) {
 			GameState next = state.Clone();
 
-			movePlayer (p1Fix, input1);
-			movePlayer (p2Fix, input2);
+//			movePlayer (p1Fix, input1);
+//			movePlayer (p2Fix, input2);
+			p1.movePlayer (input1);
+			p2.movePlayer (input2);
 			world.Step (1/30f); // XXX: pass in the right time-step
 
 
-			next.p1.Coords = p1Fix.Body.Position;
-			next.p2.Coords = p2Fix.Body.Position;
+			next.p1.Coords = p1.Fixture.Body.Position;
+			next.p2.Coords = p2.Fixture.Body.Position;
 			return next;
 		}
 

@@ -79,6 +79,7 @@
     <Compile Include="Drawing.cs" />
     <Compile Include="PrimitiveBatch.cs" />
     <Compile Include="DebugViewXNA.cs" />
+    <Compile Include="PlayerPhysics.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Info.plist" />

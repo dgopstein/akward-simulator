@@ -19,7 +19,7 @@ namespace awkwardsimulator
 		SpriteFont spriteFont;
 		GameState state;
 		ForwardModel forwardModel;
-		DebugDraw debugDraw;
+//		DebugDraw debugDraw;
 		Drawing drawing;
 		DebugViewXNA DebugView;
 
@@ -35,7 +35,7 @@ namespace awkwardsimulator
 		{
 			graphics = new GraphicsDeviceManager (this);
 			Content.RootDirectory = "Content";	            
-			graphics.IsFullScreen = true;
+//			graphics.IsFullScreen = true;
 		}
 
 		// load any non-graphic related content.  Calling base.Initialize will enumerate through any components
@@ -62,7 +62,7 @@ namespace awkwardsimulator
 			spriteFont = Content.Load<SpriteFont>("Default");
 
 			drawing = new Drawing (GraphicsDevice, spriteBatch, spriteFont);
-			debugDraw = new DebugDraw (drawing, forwardModel.World);
+//			debugDraw = new DebugDraw (drawing, forwardModel.World);
 
 			DebugView = new DebugViewXNA (forwardModel.World);
 			DebugView.DefaultShapeColor = Color.White;
