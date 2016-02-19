@@ -12,37 +12,27 @@ namespace awkwardsimulator
 	public class ForwardModel
 	{
 		private World world;
-		Fixture p1Fix, p2Fix, plat;
+		Fixture p1Fix, p2Fix;//, plat;
 
 		public World World { get { return world; } }
 
-		private Shape rectShape(float width, float height) {
-			Vertices vs = new FarseerPhysics.Common.Vertices () {
-//				new Vector2 (-width/2, -height/2),
-//				new Vector2 (-width/2,  height/2),
-//				new Vector2 ( width/2, -height/2),
-//				new Vector2 ( width/2,  height/2)
-				new Vector2(   0f,     0f),
-				new Vector2(   0f, height),
-				new Vector2(width, height),
-				new Vector2(width,     0f)
-			};
-
-			return new PolygonShape(vs, 1f);
+		private Shape rectShape(float width, float height) {			
+			return new PolygonShape (PolygonTools.CreateRectangle(width/2, height/2, new Vector2(width/2, height/2), 0f), 1f);
 		}
 
-		private Fixture playerFix(float x, float y) {
+		private Fixture playerFix(float x, float y, float width = .01f, float height = .02f) {
 			Body body = FarseerPhysics.Factories.BodyFactory.CreateBody(world, new Vector2(x, y));
 			body.BodyType = BodyType.Dynamic;
+			body.FixedRotation = true;
 
-			return body.CreateFixture(rectShape (.01f, .02f));
+			return body.CreateFixture(rectShape (width, height));
 		}
 
-		private Fixture platformFix(float x, float y) {
+		private Fixture platformFix(float x, float y, float width = .3f, float height = .05f) {
 			Body body = FarseerPhysics.Factories.BodyFactory.CreateBody(world, new Vector2(x, y));
 			body.BodyType = BodyType.Static;
 
-			return body.CreateFixture(rectShape (.8f, .05f));
+			return body.CreateFixture(rectShape (width, height));
 		}
 
 		private void movePlayer(Fixture fix, Input input) {
@@ -58,9 +48,9 @@ namespace awkwardsimulator
 		{
 			world = new World (new Vector2 (0f, -.8f));
 
-			p1Fix = playerFix (.5f, .7f);
+			p1Fix = playerFix (.21f, .5f);
 			p2Fix = playerFix (.2f, .4f);
-			plat = platformFix (0.05f, 0.2f);
+			/*plat =*/platformFix (0.1f, 0.2f, 0.7f);
 		}
 
 		public GameState next(GameState state, Input input1, Input input2) {
