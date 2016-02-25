@@ -36,8 +36,8 @@ namespace awkwardsimulator
 		{
             // Player p1, Player p2, float health, bool win, bool lose, List<Platform> platforms, Goal goal
 			state = new GameState(
-				p1: new Player (1, new Vector2 (0.1f, 0.2f)),
-				p2: new Player (2, new Vector2 (0.2f, 0.2f)),
+				p1: new Player (1, new Vector2 (20f, 50f)),
+				p2: new Player (2, new Vector2 (30f, 40f)),
 				health: 0f,
                 status: new Playing(),
                 platforms: new List<Platform> { new Platform(new Vector2(10f, 20f), new Vector2(70f, 5f)) },
