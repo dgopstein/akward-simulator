@@ -45,8 +45,6 @@ namespace awkwardsimulator
 			if (!jumpButton)
 				holdingJumpButton = false;
 
-			//System.Console.WriteLine("{0} jumpButton: {1}, {2}", id, jumpButton, holdingJumpButton);
-//			System.Console.WriteLine("grounded: {0}, {1}", grounded, wasGrounded);
 			if (jumpButton && !holdingJumpButton && (grounded || wasGrounded))
 			{
 				my = JumpVelocity;
@@ -93,20 +91,11 @@ namespace awkwardsimulator
 			float max = Math.Abs(target);
 			mx = clamp(mx, -max, max);
 
-			/*if (_platform != null) {
-		transform.parent = _platform.transform;
-	} else {
-		transform.parent = null;
-	}*/	
-
-			//System.Console.WriteLine("end: ({0}, {1})", new object[]{mx.ToString(), my.ToString()});
-
 			fix.Body.LinearVelocity = new Vector2(mx, my);
 
 		}
 
-		public static float clamp(float num, float min, float max)
-		{
+		public static float clamp(float num, float min, float max) {
 			num = ((num > min) ? 1 : 0) * num + ((!(num > min)) ? 1 : 0) * min;
 			return ((num < max) ? 1 : 0) * num + ((!(num < max)) ? 1 : 0) * max;
 		}

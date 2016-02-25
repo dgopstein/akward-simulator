@@ -1,5 +1,6 @@
 ﻿#region Using Statements
 using System;
+using System.Collections.Generic;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -19,19 +20,10 @@ namespace awkwardsimulator
 		SpriteFont spriteFont;
 		GameState state;
 		ForwardModel forwardModel;
-//		DebugDraw debugDraw;
 		Drawing drawing;
 		DebugViewXNA DebugView;
 
-//		DebugViewXNA DebugView;
-//		DebugView = new DebugViewXNA(World);
-//		DebugView.RemoveFlags(DebugViewFlags.Shape);
-//		DebugView.RemoveFlags(DebugViewFlags.Joint);
-//		DebugView.DefaultShapeColor = Color.White;
-//		DebugView.SleepingShapeColor = Color.LightGray;
-//		DebugView.LoadContent(ScreenManager.GraphicsDevice, ScreenManager.Content);
-
-		public Game1 ()
+        public Game1 ()
 		{
 			graphics = new GraphicsDeviceManager (this);
 			Content.RootDirectory = "Content";	            
@@ -42,14 +34,17 @@ namespace awkwardsimulator
 		/// and initialize them as well.
 		protected override void Initialize ()
 		{
-
+            // Player p1, Player p2, float health, bool win, bool lose, List<Platform> platforms, Goal goal
 			state = new GameState(
-				new Player (1, new Vector2 (0.1f, 0.2f)),
-				new Player (2, new Vector2 (0.2f, 0.2f)),
-				0f, false, false
+				p1: new Player (1, new Vector2 (0.1f, 0.2f)),
+				p2: new Player (2, new Vector2 (0.2f, 0.2f)),
+				health: 0f,
+                status: new Playing(),
+                platforms: new List<Platform> { new Platform(new Vector2(10f, 20f), new Vector2(70f, 5f)) },
+                goal: new Goal(new Vector2(60f, 60f))
 			);
 
-			forwardModel = new ForwardModel ();
+			forwardModel = new ForwardModel (state);
 
 			base.Initialize ();
 		}

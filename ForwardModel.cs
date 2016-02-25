@@ -5,6 +5,7 @@ using FarseerPhysics.Collision.Shapes;
 using FarseerPhysics.Factories;
 using FarseerPhysics.Collision;
 using FarseerPhysics.Common;
+using System.Collections.Generic;
 
 namespace awkwardsimulator
 {
@@ -12,13 +13,20 @@ namespace awkwardsimulator
 	public class ForwardModel
 	{
 		private World world;
-//		Fixture p1Fix, p2Fix;//, plat;
+		List<Fixture> platforms;
 		PlayerPhysics p1, p2;
 
 		public World World { get { return world; } }
 
 		private Shape rectShape(float width, float height) {			
 			return new PolygonShape (PolygonTools.CreateRectangle(width/2, height/2, new Vector2(width/2, height/2), 0f), 1f);
+		}
+
+		private Fixture platformFix(float x, float y, float width = .3f, float height = .05f) {
+			Body body = FarseerPhysics.Factories.BodyFactory.CreateBody(world, new Vector2(x, y));
+			body.BodyType = BodyType.Static;
+
+			return body.CreateFixture(rectShape (width, height));
 		}
 
 		private Fixture playerFix(float x, float y, float width = .01f, float height = .02f) {
@@ -30,47 +38,32 @@ namespace awkwardsimulator
 			return body.CreateFixture(rectShape (width, height));
 		}
 
-		private Fixture platformFix(float x, float y, float width = .3f, float height = .05f) {
-			Body body = FarseerPhysics.Factories.BodyFactory.CreateBody(world, new Vector2(x, y));
-			body.BodyType = BodyType.Static;
-
-			return body.CreateFixture(rectShape (width, height));
-		}
-
-
-		public ForwardModel ()
+		public ForwardModel (GameState state)
 		{
 			world = new World (new Vector2 (0f, -100f));
 
-			p1 = new PlayerPhysics(playerFix (21f, 50f, 1f, 2f));
-			p2 = new PlayerPhysics(playerFix (30f, 40f, 1f, 2f));
-			/*plat =*/platformFix (10f, 20f, 70f, 5f);
+            p1 = new PlayerPhysics(playerFix (state.p1.X, state.p1.Y, state.p1.W, state.p1.H));
+            p2 = new PlayerPhysics(playerFix (state.p2.X, state.p2.Y, state.p2.W, state.p2.H));
+
+//			/*plat =*/platformFix (10f, 20f, 70f, 5f);
+            foreach (var plat in state.platforms) {
+                platformFix (plat.X, plat.Y, plat.W, plat.H);
+            }
 		}
 
 		public GameState next(GameState state, Input input1, Input input2) {
 			GameState next = state.Clone();
 
-//			movePlayer (p1Fix, input1);
-//			movePlayer (p2Fix, input2);
 			p1.movePlayer (input1);
 			p2.movePlayer (input2);
 			world.Step (1/30f); // XXX: pass in the right time-step
 
+//			next.p1.Coords = p1.Fixture.Body.Position;
+//			next.p2.Coords = p2.Fixture.Body.Position;
+            next.p1 = next.p1.WithPosition(p1.Fixture.Body.Position);
+            next.p2 = next.p2.WithPosition(p2.Fixture.Body.Position);
 
-			next.p1.Coords = p1.Fixture.Body.Position;
-			next.p2.Coords = p2.Fixture.Body.Position;
 			return next;
-		}
-
-		private Vector2 velocity(Input i) {
-			double xspeed = 15, yspeed = 1;
-			double x = 0, y = 0;
-
-			if (i.left ) { x -= xspeed; }
-			if (i.right) { x += xspeed; }
-			if (i.up   ) { y += yspeed; }
-
-			return new Vector2 ((float)x, (float)y);
 		}
 	}
 }
