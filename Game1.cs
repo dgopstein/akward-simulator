@@ -23,6 +23,11 @@ namespace awkwardsimulator
 		Drawing drawing;
 		DebugViewXNA DebugView;
 
+        static float GameWidth = 160f;
+        static float GameHeight = 100f;
+        Matrix proj = Matrix.CreateOrthographicOffCenter(0f, GameWidth, 0f, GameHeight, 0f, 1f);
+        Matrix view = Matrix.Identity;
+
         public Game1 ()
 		{
 			graphics = new GraphicsDeviceManager (this);
@@ -56,7 +61,7 @@ namespace awkwardsimulator
 			spriteBatch = new SpriteBatch (GraphicsDevice);
 			spriteFont = Content.Load<SpriteFont>("Default");
 
-			drawing = new Drawing (GraphicsDevice, spriteBatch, spriteFont);
+            drawing = new Drawing (GraphicsDevice, spriteBatch, spriteFont, new Vector2(GameWidth, GameHeight));
 //			debugDraw = new DebugDraw (drawing, forwardModel.World);
 
 			DebugView = new DebugViewXNA (forwardModel.World);
@@ -99,12 +104,14 @@ namespace awkwardsimulator
 
 			drawing.DrawPlayer (state.p1);
 			drawing.DrawPlayer (state.p2);
+
+            foreach (var plat in state.platforms) {
+                drawing.DrawGameObjectRect (plat, Color.Beige);
+            }
 			
 			spriteBatch.End();
-
-			Matrix proj = Matrix.CreateOrthographicOffCenter(0f, 100f, 0f, 100f, 0f, 1f);
-			Matrix view = Matrix.Identity;
-			DebugView.RenderDebugData(ref proj, ref view);
+            			
+			DebugView.RenderDebugData(ref proj, ref view); //XXX probably expensive
             
 			base.Draw (gameTime);
 		}

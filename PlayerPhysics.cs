@@ -13,7 +13,7 @@ namespace awkwardsimulator
 		float VariableJumpDampening = 0.75f; //Your jump speed is multiplied by this every frame unless you hold jump
 		float GroundMoveAccel = 40.0f;
 		float AirMoveAccel = 20.0f;
-		float MaxMoveSpeed = 8.0f;
+		float MaxMoveSpeed = 30.0f;
 		float GroundFriction = 40.0f; //Applied to horizontal movement if neither key is held
 		float AirFriction = 30.0f;
 

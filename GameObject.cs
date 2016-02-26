@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework;
 namespace awkwardsimulator
 {
 
-    public abstract class GameObject<T> where T : GameObject<T> {
+    public abstract class GameObject {
         public Vector2 Coords { get; }
         public Vector2 Size { get; }
 
@@ -19,26 +19,19 @@ namespace awkwardsimulator
 			this.Coords = coords;
             this.Size = size;
 		}
-
-//        public virtual T Clone () {
-//            return new T { Coords = this.Coords, Size = this.Size };
-//		}
-
-//        public abstract T Clone ()
 	}
 
-	public class Player : GameObject<Player> {
+	public class Player : GameObject {
 		public int Id { get; }
-        public Player (int id, Vector2 coords) : base(coords, size: new Vector2(1f, 2f)) { Id = id; }
-//		override public Player Clone() { return new Player(Id, Coords);	}
+        public Player (int id, Vector2 coords) : base(coords, size: new Vector2(4f, 6f)) { Id = id; }
         public Player WithPosition(Vector2 coords) { return new Player(Id, coords); }
 	}
 
-	public class Platform : GameObject<Platform> {
+	public class Platform : GameObject {
         public Platform (Vector2 coords, Vector2 size) : base (coords, size) {}
 	}
 
-    public class Goal : GameObject<Goal> {
+    public class Goal : GameObject {
         public Goal (Vector2 coords) : base (coords, size: new Vector2(10f, 10f)) {}
     }
 }
