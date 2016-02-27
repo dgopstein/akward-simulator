@@ -80,6 +80,8 @@
     <Compile Include="DebugViewXNA.cs" />
     <Compile Include="PlayerPhysics.cs" />
     <Compile Include="GameObject.cs" />
+    <Compile Include="Util.cs" />
+    <Compile Include="HealthControl.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Info.plist" />
