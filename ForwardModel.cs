@@ -6,6 +6,7 @@ using FarseerPhysics.Factories;
 using FarseerPhysics.Collision;
 using FarseerPhysics.Common;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace awkwardsimulator
 {
@@ -13,8 +14,7 @@ namespace awkwardsimulator
 	public class ForwardModel
 	{
 		private World world;
-		List<Fixture> platforms;
-		PlayerPhysics p1, p2;
+        PlayerPhysics physP1, physP2;
 
 		public World World { get { return world; } }
 
@@ -42,10 +42,9 @@ namespace awkwardsimulator
 		{
 			world = new World (new Vector2 (0f, -100f));
 
-            p1 = new PlayerPhysics(playerFix (state.p1.X, state.p1.Y, state.p1.W, state.p1.H));
-            p2 = new PlayerPhysics(playerFix (state.p2.X, state.p2.Y, state.p2.W, state.p2.H));
+            physP1 = new PlayerPhysics(playerFix (state.p1.X, state.p1.Y, state.p1.W, state.p1.H));
+            physP2 = new PlayerPhysics(playerFix (state.p2.X, state.p2.Y, state.p2.W, state.p2.H));
 
-//			/*plat =*/platformFix (10f, 20f, 70f, 5f);
             foreach (var plat in state.platforms) {
                 platformFix (plat.X, plat.Y, plat.W, plat.H);
             }
@@ -54,14 +53,22 @@ namespace awkwardsimulator
 		public GameState next(GameState state, Input input1, Input input2) {
 			GameState next = state.Clone();
 
-			p1.movePlayer (input1);
-			p2.movePlayer (input2);
+            Debug.WriteLineIf ((Vector2.Distance (physP1.Fixture.Body.Position, state.p1.Coords) > 0.001f ||
+                                Vector2.Distance (physP2.Fixture.Body.Position, state.p2.Coords) > 0.001f),
+                "The gamestate and forwardmodel are out of sync"
+            );
+
+            // Calculate physics
+
+			physP1.movePlayer (input1);
+			physP2.movePlayer (input2);
 			world.Step (1/30f); // XXX: pass in the right time-step
 
-//			next.p1.Coords = p1.Fixture.Body.Position;
-//			next.p2.Coords = p2.Fixture.Body.Position;
-            next.p1 = next.p1.WithPosition(p1.Fixture.Body.Position);
-            next.p2 = next.p2.WithPosition(p2.Fixture.Body.Position);
+            // Assign values to GameState
+
+            next.p1 = next.p1.WithPosition(physP1.Fixture.Body.Position);
+            next.p2 = next.p2.WithPosition(physP2.Fixture.Body.Position);
+            next.health = HealthControl.Health(next);
 
 			return next;
 		}

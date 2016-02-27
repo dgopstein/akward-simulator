@@ -74,6 +74,31 @@ namespace awkwardsimulator
             Point dim = RasterizeDims (go);
             spriteBatch.Draw (blankTexture, new Rectangle (pt.X, pt.Y, dim.X, dim.Y), c);
         }
+
+        public void DrawHealth(float health) {
+
+
+            float screenWidth = graphicsDevice.Viewport.Width;
+            float screenHeight = graphicsDevice.Viewport.Height;
+
+            int y = (int) (0.1 * screenHeight);
+            int h = (int) (.05 * screenHeight);
+
+            double totalW = 0.6 * screenWidth;
+
+            int leftX = (int) (0.2 * screenWidth);
+            int leftW = (int) (totalW * ((health + 1) / 2));
+
+            int rightX = leftX + leftW;
+            int rightW = (int) (totalW - leftW);
+
+            int centerX = (int)(leftX + totalW / 2);
+
+            spriteBatch.Draw (blankTexture, new Rectangle (leftX,  y, leftW,  h), Color.Coral);
+            spriteBatch.Draw (blankTexture, new Rectangle (rightX, y, rightW, h), Color.Cornsilk);
+            spriteBatch.DrawString(spriteFont, health.ToString("0.00"), new Vector2(centerX - 40, y), Color.Black, 0, Vector2.Zero,
+                scale: 1.5f, effects: SpriteEffects.None, layerDepth: 0);
+        }
 	}
 }
 

@@ -108,6 +108,8 @@ namespace awkwardsimulator
             foreach (var plat in state.platforms) {
                 drawing.DrawGameObjectRect (plat, Color.Beige);
             }
+
+            drawing.DrawHealth (state.health);
 			
 			spriteBatch.End();
             			
