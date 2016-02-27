@@ -89,15 +89,10 @@ namespace awkwardsimulator
 				mx -= Math.Sign(mx) * Math.Min(Math.Abs(mx), drag);
 			}
 			float max = Math.Abs(target);
-			mx = clamp(mx, -max, max);
+			mx = Util.clamp(mx, -max, max);
 
 			fix.Body.LinearVelocity = new Vector2(mx, my);
 
-		}
-
-		public static float clamp(float num, float min, float max) {
-			num = ((num > min) ? 1 : 0) * num + ((!(num > min)) ? 1 : 0) * min;
-			return ((num < max) ? 1 : 0) * num + ((!(num < max)) ? 1 : 0) * max;
 		}
 
 		Fixture ground = null;

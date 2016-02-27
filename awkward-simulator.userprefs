@@ -1,12 +1,15 @@
 ﻿<Properties StartupItem="awkward-simulator.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="GameObject.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="../awkward/c_sharp_simulator/Classes/Global.cs">
     <Files>
-      <File FileName="ForwardModel.cs" Line="41" Column="39" />
-      <File FileName="PlayerPhysics.cs" Line="101" Column="4" />
-      <File FileName="Game1.cs" Line="47" Column="13" />
-      <File FileName="GameState.cs" Line="12" Column="83" />
-      <File FileName="GameObject.cs" Line="30" Column="56" />
+      <File FileName="ForwardModel.cs" Line="45" Column="84" />
+      <File FileName="PlayerPhysics.cs" Line="64" Column="34" />
+      <File FileName="Game1.cs" Line="114" Column="56" />
+      <File FileName="GameState.cs" Line="30" Column="29" />
+      <File FileName="GameObject.cs" Line="34" Column="35" />
+      <File FileName="Drawing.cs" Line="63" Column="1" />
+      <File FileName="../awkward/c_sharp_simulator/Classes/Physics/PhysicsHealthControl.cs" Line="91" Column="3" />
+      <File FileName="../awkward/c_sharp_simulator/Classes/Global.cs" Line="128" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
