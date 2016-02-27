@@ -50,6 +50,27 @@ namespace awkwardsimulator
             }
 		}
 
+        private bool p1InGoal = false, p2InGoal = false; // TODO set these values somewhere
+        private PlayStatus determinePlayStatus(GameState state) {
+            PlayStatus status;
+
+            if (p1InGoal && p2InGoal) {
+                status = new Won ();
+            } else if (state.health >= 1) {
+                status = new Died { cause = "loneliness" };
+            } else if (state.health <= -1) {
+                status = new Died { cause = "awkwardness" };
+            } else if (state.p1.Y < 0) {
+                status = new Died { cause = "p1 fell" };
+            } else if (state.p2.Y < 0) {
+                status = new Died { cause = "p2 fell" };
+            } else {
+                status = new Playing ();
+            }
+
+            return status;
+        }
+
 		public GameState next(GameState state, Input input1, Input input2) {
 			GameState next = state.Clone();
 
@@ -69,6 +90,7 @@ namespace awkwardsimulator
             next.p1 = next.p1.WithPosition(physP1.Fixture.Body.Position);
             next.p2 = next.p2.WithPosition(physP2.Fixture.Body.Position);
             next.health = HealthControl.Health(next);
+            next.playStatus = determinePlayStatus (next);
 
 			return next;
 		}

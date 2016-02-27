@@ -52,6 +52,12 @@ namespace awkwardsimulator
             return new Point (xScale (go.W), yScale (go.H));
         }
 
+        public void DrawFPS(GameTime gameTime) {
+            spriteBatch.DrawString(SpriteFont,
+                "FPS: " + Math.Round(1000 / (gameTime.ElapsedGameTime.TotalMilliseconds + 1)),
+                new Vector2(graphicsDevice.Viewport.Width - 100, 20), Color.Red);
+        }
+
 		public void DrawPlayer(Player p) {
             Point pt = RasterizeCoords (p);
             Color color1, color2;
@@ -76,12 +82,10 @@ namespace awkwardsimulator
         }
 
         public void DrawHealth(float health) {
-
-
             float screenWidth = graphicsDevice.Viewport.Width;
             float screenHeight = graphicsDevice.Viewport.Height;
 
-            int y = (int) (0.1 * screenHeight);
+            int y = (int) (0.04 * screenHeight);
             int h = (int) (.05 * screenHeight);
 
             double totalW = 0.6 * screenWidth;
@@ -98,6 +102,10 @@ namespace awkwardsimulator
             spriteBatch.Draw (blankTexture, new Rectangle (rightX, y, rightW, h), Color.Cornsilk);
             spriteBatch.DrawString(spriteFont, health.ToString("0.00"), new Vector2(centerX - 40, y), Color.Black, 0, Vector2.Zero,
                 scale: 1.5f, effects: SpriteEffects.None, layerDepth: 0);
+        }
+
+        public void DrawPlayStatus(PlayStatus status) {
+            spriteBatch.DrawString(SpriteFont, status.ToString (), new Vector2(20, 20), Color.Black);
         }
 	}
 }

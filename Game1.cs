@@ -100,8 +100,8 @@ namespace awkwardsimulator
 		
 			//TODO: Add your drawing code here
 			spriteBatch.Begin();
-			spriteBatch.DrawString(drawing.SpriteFont, "FPS: " + Math.Round(1000 / (gameTime.ElapsedGameTime.TotalMilliseconds + 1)), new Vector2(100, 100), Color.Red);
 
+            drawing.DrawFPS (gameTime);
 			drawing.DrawPlayer (state.p1);
 			drawing.DrawPlayer (state.p2);
 
@@ -110,6 +110,7 @@ namespace awkwardsimulator
             }
 
             drawing.DrawHealth (state.health);
+            drawing.DrawPlayStatus (state.playStatus);
 			
 			spriteBatch.End();
             			

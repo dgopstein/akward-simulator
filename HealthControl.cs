@@ -9,9 +9,10 @@ namespace awkwardsimulator
         private static float minSafeDistance = 10.0f;
         private static float maxSafeDistance = 2.0f * minSafeDistance;
         private static float rampWidth = 1.5f;
-        private static float minDamagePerSecond = 0.004f;
-        private static float maxDamagePerSecond = 0.01f;
-        private static float healRate = 0.005f;
+        private static float minDamagePerSecond = 0.001f;
+        private static float maxDamagePerSecond = 0.004f;
+        private static float healRate = 0.01f;
+        private static float drainRate = 0.005f;
 
         /*
          *   -1: too awkward
@@ -27,7 +28,7 @@ namespace awkwardsimulator
             if (dist > maxSafeDistance || dist < minSafeDistance)
             {
                 if ((dist > maxSafeDistance && health > IDEAL) || (dist < minSafeDistance && health < IDEAL))
-                    health = Util.moveTowards(health, IDEAL, healRate * Util.FIXED_DELTA_TIME);
+                    health = Util.moveTowards(health, IDEAL, drainRate * Util.FIXED_DELTA_TIME);
                 outOfBounds = (dist > maxSafeDistance ? maxSafeDistance - dist : minSafeDistance - dist);
 
                 float d = Util.lerp(minDamagePerSecond, maxDamagePerSecond, System.Math.Abs(outOfBounds / rampWidth));
@@ -40,7 +41,7 @@ namespace awkwardsimulator
                 health = Util.moveTowards(health, IDEAL, healRate * ((windowSize/2) - Math.Abs(midPoint - dist)) * Util.FIXED_DELTA_TIME);
             }
 
-            return health; // scale health from [-1, 1]
+            return 2*health - 1; // scale health from [-1, 1]
         }
     }
 }
