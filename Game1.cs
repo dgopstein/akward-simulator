@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Storage;
 using Microsoft.Xna.Framework.Input;
 using FarseerPhysics.DebugView;
+using System.Diagnostics;
 
 #endregion
 
@@ -22,6 +23,7 @@ namespace awkwardsimulator
 		ForwardModel forwardModel;
 		Drawing drawing;
 		DebugViewXNA DebugView;
+        AI ai1, ai2;
 
         static float GameWidth = 160f;
         static float GameHeight = 100f;
@@ -39,17 +41,17 @@ namespace awkwardsimulator
 		/// and initialize them as well.
 		protected override void Initialize ()
 		{
-            // Player p1, Player p2, float health, bool win, bool lose, List<Platform> platforms, Goal goal
 			state = new GameState(
 				p1: new Player (1, new Vector2 (20f, 50f)),
 				p2: new Player (2, new Vector2 (30f, 40f)),
 				health: 0f,
-                status: new Playing(),
                 platforms: new List<Platform> { new Platform(new Vector2(10f, 20f), new Vector2(70f, 5f)) },
                 goal: new Goal(new Vector2(60f, 60f))
 			);
 
 			forwardModel = new ForwardModel (state);
+
+            ai1 = new AStar (state, PlayerId.P1);
 
 			base.Initialize ();
 		}
@@ -89,7 +91,8 @@ namespace awkwardsimulator
             Input input1 = inputs.Item1;
             Input input2 = inputs.Item2;
 
-
+            input1 = ai1.nextInput (state);
+            Debug.WriteLine ("Input1: {0}", input1);
 
 			state = forwardModel.next (state, input1, input2);
 
@@ -105,15 +108,15 @@ namespace awkwardsimulator
 			spriteBatch.Begin();
 
             drawing.DrawFPS (gameTime);
-			drawing.DrawPlayer (state.p1);
-			drawing.DrawPlayer (state.p2);
+			drawing.DrawPlayer (state.P1);
+			drawing.DrawPlayer (state.P2);
 
-            foreach (var plat in state.platforms) {
+            foreach (var plat in state.Platforms) {
                 drawing.DrawGameObjectRect (plat, Color.Beige);
             }
 
-            drawing.DrawHealth (state.health);
-            drawing.DrawPlayStatus (state.playStatus);
+            drawing.DrawHealth (state.Health);
+            drawing.DrawPlayStatus (state.PlayStatus());
 			
 			spriteBatch.End();
             			

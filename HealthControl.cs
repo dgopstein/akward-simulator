@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Xna.Framework;
 
 namespace awkwardsimulator
 {
@@ -19,8 +20,8 @@ namespace awkwardsimulator
          *    0: perfect
          *    1: too lonely
          */
-        public static float Health(GameState state) {
-            float dist = Util.euclideanDistance(state.p1.Coords, state.p2.Coords);
+        public static float Health(Vector2 c1, Vector2 c2) {
+            float dist = Util.euclideanDistance(c1, c2);
             float outOfBounds = 0.0f;
 
             float IDEAL = 0.5f;

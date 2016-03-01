@@ -1,4 +1,4 @@
-﻿<Properties StartupItem="awkward-simulator.csproj">
+﻿<Properties StartupItem="awkward-simulator.csproj" RefactoringSettings.EnableRefactorings="True">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
   <MonoDevelop.Ide.Workbench ActiveDocument="Game1.cs">
     <Files>

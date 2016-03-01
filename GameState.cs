@@ -3,7 +3,10 @@ using System.Collections.Generic;
 
 namespace awkwardsimulator
 {
-    public abstract class PlayStatus {}
+    public abstract class PlayStatus {
+        public bool isDied() { return GetType () == typeof(Died); }
+        public bool isWon () { return GetType () == typeof(Won);  }
+    }
     public class Died : PlayStatus { public string cause { get; set; } }
     public class Playing : PlayStatus {}
     public class Won : PlayStatus {}
@@ -20,30 +23,73 @@ namespace awkwardsimulator
 
 	public class GameState
 	{
-		public Player p1, p2;
-		public float health;
-        public PlayStatus playStatus;
-        public List<Platform> platforms;
-        public Goal goal;
+        private Player p1, p2;
+        public Player P1 { get { return p1; } }
+        public Player P2 { get { return p2; } }
+		
+        private float health;
+        public float Health { get { return health; } }
 
-		public GameState (Player p1, Player p2, float health, PlayStatus status, List<Platform> platforms, Goal goal)
+//        private PlayStatus playStatus;
+//        public PlayStatus PlayStatus { get { return playStatus; } }
+
+        private List<Platform> platforms;
+        public List<Platform> Platforms { get { return platforms; } }
+
+        private Goal goal;
+        public Goal Goal { get { return goal; } }
+
+		public GameState (Player p1, Player p2, float health, List<Platform> platforms, Goal goal)
 		{
 			this.p1 = p1;
 			this.p2 = p2;
 			this.health = health;
-			this.playStatus = status;
 			this.platforms = platforms;
 			this.goal = goal;
 		}
 
 		public GameState(GameState s)
-			: this(p1: s.p1, p2: s.p2, /*s.p1_previousInput.Clone(), s.p2_previousInput.Clone(), new StageAIData(s.stage),*/
-                health: s.health, status: s.playStatus, platforms: s.platforms, goal: s.goal)
+			: this(p1: s.P1, p2: s.P2, /*s.p1_previousInput.Clone(), s.p2_previousInput.Clone(), new StageAIData(s.stage),*/
+                health: s.Health, platforms: s.platforms, goal: s.Goal)
 		{ }
 
-		public GameState Clone() {
-			return new GameState(this);
+		public GameState Clone(
+            Player p1 = null,
+            Player p2 = null,
+            float health = float.NegativeInfinity,
+            PlayStatus status = null,
+            List<Platform> platforms = null,
+            Goal goal = null
+        ) {
+			return new GameState(
+                p1: p1 == null ? this.p1 : p1,
+                p2: p2 == null ? this.p2 : p2,
+                health: health == float.NegativeInfinity ? this.Health : health,
+                platforms: platforms == null ? this.platforms : platforms,
+                goal: goal == null ? this.goal : goal
+            );
 		}
+
+        private bool p1InGoal = false, p2InGoal = false; // TODO set these values somewhere
+        public PlayStatus PlayStatus() {
+            PlayStatus status;
+
+            if (p1InGoal && p2InGoal) {
+                status = new Won ();
+            } else if (Health >= 1) {
+                status = new Died { cause = "loneliness" };
+            } else if (Health <= -1) {
+                status = new Died { cause = "awkwardness" };
+            } else if (P1.Y < 0) {
+                status = new Died { cause = "p1 fell" };
+            } else if (P2.Y < 0) {
+                status = new Died { cause = "p2 fell" };
+            } else {
+                status = new Playing ();
+            }
+
+            return status;
+        }
 	}
 }
 

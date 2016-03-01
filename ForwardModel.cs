@@ -40,42 +40,20 @@ namespace awkwardsimulator
 
 		public ForwardModel (GameState state)
 		{
-			world = new World (new Vector2 (0f, -100f));
+            world = new World (new Vector2 (0f, -100f));
 
-            physP1 = new PlayerPhysics(playerFix (state.p1.X, state.p1.Y, state.p1.W, state.p1.H));
-            physP2 = new PlayerPhysics(playerFix (state.p2.X, state.p2.Y, state.p2.W, state.p2.H));
+            physP1 = new PlayerPhysics(playerFix (state.P1.X, state.P1.Y, state.P1.W, state.P1.H));
+            physP2 = new PlayerPhysics(playerFix (state.P2.X, state.P2.Y, state.P2.W, state.P2.H));
 
-            foreach (var plat in state.platforms) {
+            foreach (var plat in state.Platforms) {
                 platformFix (plat.X, plat.Y, plat.W, plat.H);
             }
 		}
 
-        private bool p1InGoal = false, p2InGoal = false; // TODO set these values somewhere
-        private PlayStatus determinePlayStatus(GameState state) {
-            PlayStatus status;
-
-            if (p1InGoal && p2InGoal) {
-                status = new Won ();
-            } else if (state.health >= 1) {
-                status = new Died { cause = "loneliness" };
-            } else if (state.health <= -1) {
-                status = new Died { cause = "awkwardness" };
-            } else if (state.p1.Y < 0) {
-                status = new Died { cause = "p1 fell" };
-            } else if (state.p2.Y < 0) {
-                status = new Died { cause = "p2 fell" };
-            } else {
-                status = new Playing ();
-            }
-
-            return status;
-        }
-
 		public GameState next(GameState state, Input input1, Input input2) {
-			GameState next = state.Clone();
 
-            Debug.WriteLineIf ((Vector2.Distance (physP1.Fixture.Body.Position, state.p1.Coords) > 0.001f ||
-                                Vector2.Distance (physP2.Fixture.Body.Position, state.p2.Coords) > 0.001f),
+            Debug.WriteLineIf ((Vector2.Distance (physP1.Fixture.Body.Position, state.P1.Coords) > 0.001f ||
+                                Vector2.Distance (physP2.Fixture.Body.Position, state.P2.Coords) > 0.001f),
                 "The gamestate and forwardmodel are out of sync"
             );
 
@@ -85,12 +63,15 @@ namespace awkwardsimulator
 			physP2.movePlayer (input2);
 			world.Step (1/30f); // XXX: pass in the right time-step
 
-            // Assign values to GameState
+            Vector2 c1 = physP1.Fixture.Body.Position;
+            Vector2 c2 = physP2.Fixture.Body.Position;
 
-            next.p1 = next.p1.WithPosition(physP1.Fixture.Body.Position);
-            next.p2 = next.p2.WithPosition(physP2.Fixture.Body.Position);
-            next.health = HealthControl.Health(next);
-            next.playStatus = determinePlayStatus (next);
+            // Assign values to GameState
+            GameState next = state.Clone(
+                p1: state.P1.WithPosition(c1),
+                p2: state.P2.WithPosition(c2),
+                health: HealthControl.Health(c1, c2)
+            );
 
 			return next;
 		}
