@@ -8,6 +8,16 @@ namespace awkwardsimulator
     public class Playing : PlayStatus {}
     public class Won : PlayStatus {}
 
+    public class Stage {
+        public List<Platform> Platforms { get; }
+        public Goal Goal { get; }
+
+        public Stage(Goal goal, List<Platform> platforms) {
+            Goal = goal;
+            Platforms = platforms;
+        }
+    }
+
 	public class GameState
 	{
 		public Player p1, p2;

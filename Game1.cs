@@ -86,9 +86,12 @@ namespace awkwardsimulator
 			if (keyState.IsKeyDown(Keys.Escape)) { Exit (); }
 
 			Tuple<Input, Input> inputs = ReadKeyboardInputs (keyState);
+            Input input1 = inputs.Item1;
+            Input input2 = inputs.Item2;
 
 
-			state = forwardModel.next (state, inputs.Item1, inputs.Item2);
+
+			state = forwardModel.next (state, input1, input2);
 
 			base.Update (gameTime);
 		}
