@@ -19,12 +19,21 @@ namespace awkwardsimulator
 			this.Coords = coords;
             this.Size = size;
 		}
+
+        override public string ToString() {
+            return Coords.ToString ();
+        }
 	}
 
 	public class Player : GameObject {
 		public int Id { get; }
         public Player (int id, Vector2 coords) : base(coords, size: new Vector2(4f, 6f)) { Id = id; }
         public Player WithPosition(Vector2 coords) { return new Player(Id, coords); }
+
+        public override string ToString ()
+        {
+            return string.Format ("P{0}{1}", Id, base.ToString());
+        }
 	}
 
 	public class Platform : GameObject {

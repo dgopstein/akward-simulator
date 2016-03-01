@@ -91,10 +91,12 @@ namespace awkwardsimulator
             Input input1 = inputs.Item1;
             Input input2 = inputs.Item2;
 
+            Debug.WriteLine ("state1: {0}", state);
             input1 = ai1.nextInput (state);
-            Debug.WriteLine ("Input1: {0}", input1);
+            Debug.WriteLine ("state2: {0}\n", state);
 
-			state = forwardModel.next (state, input1, input2);
+//          state = forwardModel.next (state, input1, input2);
+			state = forwardModel.next (input1, input2);
 
 			base.Update (gameTime);
 		}

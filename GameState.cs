@@ -30,9 +30,6 @@ namespace awkwardsimulator
         private float health;
         public float Health { get { return health; } }
 
-//        private PlayStatus playStatus;
-//        public PlayStatus PlayStatus { get { return playStatus; } }
-
         private List<Platform> platforms;
         public List<Platform> Platforms { get { return platforms; } }
 
@@ -69,6 +66,10 @@ namespace awkwardsimulator
                 goal: goal == null ? this.goal : goal
             );
 		}
+
+        override public string ToString() {
+            return String.Format ("{0} {1} {2} {3}", P1, P2, Health, PlayStatus());
+        }
 
         private bool p1InGoal = false, p2InGoal = false; // TODO set these values somewhere
         public PlayStatus PlayStatus() {

@@ -53,9 +53,9 @@ namespace awkwardsimulator
             int intermediateSteps = 3; // set to match a reasonable Gameloop#humanInputDelayFrames() value...
             for (int i = 0; i < intermediateSteps; i++) {
                 if (pId == PlayerId.P1) {
-                    lastState = forwardModel.next(lastState, thisPlayerMove, otherPlayerMove);
+                    lastState = ForwardModel.next(lastState, thisPlayerMove, otherPlayerMove);
                 } else {
-                    lastState = forwardModel.next(lastState, otherPlayerMove, thisPlayerMove);
+                    lastState = ForwardModel.next(lastState, otherPlayerMove, thisPlayerMove);
                 }
             }
 
