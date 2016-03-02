@@ -89,6 +89,7 @@
     <Compile Include="SourceLibraries\DebugViewXNA\DebugViewXNA.cs" />
     <Compile Include="SourceLibraries\DebugViewXNA\PrimitiveBatch.cs" />
     <Compile Include="SourceLibraries\FarseerSamples\AssetCreator.cs" />
+    <Compile Include="Level.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Info.plist" />

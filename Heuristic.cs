@@ -13,7 +13,7 @@ namespace awkwardsimulator
             float goalDistance = Vector2.Distance(player.Coords, state.Goal.Coords);
             float healthScore  = System.Math.Abs(state.Health);
 
-            return goalDistance + 100 * healthScore;
+            return goalDistance + 10 * healthScore;
         }
 
         public static float heuristic(this AI ai, GameState state) {

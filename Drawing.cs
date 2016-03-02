@@ -3,7 +3,9 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using FarseerPhysics.Samples.DrawingSystem;
 using System.Collections.Generic;
-
+using Microsoft.Xna.Framework.Content;
+using FarseerPhysics.Dynamics;
+using FarseerPhysics.DebugView;
 
 namespace awkwardsimulator
 {
@@ -25,17 +27,45 @@ namespace awkwardsimulator
 		private SpriteFont spriteFont;
 		public SpriteFont SpriteFont { get { return spriteFont; } }
 
+        private ContentManager content;
+        public ContentManager Content { get { return content; } }
+
+        private World world;
+        public World World { get { return world; } }
+
         private Vector2 gameDimensions;
 
-        public Drawing(GraphicsDevice graphicsDevice, SpriteBatch spriteBatch, SpriteFont spriteFont, Vector2 gameDimensions) {
+        public Drawing(GraphicsDevice graphicsDevice, SpriteBatch spriteBatch, SpriteFont spriteFont,
+            ContentManager content, World world, Vector2 gameDimensions) {
 			this.graphicsDevice = graphicsDevice;
 			this.spriteBatch = spriteBatch;
 			this.spriteFont = spriteFont;
+            this.content = content;
+            this.world = world;
             this.gameDimensions = gameDimensions;
 
 			blankTexture = new Texture2D(graphicsDevice, 1, 1);
 			blankTexture.SetData(new[] { Color.White });
 		}
+
+        Matrix debugProjMat;
+        Matrix debugViewMat;
+        DebugViewXNA DebugView;
+        private void InitDebugDraw() {
+            debugProjMat = Matrix.CreateOrthographicOffCenter(0f, gameDimensions.X, 0f, gameDimensions.Y, 0f, 1f);
+            debugViewMat = Matrix.Identity;
+
+            DebugView = new DebugViewXNA (world);
+            DebugView.DefaultShapeColor = Color.White;
+            DebugView.SleepingShapeColor = Color.LightGray;
+            DebugView.LoadContent (GraphicsDevice, Content);
+        }
+
+        public void DrawDebug() {
+            if (DebugView == null) { InitDebugDraw (); }
+
+            DebugView.RenderDebugData(ref debugProjMat, ref debugViewMat); //XXX probably expensive
+        }
 
         public float xScale() { return graphicsDevice.Viewport.Width  / gameDimensions.X; }
         public float yScale() { return graphicsDevice.Viewport.Height  / gameDimensions.Y; }

@@ -6,7 +6,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Storage;
 using Microsoft.Xna.Framework.Input;
-using FarseerPhysics.DebugView;
 using System.Diagnostics;
 
 #endregion
@@ -22,13 +21,11 @@ namespace awkwardsimulator
 		GameState state;
 		ForwardModel forwardModel;
 		Drawing drawing;
-		DebugViewXNA DebugView;
         AI ai1, ai2;
 
         static float GameWidth = 160f;
         static float GameHeight = 100f;
-        Matrix proj = Matrix.CreateOrthographicOffCenter(0f, GameWidth, 0f, GameHeight, 0f, 1f);
-        Matrix view = Matrix.Identity;
+
 
         public Game1 ()
 		{
@@ -41,13 +38,7 @@ namespace awkwardsimulator
 		/// and initialize them as well.
 		protected override void Initialize ()
 		{
-			state = new GameState(
-				p1: new Player (1, new Vector2 (20f, 50f)),
-				p2: new Player (2, new Vector2 (30f, 40f)),
-				health: 0f,
-                platforms: new List<Platform> { new Platform(new Vector2(10f, 20f), new Vector2(70f, 5f)) },
-                goal: new Goal(new Vector2(60f, 40f), 10f)
-			);
+            state = Level.Level1;
 
 			forwardModel = new ForwardModel (state);
 
@@ -64,12 +55,8 @@ namespace awkwardsimulator
 			spriteBatch = new SpriteBatch (GraphicsDevice);
 			spriteFont = Content.Load<SpriteFont>("Default");
 
-            drawing = new Drawing (GraphicsDevice, spriteBatch, spriteFont, new Vector2(GameWidth, GameHeight));
-
-//            DebugView = new DebugViewXNA (forwardModel.World);
-//            DebugView.DefaultShapeColor = Color.White;
-//            DebugView.SleepingShapeColor = Color.LightGray;
-//            DebugView.LoadContent (GraphicsDevice, Content);
+            drawing = new Drawing (GraphicsDevice, spriteBatch, spriteFont,
+                Content, forwardModel.World, new Vector2(GameWidth, GameHeight));
 		}
 
 		protected override void UnloadContent()
@@ -92,8 +79,8 @@ namespace awkwardsimulator
             Input input2 = inputs.Item2;
 
             input1 = ai1.nextInput (state);
-//            input2 = ai2.nextInput (state);
-            Debug.WriteLine ("input1: {0}\n", input1);
+            input2 = ai2.nextInput (state);
+//            Debug.WriteLine ("input1: {0}\n", input1);
 
 //            state = forwardModel.next (state, input1, input2);
 //            state = ForwardModel.Next (state, input1, input2);
@@ -128,8 +115,8 @@ namespace awkwardsimulator
 			
 			spriteBatch.End();
             			
-//			DebugView.RenderDebugData(ref proj, ref view); //XXX probably expensive
-            
+//            drawing.DrawDebug ();
+
 			base.Draw (gameTime);
 		}
 

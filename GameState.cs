@@ -84,9 +84,9 @@ namespace awkwardsimulator
             if (inGoal(p1) && inGoal(p2)) {
                 status = new Won ();
             } else if (Health >= 1) {
-                status = new Died { cause = "loneliness" };
-            } else if (Health <= -1) {
                 status = new Died { cause = "awkwardness" };
+            } else if (Health <= -1) {
+                status = new Died { cause = "loneliness" };
             } else if (P1.Y < 0) {
                 status = new Died { cause = "p1 fell" };
             } else if (P2.Y < 0) {

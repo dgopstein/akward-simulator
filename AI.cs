@@ -43,11 +43,11 @@ namespace awkwardsimulator
             return player;
         }
 
-        protected GameState next(GameState game, Input move) {
-            return next(game, move, move); //TODO don't just copy this-player's move
+        protected GameState nextState(GameState game, Input move) {
+            return nextState(game, move, move); //TODO don't just copy this-player's move
         }
 
-        protected GameState next(GameState game, Input thisPlayerMove, Input otherPlayerMove) {
+        protected GameState nextState(GameState game, Input thisPlayerMove, Input otherPlayerMove) {
             GameState lastState = game;
 
             int intermediateSteps = 1; // set to match a reasonable Gameloop#humanInputDelayFrames() value...

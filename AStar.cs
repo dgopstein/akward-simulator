@@ -44,7 +44,7 @@ namespace awkwardsimulator
             float score;
             GameState newGame;
             foreach (Input i in inputs) {
-                newGame = this.next(game,i);
+                newGame = this.nextState(game,i);
                 score = this.heuristic(newGame);
                 leaves.Enqueue(new Leaf(newGame, i, 1.0f), score + 1.0f);
             }       
@@ -56,16 +56,15 @@ namespace awkwardsimulator
                 if (leaf.state.PlayStatus().isDied()) {
                   continue;
                 }
-                Debug.WriteLine ("leaves: {0}", leaves.Count);
 
                 if (leaf.state.PlayStatus().isWon()) {
                     return leaf.move;
                 }
                 foreach (Input i in inputs) {
-                    newGame = this.next(game, i);
-                    newGame = this.next(newGame, i);
+                    newGame = this.nextState(leaf.state, i);
+                    newGame = this.nextState(newGame, i);
 
-                    if (leaves.Count < 1000 && newGame.PlayStatus().isWon()) {
+                    if (leaves.Count < 1000 && !newGame.PlayStatus().isDied()) {
                         score = this.heuristic(newGame);
                         leaves.Enqueue(new Leaf(newGame, leaf.move, leaf.node_depth + 1.0f), score + leaf.node_depth + 1.0f);
                     }
