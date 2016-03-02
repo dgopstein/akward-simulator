@@ -3,12 +3,31 @@ using FarseerPhysics.Dynamics;
 using Microsoft.Xna.Framework;
 using FarseerPhysics.Dynamics.Contacts;
 using FarseerPhysics.Common;
+using System.Diagnostics;
+using System.Collections.Generic;
 
 namespace awkwardsimulator
 {
-	public class PlayerPhysics
+	public abstract class PlayerPhysics
 	{
+        protected Fixture fix;
+        public Fixture Fixture { get { return fix; } }
 
+        virtual protected bool Grounded { get; }
+
+        public PlayerPhysics (Fixture fix) {
+            this.fix = fix;
+            fix.OnCollision = OnCollisionEventHandler;
+            fix.OnSeparation = OnSeparationEventHandler;
+        }
+
+        abstract public void movePlayer (Input input, float dt = 0.2f);
+
+        abstract protected bool OnCollisionEventHandler (Fixture fixtureA, Fixture fixtureB, Contact contact);
+        abstract protected void OnSeparationEventHandler (Fixture fixtureA, Fixture fixtureB);
+    }
+
+    public class RealPlayerPhysics : PlayerPhysics{
 		float JumpVelocity = 50.0f;
 		float VariableJumpDampening = 0.75f; //Your jump speed is multiplied by this every frame unless you hold jump
 		float GroundMoveAccel = 40.0f;
@@ -20,38 +39,29 @@ namespace awkwardsimulator
 		bool grounded = true;
 		bool boosting = false;
 		bool holdingJumpButton = true;
-		bool landed = true;
 		bool wasGrounded = true;
 
-		Fixture fix;
+        override protected bool Grounded { get { return grounded; } }
 
-		public Fixture Fixture { get { return fix; } }
+        public RealPlayerPhysics (Fixture fix) : base(fix) {}
 
-		public PlayerPhysics (Fixture fix)
-		{
-			this.fix = fix;
-			fix.OnCollision = OnCollisionEventHandler;
-			fix.OnSeparation = OnSeparationEventHandler;
-		}
-
-		public void movePlayer(Input input, float dt = 0.2f) {
+		override public void movePlayer(Input input, float dt = 0.2f) {
 			float mx = fix.Body.LinearVelocity.X;
 			float my = fix.Body.LinearVelocity.Y;
 
-			wasGrounded = grounded;
-			grounded = landed;
+			wasGrounded = Grounded;
 
 			bool jumpButton = input.up;
 			if (!jumpButton)
 				holdingJumpButton = false;
 
-			if (jumpButton && !holdingJumpButton && (grounded || wasGrounded))
+			if (jumpButton && !holdingJumpButton && (Grounded || wasGrounded))
 			{
 				my = JumpVelocity;
 				boosting = true;
 				holdingJumpButton = true;
 			}
-			else if (!grounded)
+			else if (!Grounded)
 			{
 				if (boosting && !jumpButton)
 				{
@@ -67,7 +77,7 @@ namespace awkwardsimulator
 
 			float inputAxis = -1.0f * (input.left ? 1 : 0) + 1.0f * (input.right ? 1 : 0);
 			float target = inputAxis * MaxMoveSpeed;
-			float accel = (grounded ? GroundMoveAccel : AirMoveAccel) * inputAxis * dt;
+			float accel = (Grounded ? GroundMoveAccel : AirMoveAccel) * inputAxis * dt;
 
 			bool hasInput = inputAxis != 0 ? true : false;
 			bool isMoving = mx > 0.0f ? true : false;
@@ -85,7 +95,7 @@ namespace awkwardsimulator
 			}
 			if (frictionApplies)
 			{
-				float drag = (grounded ? GroundFriction : AirFriction) * dt;
+				float drag = (Grounded ? GroundFriction : AirFriction) * dt;
 				mx -= Math.Sign(mx) * Math.Min(Math.Abs(mx), drag);
 			}
 			float max = Math.Abs(target);
@@ -96,24 +106,49 @@ namespace awkwardsimulator
 		}
 
 		Fixture ground = null;
-		bool OnCollisionEventHandler(Fixture fixtureA, Fixture fixtureB, Contact contact) {
+		override protected bool OnCollisionEventHandler(Fixture fixtureA, Fixture fixtureB, Contact contact) {
 			Vector2 normal;
 			FixedArray2<Vector2> points;
 			contact.GetWorldManifold(out normal, out points);
 
 			if (contact.IsTouching && normal.Y < -.5f)  {
 				ground = fixtureB;
-				landed = true;
+				grounded = true;
 			}
 
 			return true;
 		}
 
-		void OnSeparationEventHandler(Fixture fixtureA, Fixture fixtureB) {
+        override protected void OnSeparationEventHandler(Fixture fixtureA, Fixture fixtureB) {
 			if (fixtureB == ground) {
-				landed = false;
+				grounded = false;
 			}
 		}
 	}
+
+    public class StatelessPlayerPhysics : RealPlayerPhysics {
+        private World world;
+
+        public StatelessPlayerPhysics(World world, Fixture fix) : base(fix) {
+            this.world = world;
+            fix.OnCollision = null;
+            fix.OnSeparation = null;
+        }
+
+        override protected bool Grounded {
+            get {
+                var offset = new Vector2 (0f, 0.1f);
+                var pos = fix.Body.Position;
+                var playerWidth = 4; // TODO get the real width
+                var pts = new List<Vector2> { pos, new Vector2(pos.X + playerWidth, pos.Y) };
+                var g = pts.Exists (pt => world.TestPoint (pt - offset) != null);
+
+                return g;
+            }
+        }
+
+        override protected bool OnCollisionEventHandler(Fixture fixtureA, Fixture fixtureB, Contact contact) { return true; }
+        override protected void OnSeparationEventHandler (Fixture fixtureA, Fixture fixtureB) {}
+    }
 }
 

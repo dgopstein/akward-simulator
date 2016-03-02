@@ -77,7 +77,6 @@
     <Compile Include="Input.cs" />
     <Compile Include="ForwardModel.cs" />
     <Compile Include="GameState.cs" />
-    <Compile Include="DebugDraw.cs" />
     <Compile Include="Drawing.cs" />
     <Compile Include="PlayerPhysics.cs" />
     <Compile Include="GameObject.cs" />
@@ -87,8 +86,9 @@
     <Compile Include="AIUtil.cs" />
     <Compile Include="AStar.cs" />
     <Compile Include="Heuristic.cs" />
-    <Compile Include="DebugViewXNA\DebugViewXNA.cs" />
-    <Compile Include="DebugViewXNA\PrimitiveBatch.cs" />
+    <Compile Include="SourceLibraries\DebugViewXNA\DebugViewXNA.cs" />
+    <Compile Include="SourceLibraries\DebugViewXNA\PrimitiveBatch.cs" />
+    <Compile Include="SourceLibraries\FarseerSamples\AssetCreator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Info.plist" />
@@ -114,6 +114,8 @@
     </MonoDevelop>
   </ProjectExtensions>
   <ItemGroup>
-    <Folder Include="DebugViewXNA\" />
+    <Folder Include="SourceLibraries\" />
+    <Folder Include="SourceLibraries\DebugViewXNA\" />
+    <Folder Include="SourceLibraries\FarseerSamples\" />
   </ItemGroup>
 </Project>

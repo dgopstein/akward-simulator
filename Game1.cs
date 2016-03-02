@@ -46,12 +46,13 @@ namespace awkwardsimulator
 				p2: new Player (2, new Vector2 (30f, 40f)),
 				health: 0f,
                 platforms: new List<Platform> { new Platform(new Vector2(10f, 20f), new Vector2(70f, 5f)) },
-                goal: new Goal(new Vector2(60f, 60f))
+                goal: new Goal(new Vector2(60f, 40f), 10f)
 			);
 
 			forwardModel = new ForwardModel (state);
 
             ai1 = new AStar (state, PlayerId.P1);
+            ai2 = new AStar (state, PlayerId.P2);
 
 			base.Initialize ();
 		}
@@ -91,12 +92,13 @@ namespace awkwardsimulator
             Input input1 = inputs.Item1;
             Input input2 = inputs.Item2;
 
-            Debug.WriteLine ("state1: {0}", state);
-            input1 = ai1.nextInput (state);
-            Debug.WriteLine ("state2: {0}\n", state);
+//            input1 = ai1.nextInput (state);
+//            input2 = ai2.nextInput (state);
+            Debug.WriteLine ("input1: {0}\n", input1);
 
-//          state = forwardModel.next (state, input1, input2);
-			state = forwardModel.next (input1, input2);
+//            state = forwardModel.next (state, input1, input2);
+//            state = ForwardModel.Next (state, input1, input2);
+            state = forwardModel.next (input1, input2);
 
 			base.Update (gameTime);
 		}
@@ -116,6 +118,8 @@ namespace awkwardsimulator
             foreach (var plat in state.Platforms) {
                 drawing.DrawGameObjectRect (plat, Color.Beige);
             }
+
+            drawing.DrawGameObjectCircle (state.Goal, Color.BurlyWood);
 
             drawing.DrawHealth (state.Health);
             drawing.DrawPlayStatus (state.PlayStatus());

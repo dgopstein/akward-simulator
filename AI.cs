@@ -50,12 +50,12 @@ namespace awkwardsimulator
         protected GameState next(GameState game, Input thisPlayerMove, Input otherPlayerMove) {
             GameState lastState = game;
 
-            int intermediateSteps = 3; // set to match a reasonable Gameloop#humanInputDelayFrames() value...
+            int intermediateSteps = 1; // set to match a reasonable Gameloop#humanInputDelayFrames() value...
             for (int i = 0; i < intermediateSteps; i++) {
                 if (pId == PlayerId.P1) {
-                    lastState = ForwardModel.next(lastState, thisPlayerMove, otherPlayerMove);
+                    lastState = forwardModel.next(lastState, thisPlayerMove, otherPlayerMove);
                 } else {
-                    lastState = ForwardModel.next(lastState, otherPlayerMove, thisPlayerMove);
+                    lastState = forwardModel.next(lastState, otherPlayerMove, thisPlayerMove);
                 }
             }
 

@@ -7,9 +7,12 @@ namespace awkwardsimulator
         public bool isDied() { return GetType () == typeof(Died); }
         public bool isWon () { return GetType () == typeof(Won);  }
     }
-    public class Died : PlayStatus { public string cause { get; set; } }
-    public class Playing : PlayStatus {}
-    public class Won : PlayStatus {}
+    public class Died : PlayStatus {
+        public string cause { get; set; }
+        override public string ToString() { return cause; } 
+    }
+    public class Playing : PlayStatus { override public string ToString() { return "Playing"; } }
+    public class Won : PlayStatus { override public string ToString() { return "Won"; } }
 
     public class Stage {
         public List<Platform> Platforms { get; }
@@ -71,11 +74,14 @@ namespace awkwardsimulator
             return String.Format ("{0} {1} {2} {3}", P1, P2, Health, PlayStatus());
         }
 
-        private bool p1InGoal = false, p2InGoal = false; // TODO set these values somewhere
+        private bool inGoal(Player p) {
+            return Util.euclideanDistance (p.Center, goal.Coords) <= goal.Radius;
+        }
+
         public PlayStatus PlayStatus() {
             PlayStatus status;
 
-            if (p1InGoal && p2InGoal) {
+            if (inGoal(p1) && inGoal(p2)) {
                 status = new Won ();
             } else if (Health >= 1) {
                 status = new Died { cause = "loneliness" };

@@ -26,9 +26,20 @@ namespace awkwardsimulator
 	}
 
 	public class Player : GameObject {
-		public int Id { get; }
-        public Player (int id, Vector2 coords) : base(coords, size: new Vector2(4f, 6f)) { Id = id; }
-        public Player WithPosition(Vector2 coords) { return new Player(Id, coords); }
+        public int Id { get; }
+        public Vector2 Velocity { get; }
+
+        public Vector2 Center { get { return Coords + (Vector2.Multiply (Size, 0.5f)); } }
+
+        public Player (int id, Vector2 coords, Vector2 velocity = default(Vector2)) : base(coords, size: new Vector2(4f, 6f)) {
+            Id = id;
+            this.Velocity = velocity;
+        }
+
+        public Player Clone(Vector2 coords, Vector2 velocity) { return new Player(Id, coords, velocity); }
+        public Player Clone(Vector2 coords) {  return Clone(coords, Velocity); }
+        public Player Clone() {  return Clone(Coords); }
+
 
         public override string ToString ()
         {
@@ -41,7 +52,12 @@ namespace awkwardsimulator
 	}
 
     public class Goal : GameObject {
-        public Goal (Vector2 coords) : base (coords, size: new Vector2(10f, 10f)) {}
+        private float radius;
+        public float Radius { get { return radius; } }
+
+        public Goal (Vector2 coords, float radius) : base (coords, size: new Vector2(radius, radius)) {
+            this.radius = radius;
+        }
     }
 }
 

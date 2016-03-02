@@ -1,6 +1,8 @@
 ﻿using System;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
+using FarseerPhysics.Samples.DrawingSystem;
+using System.Collections.Generic;
 
 
 namespace awkwardsimulator
@@ -106,6 +108,52 @@ namespace awkwardsimulator
 
         public void DrawPlayStatus(PlayStatus status) {
             spriteBatch.DrawString(SpriteFont, status.ToString (), new Vector2(20, 20), Color.Black);
+        }
+
+        public void DrawGameObjectCircle(GameObject go, Color c) {
+            Point pt = RasterizeCoords (go);
+            Point dim = RasterizeDims (go);
+
+            spriteBatch.Draw (FilledCircle(dim.X), (pt - new Point(dim.X, 0)).ToVector2(), c);
+        }
+
+//        http://stackoverflow.com/questions/2983809/how-to-draw-circle-with-specific-color-in-xna
+//        public Texture2D CreateCircle(int radius)
+
+        Dictionary<int, Texture2D> circleTexturesCache = new Dictionary<int, Texture2D>();
+        public Texture2D FilledCircle(int radius) {
+            Texture2D texture;
+
+            if (circleTexturesCache.ContainsKey (radius)) {
+                texture = circleTexturesCache [radius];
+            } else {
+                texture = CreateFilledCircle (radius);
+                circleTexturesCache [radius] = texture;
+            }
+
+            return texture;
+        }
+
+        private Texture2D CreateFilledCircle(int radius) {
+            int outerRadius = radius*2 + 2; // So circle doesn't go out of bounds
+            Texture2D texture = new Texture2D(GraphicsDevice, outerRadius, outerRadius);
+
+            Color[] data = new Color[outerRadius * outerRadius];
+
+            int center = (int)Math.Round(outerRadius / 2f);
+
+            for (int i = 0; i < data.Length; i++) {
+                int row = i / outerRadius;
+                int col = i % outerRadius;
+
+                float dist = Util.euclideanDistance (new Vector2 (center, center), new Vector2 (row, col));
+
+                data[i] = (dist <= radius) ? Color.White : Color.Transparent;
+            }
+
+            texture.SetData(data);
+
+            return texture;
         }
 	}
 }

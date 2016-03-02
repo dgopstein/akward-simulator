@@ -10,23 +10,27 @@ namespace awkwardsimulator
 
     public class Leaf
     {
-        public GameState game;
+//        public ForwardModel fm;
+        public GameState state;
         public Input move;
         public float node_depth;
 
-        public Leaf(GameState gamestate, Input rootmove, float nd) {
-            game = gamestate;
+//        public Leaf(ForwardModel fm, Input rootmove, float nd) {
+        public Leaf(GameState state, Input rootmove, float nd) {
+//            this.fm = fm;
+            this.state = state;
             move = rootmove;
             node_depth = nd;
         }
     }
 
     public class AStar : AI {
-        static private Input[] inputs = {new Input(false, true, false), new Input(true, false, false), new Input(false, false, true), new Input(true, false, true), 
-            new Input(false, true, true), new Input(false, false, false)};
-        //public int playerId;
+        static private Input[] inputs = {
+            new Input(false, true, false), new Input(true, false, false), new Input(false, false, true),
+            new Input(true, false, true), new Input(false, false, false), new Input(false, true, true)
+        };
+
         public SimplePriorityQueue<Leaf> leaves;
-//        private float minDistance = 50;
 
         public AStar(GameState state, PlayerId pId) : base(state, pId) {}
 
@@ -49,10 +53,10 @@ namespace awkwardsimulator
             sw.Start();
             while (sw.ElapsedMilliseconds < 40 && leaves.Count > 0) {
                 Leaf leaf = leaves.Dequeue();
-                if (leaf.game.PlayStatus().isDied()) {
+                if (leaf.state.PlayStatus().isDied()) {
                   continue;
                 }
-                if (leaf.game.PlayStatus().isWon()) {
+                if (leaf.state.PlayStatus().isWon()) {
                     return leaf.move;
                 }
                 foreach (Input i in inputs) {

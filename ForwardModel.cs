@@ -24,7 +24,7 @@ namespace awkwardsimulator
             return new PolygonShape (PolygonTools.CreateRectangle (width / 2, height / 2, new Vector2 (width / 2, height / 2), 0f), 1f);
         }
 
-        private Fixture platformFix (float x, float y, float width = .3f, float height = .05f)
+        private Fixture platformFix (float x, float y, float width, float height)
         {
             Body body = FarseerPhysics.Factories.BodyFactory.CreateBody (world, new Vector2 (x, y));
             body.BodyType = BodyType.Static;
@@ -32,7 +32,7 @@ namespace awkwardsimulator
             return body.CreateFixture (rectShape (width, height));
         }
 
-        private Fixture playerFix (float x, float y, float width = .01f, float height = .02f)
+        private Fixture playerFix (float x, float y, float width, float height)
         {
             Body body = FarseerPhysics.Factories.BodyFactory.CreateBody (world, new Vector2 (x, y));
             body.BodyType = BodyType.Dynamic;
@@ -42,18 +42,33 @@ namespace awkwardsimulator
             return body.CreateFixture (rectShape (width, height));
         }
 
+        private Fixture goalFix (float x, float y, float radius)
+        {
+            Body body = FarseerPhysics.Factories.BodyFactory.CreateBody (world, new Vector2 (x, y));
+            body.BodyType = BodyType.Static;
+
+            Fixture fix = body.CreateFixture (new CircleShape(radius, 1.0f));
+            fix.CollidesWith = Category.None;
+
+            return fix;
+        }
+
         public ForwardModel (GameState state)
         {
             initialState = state;
 
             world = new World (new Vector2 (0f, -100f));
 
-            physP1 = new PlayerPhysics (playerFix (state.P1.X, state.P1.Y, state.P1.W, state.P1.H));
-            physP2 = new PlayerPhysics (playerFix (state.P2.X, state.P2.Y, state.P2.W, state.P2.H));
+            physP1 = new StatelessPlayerPhysics (world, playerFix (state.P1.X, state.P1.Y, state.P1.W, state.P1.H));
+            physP2 = new StatelessPlayerPhysics (world, playerFix (state.P2.X, state.P2.Y, state.P2.W, state.P2.H));
 
             foreach (var plat in state.Platforms) {
                 platformFix (plat.X, plat.Y, plat.W, plat.H);
             }
+
+            goalFix (state.Goal.X, state.Goal.Y, state.Goal.W);
+
+            loadState (state);
         }
 
         public GameState next (Input input1, Input input2)
@@ -73,21 +88,35 @@ namespace awkwardsimulator
 
             Vector2 c1 = physP1.Fixture.Body.Position;
             Vector2 c2 = physP2.Fixture.Body.Position;
+            Vector2 v1 = physP1.Fixture.Body.LinearVelocity;
+            Vector2 v2 = physP2.Fixture.Body.LinearVelocity;
 
             // Assign values to GameState
             GameState next = state.Clone (
-                                 p1: state.P1.WithPosition (c1),
-                                 p2: state.P2.WithPosition (c2),
+                                 p1: state.P1.Clone (c1, v1),
+                                 p2: state.P2.Clone (c2, v2),
                                  health: HealthControl.Health (c1, c2)
                              );
 
             return next;
         }
 
-        public static GameState next (GameState state, Input input1, Input input2) {
-            ForwardModel fm = new ForwardModel (state);
-            return fm.next (input1, input2);
+        public GameState next (GameState state, Input input1, Input input2) {
+            loadState (state);
+            return next (input1, input2);
         }
+
+        private void loadState(GameState state) {
+            physP1.Fixture.Body.Position = state.P1.Coords;
+            physP2.Fixture.Body.Position = state.P2.Coords;
+            physP1.Fixture.Body.LinearVelocity = state.P1.Velocity;
+            physP2.Fixture.Body.LinearVelocity = state.P2.Velocity;
+        }
+
+//        public static GameState Next (GameState state, Input input1, Input input2) {
+//            ForwardModel fm = new ForwardModel (state);
+//            return fm.next (input1, input2);
+//        }
     }
 }
 
