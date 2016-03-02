@@ -71,10 +71,8 @@ namespace awkwardsimulator
             loadState (state);
         }
 
-        public GameState next (Input input1, Input input2)
+        public GameState next (float oldHealth, Input input1, Input input2)
         {
-            GameState state = initialState;
-
 //            Debug.WriteLineIf ((Vector2.Distance (physP1.Fixture.Body.Position, state.P1.Coords) > 0.001f ||
 //            Vector2.Distance (physP2.Fixture.Body.Position, state.P2.Coords) > 0.001f),
 //                "The gamestate and forwardmodel are out of sync"
@@ -92,10 +90,10 @@ namespace awkwardsimulator
             Vector2 v2 = physP2.Fixture.Body.LinearVelocity;
 
             // Assign values to GameState
-            GameState next = state.Clone (
-                                 p1: state.P1.Clone (c1, v1),
-                                 p2: state.P2.Clone (c2, v2),
-                                 health: HealthControl.Health (c1, c2)
+            GameState next = initialState.Clone (
+                                 p1: initialState.P1.Clone (c1, v1),
+                                 p2: initialState.P2.Clone (c2, v2),
+                                 health: HealthControl.Health (oldHealth, c1, c2)
                              );
 
             return next;
@@ -103,7 +101,7 @@ namespace awkwardsimulator
 
         public GameState next (GameState state, Input input1, Input input2) {
             loadState (state);
-            return next (input1, input2);
+            return next (state.Health, input1, input2);
         }
 
         private void loadState(GameState state) {

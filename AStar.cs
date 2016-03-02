@@ -56,6 +56,8 @@ namespace awkwardsimulator
                 if (leaf.state.PlayStatus().isDied()) {
                   continue;
                 }
+                Debug.WriteLine ("leaves: {0}", leaves.Count);
+
                 if (leaf.state.PlayStatus().isWon()) {
                     return leaf.move;
                 }
@@ -69,9 +71,14 @@ namespace awkwardsimulator
                     }
                 }
             }
-            Leaf top = (leaves.Count > 0) ? leaves.Dequeue() : null;
-            //System.Console.WriteLine("{0} : {1}" , playerId, top.node_depth);
-            Input move = (leaves.Count > 0) ? top.move : new Input();
+            Leaf top = null;
+            Input move = new Input();
+            if (leaves.Count > 0) {
+                top = leaves.Dequeue ();
+                move = top.move;
+            } else {
+                Debug.WriteLine("{0} : no nodes!" , thisPlayer(game).Id);
+            }
 
             return move;
         }
