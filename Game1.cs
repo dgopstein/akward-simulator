@@ -123,8 +123,8 @@ namespace awkwardsimulator
 
             drawing.DrawHealth (state.Health);
             drawing.DrawPlayStatus (state.PlayStatus());
-            drawing.DrawHeuristic (state.P1, state, 100, 450);
-            drawing.DrawHeuristic (state.P2, state, 600, 450);
+            drawing.DrawHeuristic (state.P1, state, 20, 50);
+            drawing.DrawHeuristic (state.P2, state, 20, 80);
 			
 			spriteBatch.End();
             			

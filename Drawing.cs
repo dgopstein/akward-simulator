@@ -111,8 +111,8 @@ namespace awkwardsimulator
         }
 
         public void DrawHeuristic(Player p, GameState gs, int x, int y) {
-            var heuristic = Heuristic.linearHealthHeuristic (p, gs.Goal, gs.Health);
-            var str = String.Format ("P{0}: {1}", p.Id, heuristic);
+            var heuristic = Heuristic.heuristic (p, gs);
+            var str = String.Format ("P{0}: {1:F1}", p.Id, heuristic);
             spriteBatch.DrawString(SpriteFont, str, new Vector2(x, y), Color.DarkViolet);
         }
 
