@@ -65,12 +65,11 @@ namespace awkwardsimulator
 			spriteFont = Content.Load<SpriteFont>("Default");
 
             drawing = new Drawing (GraphicsDevice, spriteBatch, spriteFont, new Vector2(GameWidth, GameHeight));
-//			debugDraw = new DebugDraw (drawing, forwardModel.World);
 
-			DebugView = new DebugViewXNA (forwardModel.World);
-			DebugView.DefaultShapeColor = Color.White;
-			DebugView.SleepingShapeColor = Color.LightGray;
-			DebugView.LoadContent(GraphicsDevice, Content);
+//            DebugView = new DebugViewXNA (forwardModel.World);
+//            DebugView.DefaultShapeColor = Color.White;
+//            DebugView.SleepingShapeColor = Color.LightGray;
+//            DebugView.LoadContent (GraphicsDevice, Content);
 		}
 
 		protected override void UnloadContent()
@@ -112,8 +111,6 @@ namespace awkwardsimulator
 			spriteBatch.Begin();
 
             drawing.DrawFPS (gameTime);
-			drawing.DrawPlayer (state.P1);
-			drawing.DrawPlayer (state.P2);
 
             foreach (var plat in state.Platforms) {
                 drawing.DrawGameObjectRect (plat, Color.Beige);
@@ -121,12 +118,17 @@ namespace awkwardsimulator
 
             drawing.DrawGameObjectCircle (state.Goal, Color.BurlyWood);
 
+            drawing.DrawPlayer (state.P1);
+            drawing.DrawPlayer (state.P2);
+
             drawing.DrawHealth (state.Health);
             drawing.DrawPlayStatus (state.PlayStatus());
+            drawing.DrawHeuristic (state.P1, state, 100, 450);
+            drawing.DrawHeuristic (state.P2, state, 600, 450);
 			
 			spriteBatch.End();
             			
-			DebugView.RenderDebugData(ref proj, ref view); //XXX probably expensive
+//			DebugView.RenderDebugData(ref proj, ref view); //XXX probably expensive
             
 			base.Draw (gameTime);
 		}

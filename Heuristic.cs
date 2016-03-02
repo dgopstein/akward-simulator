@@ -6,18 +6,14 @@ namespace awkwardsimulator
     public static class Heuristic
     {
         public static float linearHealthHeuristic(this AI ai, GameState state) {
-            Player thisPlayer = ai.thisPlayer (state);
+            return linearHealthHeuristic (ai.thisPlayer (state), state.Goal, state.Health);
+        }
 
-            Vector2 position = thisPlayer.Coords;
-            float goal = Vector2.Distance(position, state.Goal.Coords);
-
-            float minHealth = 0.5f;
-            float health =  System.Math.Abs(state.Health - minHealth);
-            health  = goal * health;
-
-            //Console.WriteLine(health);
-
-            return goal + health;
+        public static float linearHealthHeuristic(Player player, Goal goal, float health) {
+            float goalDistance = Vector2.Distance(player.Coords, goal.Coords);
+            float healthScore  = System.Math.Abs(health);
+            
+            return goalDistance + healthScore;
         }
 
         public static float heuristic(this AI ai, GameState state) {

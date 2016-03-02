@@ -110,6 +110,12 @@ namespace awkwardsimulator
             spriteBatch.DrawString(SpriteFont, status.ToString (), new Vector2(20, 20), Color.Black);
         }
 
+        public void DrawHeuristic(Player p, GameState gs, int x, int y) {
+            var heuristic = Heuristic.linearHealthHeuristic (p, gs.Goal, gs.Health);
+            var str = String.Format ("P{0}: {1}", p.Id, heuristic);
+            spriteBatch.DrawString(SpriteFont, str, new Vector2(x, y), Color.DarkViolet);
+        }
+
         public void DrawGameObjectCircle(GameObject go, Color c) {
             Point pt = RasterizeCoords (go);
             Point dim = RasterizeDims (go);
