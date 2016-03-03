@@ -5,6 +5,7 @@ using FarseerPhysics.Dynamics.Contacts;
 using FarseerPhysics.Common;
 using System.Diagnostics;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace awkwardsimulator
 {
@@ -36,10 +37,9 @@ namespace awkwardsimulator
 		float GroundFriction = 40.0f; //Applied to horizontal movement if neither key is held
 		float AirFriction = 30.0f;
 
-		bool grounded = true;
-		bool boosting = false;
 		bool holdingJumpButton = true;
 
+        bool grounded = true;
         override protected bool Grounded { get { return grounded; } }
 
         public RealPlayerPhysics (Fixture fix) : base(fix) {}
@@ -55,21 +55,10 @@ namespace awkwardsimulator
 			if (jumpButton && !holdingJumpButton && Grounded)
 			{
 				my = JumpVelocity;
-				boosting = true;
 				holdingJumpButton = true;
 			}
-			else if (!Grounded)
-			{
-				if (boosting && !jumpButton)
-				{
-					boosting = false;
-				}
-				//System.Console.WriteLine("(my: {0})", new object[]{my.ToString()});
-				//if (!boosting && my > 0.0f)
-				if (!boosting && my > 0.0f)
-				{
-					my *= VariableJumpDampening;
-				}
+			else if (!Grounded && !holdingJumpButton && my > 0.0f)	{
+				my *= VariableJumpDampening;
 			}
 
 			float inputAxis = -1.0f * (input.left ? 1 : 0) + 1.0f * (input.right ? 1 : 0);
