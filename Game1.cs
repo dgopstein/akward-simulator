@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework.Storage;
 using Microsoft.Xna.Framework.Input;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using System.Linq;
 
 #endregion
 
@@ -133,9 +134,13 @@ namespace awkwardsimulator
             drawing.DrawPlayer (state.P2);
 
             drawing.DrawHealth (state.Health);
+
             drawing.DrawPlayStatus (state.PlayStatus);
             drawing.DrawHeuristic (state.P1, state, 20, 50);
             drawing.DrawHeuristic (state.P2, state, 20, 80);
+
+            drawing.DrawPaths (ai1.BestPaths ().Select(p => p.Select(e => e.Item2.P1.Coords)));
+//            drawing.DrawPaths (ai2.BestPaths ().Select(p => p.Select(e => e.Item2.P2.Coords)));
 			
 			spriteBatch.End();
             			

@@ -19,7 +19,9 @@ namespace awkwardsimulator
             this.forwardModel = new ForwardModel(state);
         }
 
-
+        virtual public List<List<Tuple<Input, GameState>>> BestPaths() {
+            throw new NotImplementedException();
+        }
 
         protected GameState nextState(GameState game, Input move) {
             return nextState(game, move, move); //TODO don't just copy this-player's move

@@ -21,8 +21,12 @@ namespace awkwardsimulator
 		}
 
 		override public string ToString() {
-			return String.Format("Input( {0} , {1} , {2} )", left, right, up);
+            return mediumString ();
 		}
+
+        public string longString() {
+            return String.Format("Input( {0} , {1} , {2} )", left, right, up);
+        }
 
 		public string mediumString() {
 			return String.Format("{0}{1}{2}", left ? "L" : "_", right ? "R" : "_", up ? "U" : "_");

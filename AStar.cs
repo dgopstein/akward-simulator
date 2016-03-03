@@ -33,8 +33,6 @@ namespace awkwardsimulator
         public StateNode FirstAncestor () {
             StateNode node;
 
-            Debug.WriteLine ("node: {0} {1}", Input, State.P1.Coords);
-
             if (parent == null) {
                 Debug.WriteLine ("Returning the root!!!");
                 node = this;
@@ -46,6 +44,18 @@ namespace awkwardsimulator
 
             return node;
         }
+
+        public List<Tuple<Input, GameState>> ToPath() {
+            Stack<Tuple<Input, GameState>> stack = new Stack<Tuple<Input, GameState>> ();
+
+            StateNode node = this;
+            while (node.Parent != null) {
+                stack.Push (Tuple.Create (node.Input, node.State));
+                node = node.Parent;
+            }
+
+            return stack.ToList ();
+        }
     }
 
     public class AStar : AI
@@ -55,36 +65,45 @@ namespace awkwardsimulator
 
         public AStar (GameState state, PlayerId pId) : base(state, pId)
         {
+            allPaths = new SortedDictionary<double, StateNode> ();
         }
 
-        public override Input nextInput (GameState state)
-        {
-            allPaths = new SortedDictionary<double, StateNode>();
-
-            Func<GameState, double> heuristic = (s) => Math.Truncate(Heuristic.heuristic (this.thisPlayer (s), s) * 1000d) / 1000d;
-            int maxIters = 1000;
-
-            var root = new StateNode (null, new Input(), state);
-            allPaths.Add(heuristic(state), root);
-            var best = root;
-
-            for (int i = 0; i < maxIters && !best.State.PlayStatus.isWon() && allPaths.Count > 0; i++) {
-                best.Children = Input.All.ToDictionary (input=>input, input=> new StateNode(best, input, nextState(state, input)));
-
-                for (int j = 0; j < best.Children.Count; j++) {
-                    var child = best.Children.ElementAt(j).Value;
-                    var h = heuristic (child.State) + (0.0000001 * (i+1) + 0.00000001 * j);
-                    allPaths.Add(h, child);
-                }
-
-                best = allPaths.First().Value;
-                allPaths.Remove (allPaths.First().Key);
-
-//                Debug.WriteLine(string.Join(", ", allPaths.Select(x => x.Key)));
-//                Debug.WriteLine (allPaths.First ().Key);
+        override public List<List<Tuple<Input, GameState>>> BestPaths() {
+            List<KeyValuePair<double,StateNode>> myPaths;
+            lock(allPaths) {
+                myPaths = allPaths.Take (5).ToList();
             }
 
-            Debug.WriteLine ("FirstAncestor");
+            return myPaths
+                .Select(sn => sn.Value.ToPath()).ToList();
+        }
+
+        public override Input nextInput (GameState origState)
+        {
+            int maxIters = 100;
+            var paths = new SortedDictionary<double, StateNode>();
+
+            int uniqueId = 1;
+            Func<GameState, double> heuristic = (s) =>
+                Math.Truncate(Heuristic.heuristic (this.thisPlayer (s), s) * 1000d) / 1000d + (0.0000001 * uniqueId++);
+
+            var root = new StateNode (null, new Input(), origState);
+            paths.Add(heuristic(origState), root);
+            var best = root;
+
+            for (int i = 0; i < maxIters && !best.State.PlayStatus.isWon() && paths.Count > 0; i++) {
+                best.Children = Input.All.ToDictionary (input=>input, input=> new StateNode(best, input, nextState(best.State, input)));
+
+                foreach (var c in best.Children) {
+                    paths.Add(heuristic (c.Value.State), c.Value);
+                }
+
+                best = paths.First().Value;
+                paths.Remove (paths.First().Key);
+            }
+
+            lock (allPaths) { allPaths = paths; }
+
             var res = best.FirstAncestor ().Input;
             return res;
         }

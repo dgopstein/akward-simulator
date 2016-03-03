@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework.Content;
 using FarseerPhysics.Dynamics;
 using FarseerPhysics.DebugView;
+using System.Linq;
+using System.Diagnostics;
 
 namespace awkwardsimulator
 {
@@ -74,11 +76,15 @@ namespace awkwardsimulator
         public int yScale(float y) { return (int)Math.Round (yScale () * y); }
 
         public Point RasterizeCoords(GameObject go) {
-            return new Point (
-                (int)Math.Round( xScale() * go.X),
-                (int)Math.Round(-yScale() * (go.Y + go.H) +graphicsDevice.Viewport.Height)
-			);
+            return RasterizeCoords (go.Coords) + new Point (0, (int)Math.Round (-yScale () * go.H));
 		}
+
+        public Point RasterizeCoords(Vector2 v) {
+            return new Point (
+                (int)Math.Round( xScale() * v.X),
+                (int)Math.Round(-yScale() * v.Y + graphicsDevice.Viewport.Height)
+            );
+        }
 
         public Point RasterizeDims(GameObject go) {
             return new Point (xScale (go.W), yScale (go.H));
@@ -190,6 +196,68 @@ namespace awkwardsimulator
             texture.SetData(data);
 
             return texture;
+        }
+
+        Color[] colors = new Color[] {
+            new Color(255, 255, 000),
+            new Color(255, 127, 000),
+            new Color(255, 000, 255),
+            new Color(255, 000, 127),
+            new Color(127, 255, 000),
+            new Color(000, 255, 255),
+            new Color(000, 255, 127),
+            new Color(127, 000, 255),
+            new Color(000, 127, 255),
+            new Color(70, 70, 70)
+            //new Color(255, 000, 000),
+            //new Color(127, 000, 000),
+            //new Color(000, 255, 000),
+            //new Color(000, 127, 000),
+            //new Color(000, 000, 255),
+            //new Color(000, 000, 127),
+            //new Color(000, 000, 000),
+        };
+
+        public void DrawPaths(IEnumerable<IEnumerable<Vector2>> paths) {
+            int i = 0;
+            foreach (var path in paths) {
+                DrawPath (path, colors [i++ % colors.Count()]);
+            }
+        }
+
+        public void DrawPath(IEnumerable<Vector2> paths, Color c) {
+            var segments = paths.Zip(paths.Skip(1), (a, b) => Tuple.Create(a, b));
+
+            foreach (var tup in segments) {
+                var v1 = RasterizeCoords (tup.Item1);
+                var v2 = RasterizeCoords (tup.Item2);
+                DrawLine(v1, v2, c);
+            }
+        }
+
+        // http://gamedev.stackexchange.com/questions/44015/how-can-i-draw-a-simple-2d-line-in-xna-without-using-3d-primitives-and-shders
+        public void DrawLine(Point start, Point end, Color c = default(Color))
+        {
+            Debug.WriteLine ("drawing: {0}, {1}, {2}", start, end, c);
+            Point edge = end - start;
+            // calculate angle to rotate line
+            float angle =
+                (float)Math.Atan2(edge.Y , edge.X);
+
+
+            spriteBatch.Draw(blankTexture,
+                new Rectangle(// rectangle defines shape of line and position of start of line
+                    (int)start.X,
+                    (int)start.Y,
+                    (int)edge.ToVector2().Length(), //sb will strech the texture to fill this rectangle
+                    1), //width of line, change this to make thicker line
+                null,
+                c, //colour of line
+                angle,     //angle of line (calulated above)
+                new Vector2(0, 0), // point in line about which to rotate
+                SpriteEffects.None,
+                0);
+
         }
 	}
 }
