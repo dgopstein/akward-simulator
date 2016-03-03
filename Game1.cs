@@ -91,11 +91,11 @@ namespace awkwardsimulator
 			KeyboardState keyState = Keyboard.GetState ();
 			if (keyState.IsKeyDown(Keys.Escape)) { Exit (); }
 
-            if (true) {
+            if (false) {
                 Tuple<Input, Input> inputs = ReadKeyboardInputs (keyState);
                 input1 = inputs.Item1;
                 input2 = inputs.Item2;
-            } else if (aiWatch.ElapsedMilliseconds >= 2) {
+            } else if (aiWatch.ElapsedMilliseconds >= 0) {
                 input1 = fAi1.Result;
                 input2 = fAi2.Result;
             }

@@ -49,17 +49,27 @@ namespace awkwardsimulator
 			float my = fix.Body.LinearVelocity.Y;
 
 			bool jumpButton = input.up;
-			if (!jumpButton)
-				holdingJumpButton = false;
 
-			if (jumpButton && !holdingJumpButton && Grounded)
-			{
-				my = JumpVelocity;
-				holdingJumpButton = true;
-			}
-			else if (!Grounded && !holdingJumpButton && my > 0.0f)	{
-				my *= VariableJumpDampening;
-			}
+            //TODO this will repeatedly jump
+            if (jumpButton && Grounded) {
+                my = JumpVelocity;
+            } else if (!jumpButton && !Grounded && my > 0.0f) {
+                my *= VariableJumpDampening;
+            }
+//			if (!jumpButton)
+//				holdingJumpButton = false;
+//
+//			if (jumpButton && !holdingJumpButton && Grounded)
+//			{
+//				my = JumpVelocity;
+//				holdingJumpButton = true;
+//			}
+//			else if (!Grounded)
+//			{
+//                if (!holdingJumpButton && my > 0.0f)	{
+//					my *= VariableJumpDampening;
+//				}
+//			}
 
 			float inputAxis = -1.0f * (input.left ? 1 : 0) + 1.0f * (input.right ? 1 : 0);
 			float target = inputAxis * MaxMoveSpeed;
