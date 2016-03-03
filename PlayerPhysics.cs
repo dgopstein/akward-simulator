@@ -27,7 +27,7 @@ namespace awkwardsimulator
         abstract protected void OnSeparationEventHandler (Fixture fixtureA, Fixture fixtureB);
     }
 
-    public class RealPlayerPhysics : PlayerPhysics{
+    public class RealPlayerPhysics : PlayerPhysics {
 		float JumpVelocity = 50.0f;
 		float VariableJumpDampening = 0.75f; //Your jump speed is multiplied by this every frame unless you hold jump
 		float GroundMoveAccel = 40.0f;
@@ -39,7 +39,6 @@ namespace awkwardsimulator
 		bool grounded = true;
 		bool boosting = false;
 		bool holdingJumpButton = true;
-		bool wasGrounded = true;
 
         override protected bool Grounded { get { return grounded; } }
 
@@ -49,13 +48,11 @@ namespace awkwardsimulator
 			float mx = fix.Body.LinearVelocity.X;
 			float my = fix.Body.LinearVelocity.Y;
 
-			wasGrounded = Grounded;
-
 			bool jumpButton = input.up;
 			if (!jumpButton)
 				holdingJumpButton = false;
 
-			if (jumpButton && !holdingJumpButton && (Grounded || wasGrounded))
+			if (jumpButton && !holdingJumpButton && Grounded)
 			{
 				my = JumpVelocity;
 				boosting = true;

@@ -221,24 +221,23 @@ namespace awkwardsimulator
         public void DrawPaths(IEnumerable<IEnumerable<Vector2>> paths) {
             int i = 0;
             foreach (var path in paths) {
-                DrawPath (path, colors [i++ % colors.Count()]);
+                DrawPath (path, colors [i++ % colors.Count()], 1);
             }
         }
 
-        public void DrawPath(IEnumerable<Vector2> paths, Color c) {
+        public void DrawPath(IEnumerable<Vector2> paths, Color c, int thickness) {
             var segments = paths.Zip(paths.Skip(1), (a, b) => Tuple.Create(a, b));
 
             foreach (var tup in segments) {
                 var v1 = RasterizeCoords (tup.Item1);
                 var v2 = RasterizeCoords (tup.Item2);
-                DrawLine(v1, v2, c);
+                DrawLine(v1, v2, c, thickness);
             }
         }
 
         // http://gamedev.stackexchange.com/questions/44015/how-can-i-draw-a-simple-2d-line-in-xna-without-using-3d-primitives-and-shders
-        public void DrawLine(Point start, Point end, Color c = default(Color))
+        public void DrawLine(Point start, Point end, Color c = default(Color), int thickness = 1)
         {
-            Debug.WriteLine ("drawing: {0}, {1}, {2}", start, end, c);
             Point edge = end - start;
             // calculate angle to rotate line
             float angle =
@@ -250,7 +249,7 @@ namespace awkwardsimulator
                     (int)start.X,
                     (int)start.Y,
                     (int)edge.ToVector2().Length(), //sb will strech the texture to fill this rectangle
-                    1), //width of line, change this to make thicker line
+                    thickness), //width of line, change this to make thicker line
                 null,
                 c, //colour of line
                 angle,     //angle of line (calulated above)

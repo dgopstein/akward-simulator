@@ -9,8 +9,8 @@ namespace awkwardsimulator
         public static GameState Level1 = new GameState(
             health: 0f,
 
-            p1: new Player (1, new Vector2 (20f, 10f)),
-            p2: new Player (2, new Vector2 (30f, 10f)),
+            p1: new Player (1, new Vector2 (20f, 15f)),
+            p2: new Player (2, new Vector2 (30f, 15f)),
 
             goal: new Goal(new Vector2(105f, 70f), 10f),
 

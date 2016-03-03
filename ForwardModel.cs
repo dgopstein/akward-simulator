@@ -71,7 +71,7 @@ namespace awkwardsimulator
             loadState (state);
         }
 
-        public GameState nextState (float oldHealth, Input input1, Input input2)
+        private GameState nextState (float oldHealth, Input input1, Input input2)
         {
 //            Debug.WriteLineIf ((Vector2.Distance (physP1.Fixture.Body.Position, state.P1.Coords) > 0.001f ||
 //            Vector2.Distance (physP2.Fixture.Body.Position, state.P2.Coords) > 0.001f),
@@ -82,7 +82,7 @@ namespace awkwardsimulator
 
             physP1.movePlayer (input1);
             physP2.movePlayer (input2);
-            world.Step (1 / 30f); // XXX: pass in the right time-step
+            world.Step (1 / 20f); // XXX: pass in the right time-step
 
             Vector2 c1 = physP1.Fixture.Body.Position;
             Vector2 c2 = physP2.Fixture.Body.Position;

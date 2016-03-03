@@ -80,7 +80,7 @@ namespace awkwardsimulator
 
         public override Input nextInput (GameState origState)
         {
-            int maxIters = 100;
+            int maxIters = 50;
             var paths = new SortedDictionary<double, StateNode>();
 
             int uniqueId = 1;

@@ -24,6 +24,7 @@ namespace awkwardsimulator
 		ForwardModel forwardModel;
 		Drawing drawing;
         AI ai1, ai2;
+        List<GameState> history;
 
         static float GameWidth = 160f;
         static float GameHeight = 100f;
@@ -54,8 +55,10 @@ namespace awkwardsimulator
 
 			forwardModel = new ForwardModel (state);
 
+            history = new List<GameState> ();
+
             ai1 = new AStar (state, PlayerId.P1);
-            ai2 = new AStarPhilip (state, PlayerId.P2);
+            ai2 = new AStar (state, PlayerId.P2);
             startAiFutures ();
 
 			base.Initialize ();
@@ -88,28 +91,23 @@ namespace awkwardsimulator
 			KeyboardState keyState = Keyboard.GetState ();
 			if (keyState.IsKeyDown(Keys.Escape)) { Exit (); }
 
-			Tuple<Input, Input> inputs = ReadKeyboardInputs (keyState);
-            input1 = inputs.Item1;
-            input2 = inputs.Item2;
-
-//            Task.WaitAll (new[] { fAi1, fAi2 });
-            if (aiWatch.ElapsedMilliseconds >= 40) {
+            if (true) {
+                Tuple<Input, Input> inputs = ReadKeyboardInputs (keyState);
+                input1 = inputs.Item1;
+                input2 = inputs.Item2;
+            } else if (aiWatch.ElapsedMilliseconds >= 2) {
                 input1 = fAi1.Result;
                 input2 = fAi2.Result;
-
-                state = forwardModel.nextState (state.Health, input1, input2);
-
-                startAiFutures ();
-            } else {
-                state = forwardModel.nextState (state.Health, input1, input2);
             }
-                
 
-//            Debug.WriteLine ("input1: {0}\n", input1);
+            state = forwardModel.nextState (state, input1, input2);
 
-//            state = forwardModel.next (state, input1, input2);
-//            state = ForwardModel.Next (state, input1, input2);
 
+            if (fAi1.IsCompleted && fAi2.IsCompleted) {
+                startAiFutures ();
+            }
+
+            history.Add (state);
 
 			base.Update (gameTime);
 		}
@@ -141,6 +139,8 @@ namespace awkwardsimulator
 
             drawing.DrawPaths (ai1.BestPaths ().Select(p => p.Select(e => e.Item2.P1.Coords)));
 //            drawing.DrawPaths (ai2.BestPaths ().Select(p => p.Select(e => e.Item2.P2.Coords)));
+
+            drawing.DrawPath (history.Select (s => s.P1.Coords), Color.LemonChiffon, 3);
 			
 			spriteBatch.End();
             			
