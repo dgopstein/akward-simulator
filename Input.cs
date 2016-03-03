@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace awkwardsimulator
 {
@@ -102,6 +103,15 @@ namespace awkwardsimulator
 		public Input Clone() {
 			return new Input(left, right, up);
 		}
+
+        public static List<Input> All = new List<Input> () {
+            new Input(false, false, false),
+            new Input(false, false,  true),
+            new Input(false,  true, false),
+            new Input(false,  true,  true),
+            new Input(true,  false, false),
+            new Input(true,  false,  true)
+        };
 	}
 }
 

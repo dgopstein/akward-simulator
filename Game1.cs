@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Storage;
 using Microsoft.Xna.Framework.Input;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 #endregion
 
@@ -34,6 +35,16 @@ namespace awkwardsimulator
 //			graphics.IsFullScreen = true;
 		}
 
+        Input input1, input2;
+        Task<Input> fAi1, fAi2;
+        Stopwatch aiWatch = new Stopwatch();
+        protected void startAiFutures() {
+            aiWatch.Reset ();
+            aiWatch.Start ();
+            fAi1 = Task.Factory.StartNew<Input>(() => ai1.nextInput (state));
+            fAi2 = Task.Factory.StartNew<Input>(() => ai2.nextInput (state));
+        }
+
 		// load any non-graphic related content.  Calling base.Initialize will enumerate through any components
 		/// and initialize them as well.
 		protected override void Initialize ()
@@ -43,7 +54,8 @@ namespace awkwardsimulator
 			forwardModel = new ForwardModel (state);
 
             ai1 = new AStar (state, PlayerId.P1);
-            ai2 = new AStar (state, PlayerId.P2);
+            ai2 = new AStarPhilip (state, PlayerId.P2);
+            startAiFutures ();
 
 			base.Initialize ();
 		}
@@ -69,22 +81,34 @@ namespace awkwardsimulator
 		}
 			
 		// checking for collisions, gathering input, and playing audio.
+
 		protected override void Update (GameTime gameTime)
 		{
 			KeyboardState keyState = Keyboard.GetState ();
 			if (keyState.IsKeyDown(Keys.Escape)) { Exit (); }
 
 			Tuple<Input, Input> inputs = ReadKeyboardInputs (keyState);
-            Input input1 = inputs.Item1;
-            Input input2 = inputs.Item2;
+            input1 = inputs.Item1;
+            input2 = inputs.Item2;
 
-            input1 = ai1.nextInput (state);
-            input2 = ai2.nextInput (state);
+//            Task.WaitAll (new[] { fAi1, fAi2 });
+            if (aiWatch.ElapsedMilliseconds >= 40) {
+                input1 = fAi1.Result;
+                input2 = fAi2.Result;
+
+                state = forwardModel.nextState (state.Health, input1, input2);
+
+                startAiFutures ();
+            } else {
+                state = forwardModel.nextState (state.Health, input1, input2);
+            }
+                
+
 //            Debug.WriteLine ("input1: {0}\n", input1);
 
 //            state = forwardModel.next (state, input1, input2);
 //            state = ForwardModel.Next (state, input1, input2);
-            state = forwardModel.next (state.Health, input1, input2);
+
 
 			base.Update (gameTime);
 		}
@@ -109,7 +133,7 @@ namespace awkwardsimulator
             drawing.DrawPlayer (state.P2);
 
             drawing.DrawHealth (state.Health);
-            drawing.DrawPlayStatus (state.PlayStatus());
+            drawing.DrawPlayStatus (state.PlayStatus);
             drawing.DrawHeuristic (state.P1, state, 20, 50);
             drawing.DrawHeuristic (state.P2, state, 20, 80);
 			

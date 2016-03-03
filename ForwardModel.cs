@@ -71,7 +71,7 @@ namespace awkwardsimulator
             loadState (state);
         }
 
-        public GameState next (float oldHealth, Input input1, Input input2)
+        public GameState nextState (float oldHealth, Input input1, Input input2)
         {
 //            Debug.WriteLineIf ((Vector2.Distance (physP1.Fixture.Body.Position, state.P1.Coords) > 0.001f ||
 //            Vector2.Distance (physP2.Fixture.Body.Position, state.P2.Coords) > 0.001f),
@@ -99,9 +99,9 @@ namespace awkwardsimulator
             return next;
         }
 
-        public GameState next (GameState state, Input input1, Input input2) {
+        public GameState nextState (GameState state, Input input1, Input input2) {
             loadState (state);
-            return next (state.Health, input1, input2);
+            return nextState (state.Health, input1, input2);
         }
 
         private void loadState(GameState state) {

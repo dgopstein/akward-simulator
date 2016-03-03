@@ -6,6 +6,7 @@ namespace awkwardsimulator
     public abstract class PlayStatus {
         public bool isDied() { return GetType () == typeof(Died); }
         public bool isWon () { return GetType () == typeof(Won);  }
+        public bool isPlaying () { return GetType () == typeof(Playing);  }
     }
     public class Died : PlayStatus {
         public string cause { get; set; }
@@ -71,31 +72,32 @@ namespace awkwardsimulator
 		}
 
         override public string ToString() {
-            return String.Format ("{0} {1} {2} {3}", P1, P2, Health, PlayStatus());
+            return String.Format ("{0} {1} {2} {3}", P1, P2, Health, PlayStatus);
         }
 
         private bool inGoal(Player p) {
             return Util.euclideanDistance (p.Center, goal.Coords) <= goal.Radius;
         }
 
-        public PlayStatus PlayStatus() {
-            PlayStatus status;
+        public PlayStatus PlayStatus { get {
+                PlayStatus status;
 
-            if (inGoal(p1) && inGoal(p2)) {
-                status = new Won ();
-            } else if (Health >= 1) {
-                status = new Died { cause = "awkwardness" };
-            } else if (Health <= -1) {
-                status = new Died { cause = "loneliness" };
-            } else if (P1.Y < 0) {
-                status = new Died { cause = "p1 fell" };
-            } else if (P2.Y < 0) {
-                status = new Died { cause = "p2 fell" };
-            } else {
-                status = new Playing ();
+                if (inGoal (p1) && inGoal (p2)) {
+                    status = new Won ();
+                } else if (Health >= 1) {
+                    status = new Died { cause = "awkwardness" };
+                } else if (Health <= -1) {
+                    status = new Died { cause = "loneliness" };
+                } else if (P1.Y < 0) {
+                    status = new Died { cause = "p1 fell" };
+                } else if (P2.Y < 0) {
+                    status = new Died { cause = "p2 fell" };
+                } else {
+                    status = new Playing ();
+                }
+
+                return status;
             }
-
-            return status;
         }
 	}
 }

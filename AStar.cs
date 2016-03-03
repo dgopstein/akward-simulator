@@ -1,87 +1,93 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+//using Priority_Queue;
+using System.Diagnostics;
 
 namespace awkwardsimulator
 {
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Diagnostics;
-    using Priority_Queue;
+    class StateNode {
+        private StateNode parent;
+        public  StateNode Parent { get { return parent; } }
 
-    public class Leaf
-    {
-//        public ForwardModel fm;
-        public GameState state;
-        public Input move;
-        public float node_depth;
+        private Input input;
+        public  Input Input { get { return input; } }
 
-//        public Leaf(ForwardModel fm, Input rootmove, float nd) {
-        public Leaf(GameState state, Input rootmove, float nd) {
-//            this.fm = fm;
+        private GameState state;
+        public  GameState State { get { return state; } }
+
+        private Dictionary<Input, StateNode> children;
+        public  Dictionary<Input, StateNode> Children {
+            get { return children;  }
+            set { children = value; }
+        }
+
+        public StateNode(StateNode parent, Input input, GameState state) {
+            this.parent = parent;
+            this.input = input;
             this.state = state;
-            move = rootmove;
-            node_depth = nd;
-        }
-    }
 
-    public class AStar : AI {
-        static private Input[] inputs = {
-            new Input(false, true, false), new Input(true, false, false), new Input(false, false, true),
-            new Input(true, false, true), new Input(false, false, false), new Input(false, true, true)
-        };
-
-        public SimplePriorityQueue<Leaf> leaves;
-
-        public AStar(GameState state, PlayerId pId) : base(state, pId) {}
-
-        override public Input nextInput(GameState game) {
-            return runAStar(game);
+            this.children = new Dictionary<Input, StateNode> ();
         }
 
-        public Input runAStar(GameState game) {
-            leaves = new SimplePriorityQueue<Leaf>();
+        public StateNode FirstAncestor () {
+            StateNode node;
 
-            float score;
-            GameState newGame;
-            foreach (Input i in inputs) {
-                newGame = this.nextState(game,i);
-                score = this.heuristic(newGame);
-                leaves.Enqueue(new Leaf(newGame, i, 1.0f), score + 1.0f);
-            }       
+            Debug.WriteLine ("node: {0} {1}", Input, State.P1.Coords);
 
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-            while (sw.ElapsedMilliseconds < 40 && leaves.Count > 0) {
-                Leaf leaf = leaves.Dequeue();
-                if (leaf.state.PlayStatus().isDied()) {
-                  continue;
-                }
-
-                if (leaf.state.PlayStatus().isWon()) {
-                    return leaf.move;
-                }
-                foreach (Input i in inputs) {
-                    newGame = this.nextState(leaf.state, i);
-                    newGame = this.nextState(newGame, i);
-
-                    if (leaves.Count < 1000 && !newGame.PlayStatus().isDied()) {
-                        score = this.heuristic(newGame);
-                        leaves.Enqueue(new Leaf(newGame, leaf.move, leaf.node_depth + 1.0f), score + leaf.node_depth + 1.0f);
-                    }
-                }
-            }
-            Leaf top = null;
-            Input move = new Input();
-            if (leaves.Count > 0) {
-                top = leaves.Dequeue ();
-                move = top.move;
+            if (parent == null) {
+                Debug.WriteLine ("Returning the root!!!");
+                node = this;
+            } else if (parent.parent == null) {
+                node = this;
             } else {
-                Debug.WriteLine("{0} : no nodes!" , thisPlayer(game).Id);
+                node = parent.FirstAncestor ();
             }
 
-            return move;
+            return node;
         }
     }
 
+    public class AStar : AI
+    {
+        //SimplePriorityQueue<StateNode> pq = new SimplePriorityQueue<StateNode>();
+        SortedDictionary<double, StateNode> allPaths;
+
+        public AStar (GameState state, PlayerId pId) : base(state, pId)
+        {
+        }
+
+        public override Input nextInput (GameState state)
+        {
+            allPaths = new SortedDictionary<double, StateNode>();
+
+            Func<GameState, double> heuristic = (s) => Math.Truncate(Heuristic.heuristic (this.thisPlayer (s), s) * 1000d) / 1000d;
+            int maxIters = 1000;
+
+            var root = new StateNode (null, new Input(), state);
+            allPaths.Add(heuristic(state), root);
+            var best = root;
+
+            for (int i = 0; i < maxIters && !best.State.PlayStatus.isWon() && allPaths.Count > 0; i++) {
+                best.Children = Input.All.ToDictionary (input=>input, input=> new StateNode(best, input, nextState(state, input)));
+
+                for (int j = 0; j < best.Children.Count; j++) {
+                    var child = best.Children.ElementAt(j).Value;
+                    var h = heuristic (child.State) + (0.0000001 * (i+1) + 0.00000001 * j);
+                    allPaths.Add(h, child);
+                }
+
+                best = allPaths.First().Value;
+                allPaths.Remove (allPaths.First().Key);
+
+//                Debug.WriteLine(string.Join(", ", allPaths.Select(x => x.Key)));
+//                Debug.WriteLine (allPaths.First ().Key);
+            }
+
+            Debug.WriteLine ("FirstAncestor");
+            var res = best.FirstAncestor ().Input;
+            return res;
+        }
+    }
 }
 

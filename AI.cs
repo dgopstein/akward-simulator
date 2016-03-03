@@ -19,29 +19,7 @@ namespace awkwardsimulator
             this.forwardModel = new ForwardModel(state);
         }
 
-        public Player thisPlayer(GameState state) {
-            Player player;
 
-            switch (pId) {
-            case PlayerId.P1: player = state.P1; break;
-            case PlayerId.P2: player = state.P2; break;
-            default: throw new Exception("Unknown player id!");
-            }
-
-            return player;
-        }
-
-        public Player otherPlayer(GameState world) {
-            Player player;
-
-            switch (pId) {
-            case PlayerId.P1: player = world.P1; break;
-            case PlayerId.P2: player = world.P2; break;
-            default: throw new Exception("Unknown player id!");
-            }
-
-            return player;
-        }
 
         protected GameState nextState(GameState game, Input move) {
             return nextState(game, move, move); //TODO don't just copy this-player's move
@@ -53,9 +31,9 @@ namespace awkwardsimulator
             int intermediateSteps = 1; // set to match a reasonable Gameloop#humanInputDelayFrames() value...
             for (int i = 0; i < intermediateSteps; i++) {
                 if (pId == PlayerId.P1) {
-                    lastState = forwardModel.next(lastState, thisPlayerMove, otherPlayerMove);
+                    lastState = forwardModel.nextState(lastState, thisPlayerMove, otherPlayerMove);
                 } else {
-                    lastState = forwardModel.next(lastState, otherPlayerMove, thisPlayerMove);
+                    lastState = forwardModel.nextState(lastState, otherPlayerMove, thisPlayerMove);
                 }
             }
 
