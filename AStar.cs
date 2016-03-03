@@ -48,7 +48,7 @@ namespace awkwardsimulator
         private int depth = -1;
         public int Depth () {
             if (depth < 0) {
-                depth = (parent == null) ? 0 : parent.Depth();
+                depth = (parent == null) ? 0 : parent.Depth() + 1;
             }
 
             return depth;
@@ -87,14 +87,29 @@ namespace awkwardsimulator
                 .Select(sn => sn.Value.ToPath()).ToList();
         }
 
+        private Func<StateNode, double>  heuristicGenerator() {
+            int uniqueId = 1;
+            Func<StateNode, double> heuristic = (s) => {
+                double h = Heuristic.heuristic (this.thisPlayer (s.State), s.State);
+
+                h =  Math.Truncate(h * 1000d) / 1000d; // remove fractional noise
+                
+                h += (0.0000001 * uniqueId++); // add marginal unique id to avoid collisions
+                
+                h += 1 * s.Depth(); // discourage long paths
+
+                return h;
+            };
+
+            return heuristic;
+        }
+
         public override Input nextInput (GameState origState)
         {
-            int maxIters = 250;
+            int maxIters = 50;
             var paths = new SortedDictionary<double, StateNode>();
 
-            int uniqueId = 1;
-            Func<StateNode, double> heuristic = (s) =>
-                Math.Truncate(Heuristic.heuristic (this.thisPlayer (s.State), s.State) * 1000d) / 1000d + (0.0000001 * uniqueId++) + 30 * s.Depth();
+            var heuristic = heuristicGenerator ();
 
             var root = new StateNode (null, new Input(), origState);
             paths.Add(heuristic(root), root);
