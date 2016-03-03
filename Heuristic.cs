@@ -23,14 +23,12 @@ namespace awkwardsimulator
         }
 
         public static float heuristic(Player p, GameState state) {
-            float score;
+            float score = linearHealthHeuristic(p, state);
 
             if (state.PlayStatus.isDied ()) {
-                score = 99999;
+//                score = 99999;
             } else if (state.PlayStatus.isWon ()) {
                 score = 0;
-            } else {
-                score = linearHealthHeuristic(p, state);
             }
 
             return score;

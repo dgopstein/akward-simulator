@@ -137,10 +137,10 @@ namespace awkwardsimulator
             drawing.DrawHeuristic (state.P1, state, 20, 50);
             drawing.DrawHeuristic (state.P2, state, 20, 80);
 
+            drawing.DrawPath (history.Select (s => s.P1.Coords), Color.LemonChiffon, 3);
+
             drawing.DrawPaths (ai1.BestPaths ().Select(p => p.Select(e => e.Item2.P1.Coords)));
 //            drawing.DrawPaths (ai2.BestPaths ().Select(p => p.Select(e => e.Item2.P2.Coords)));
-
-            drawing.DrawPath (history.Select (s => s.P1.Coords), Color.LemonChiffon, 3);
 			
 			spriteBatch.End();
             			

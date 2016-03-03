@@ -29,8 +29,8 @@ namespace awkwardsimulator
     }
 
     public class RealPlayerPhysics : PlayerPhysics {
-		float JumpVelocity = 50.0f;
-		float VariableJumpDampening = 0.75f; //Your jump speed is multiplied by this every frame unless you hold jump
+		float JumpVelocity = 700.0f;
+		float VariableJumpDampening = .7f; //Your jump speed is multiplied by this every frame unless you hold jump
 		float GroundMoveAccel = 40.0f;
 		float AirMoveAccel = 20.0f;
 		float MaxMoveSpeed = 30.0f;
@@ -56,6 +56,9 @@ namespace awkwardsimulator
             } else if (!jumpButton && !Grounded && my > 0.0f) {
                 my *= VariableJumpDampening;
             }
+
+
+
 //			if (!jumpButton)
 //				holdingJumpButton = false;
 //
@@ -98,7 +101,6 @@ namespace awkwardsimulator
 			mx = Util.clamp(mx, -max, max);
 
 			fix.Body.LinearVelocity = new Vector2(mx, my);
-
 		}
 
 		Fixture ground = null;

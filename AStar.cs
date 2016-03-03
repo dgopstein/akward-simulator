@@ -45,6 +45,15 @@ namespace awkwardsimulator
             return node;
         }
 
+        private int depth = -1;
+        public int Depth () {
+            if (depth < 0) {
+                depth = (parent == null) ? 0 : parent.Depth();
+            }
+
+            return depth;
+        }
+
         public List<Tuple<Input, GameState>> ToPath() {
             Stack<Tuple<Input, GameState>> stack = new Stack<Tuple<Input, GameState>> ();
 
@@ -80,22 +89,22 @@ namespace awkwardsimulator
 
         public override Input nextInput (GameState origState)
         {
-            int maxIters = 50;
+            int maxIters = 250;
             var paths = new SortedDictionary<double, StateNode>();
 
             int uniqueId = 1;
-            Func<GameState, double> heuristic = (s) =>
-                Math.Truncate(Heuristic.heuristic (this.thisPlayer (s), s) * 1000d) / 1000d + (0.0000001 * uniqueId++);
+            Func<StateNode, double> heuristic = (s) =>
+                Math.Truncate(Heuristic.heuristic (this.thisPlayer (s.State), s.State) * 1000d) / 1000d + (0.0000001 * uniqueId++) + 30 * s.Depth();
 
             var root = new StateNode (null, new Input(), origState);
-            paths.Add(heuristic(origState), root);
+            paths.Add(heuristic(root), root);
             var best = root;
 
             for (int i = 0; i < maxIters && !best.State.PlayStatus.isWon() && paths.Count > 0; i++) {
                 best.Children = Input.All.ToDictionary (input=>input, input=> new StateNode(best, input, nextState(best.State, input)));
 
                 foreach (var c in best.Children) {
-                    paths.Add(heuristic (c.Value.State), c.Value);
+                    paths.Add(heuristic (c.Value), c.Value);
                 }
 
                 best = paths.First().Value;

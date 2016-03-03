@@ -57,7 +57,7 @@ namespace awkwardsimulator
         {
             initialState = state;
 
-            world = new World (new Vector2 (0f, -100f));
+            world = new World (new Vector2 (0f, -50f));
 
             physP1 = new StatelessPlayerPhysics (world, playerFix (state.P1.X, state.P1.Y, state.P1.W, state.P1.H));
             physP2 = new StatelessPlayerPhysics (world, playerFix (state.P2.X, state.P2.Y, state.P2.W, state.P2.H));
@@ -73,11 +73,6 @@ namespace awkwardsimulator
 
         private GameState nextState (float oldHealth, Input input1, Input input2)
         {
-//            Debug.WriteLineIf ((Vector2.Distance (physP1.Fixture.Body.Position, state.P1.Coords) > 0.001f ||
-//            Vector2.Distance (physP2.Fixture.Body.Position, state.P2.Coords) > 0.001f),
-//                "The gamestate and forwardmodel are out of sync"
-//            );
-
             // Calculate physics
 
             physP1.movePlayer (input1);
@@ -101,6 +96,12 @@ namespace awkwardsimulator
 
         public GameState nextState (GameState state, Input input1, Input input2) {
             loadState (state);
+
+            Debug.WriteLineIf ((Vector2.Distance (physP1.Fixture.Body.Position, state.P1.Coords) > 0.001f ||
+                                Vector2.Distance (physP2.Fixture.Body.Position, state.P2.Coords) > 0.001f),
+                "The gamestate and forwardmodel are out of sync"
+            );
+
             return nextState (state.Health, input1, input2);
         }
 
