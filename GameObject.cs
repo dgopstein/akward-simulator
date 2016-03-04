@@ -16,17 +16,25 @@ namespace awkwardsimulator
         public float W { get { return Size.X; } }
         public float H { get { return Size.Y; } }
 
-        virtual public List<Vector2> Corners() {
+        virtual public List<Vector2> Surface { get {
+                return new List<Vector2> () {
+                    new Vector2 (X, Y + H),
+                    new Vector2 (X + W, Y + H)
+            };
+        } }
+
+        virtual public List<Vector2> Corners { get {
             return new List<Vector2>() {
                 new Vector2(X    , Y    ),
                 new Vector2(X + W, Y    ),
                 new Vector2(X    , Y + H),
                 new Vector2(X + W, Y + H)
             };
-        }
+        } }
 
 
         virtual public Vector2 Center { get { return Coords + (Vector2.Multiply (Size, 0.5f)); } }
+        virtual public Vector2 SurfaceCenter { get { return Coords + (Vector2.Multiply (Size, new Vector2(0.5f, 1f))); } }
 
 
         public GameObject (Vector2 coords, Vector2 size) {
@@ -39,6 +47,27 @@ namespace awkwardsimulator
         }
 	}
 
+    abstract public class GameObjectCircle : GameObject {
+        private float radius;
+        public float Radius { get { return radius; } }
+
+        public GameObjectCircle (Vector2 coords, float radius) : base (coords, size: new Vector2(radius, radius)) {
+            this.radius = radius;
+        }
+
+        override public Vector2 Center { get { return Coords; } }
+        override public Vector2 SurfaceCenter { get { return Coords; } }
+
+        override public List<Vector2> Corners { get {
+                return new List<Vector2> () {
+                    new Vector2 (X - Radius, Y - Radius),
+                    new Vector2 (X - Radius, Y + Radius),
+                    new Vector2 (X + Radius, Y - Radius),
+                    new Vector2 (X + Radius, Y + Radius),
+                };
+            } }
+    }
+
 	public class Player : GameObject {
         public int Id { get; }
         public Vector2 Velocity { get; }
@@ -49,13 +78,15 @@ namespace awkwardsimulator
             this.Velocity = velocity;
         }
 
+        // Player surface is on the bottom, because that's where it stands on platforms from
+        override public Vector2 SurfaceCenter { get { return Coords + (Vector2.Multiply (Size, new Vector2(0.5f, 0f))); } }
+
         public Player Clone(Vector2 coords, Vector2 velocity) { return new Player(Id, coords, velocity); }
         public Player Clone(Vector2 coords) {  return Clone(coords, Velocity); }
         public Player Clone() {  return Clone(Coords); }
 
 
-        public override string ToString ()
-        {
+        public override string ToString () {
             return string.Format ("P{0}{1}", Id, base.ToString());
         }
 	}
@@ -64,24 +95,8 @@ namespace awkwardsimulator
         public Platform (Vector2 coords, Vector2 size) : base (coords, size) {}
 	}
 
-    public class Goal : GameObject {
-        private float radius;
-        public float Radius { get { return radius; } }
-
-        override public Vector2 Center { get { return Coords; } }
-
-        override public List<Vector2> Corners() {
-            return new List<Vector2> () {
-                new Vector2 (X - Radius, Y - Radius),
-                new Vector2 (X - Radius, Y + Radius),
-                new Vector2 (X + Radius, Y - Radius),
-                new Vector2 (X + Radius, Y + Radius),
-            };
-        }
-
-        public Goal (Vector2 coords, float radius) : base (coords, size: new Vector2(radius, radius)) {
-            this.radius = radius;
-        }
+    public class Goal : GameObjectCircle {
+        public Goal (Vector2 coords, float radius) : base (coords, radius) { }
     }
 }
 

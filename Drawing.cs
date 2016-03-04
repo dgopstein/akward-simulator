@@ -87,7 +87,11 @@ namespace awkwardsimulator
         }
 
         public Point RasterizeDims(GameObject go) {
-            return new Point (xScale (go.W), yScale (go.H));
+            return RasterizeDims(go.Size);
+        }
+
+        public Point RasterizeDims(Vector2 v) {
+            return new Point (xScale (v.X), yScale (v.Y));
         }
 
         public void DrawFPS(GameTime gameTime) {
@@ -146,17 +150,25 @@ namespace awkwardsimulator
             spriteBatch.DrawString(SpriteFont, status.ToString (), new Vector2(20, 20), Color.Black);
         }
 
-        public void DrawHeuristic(Player p, GameState gs, int x, int y) {
-            var heuristic = Heuristic.heuristic (p, gs);
-            var str = String.Format ("P{0}: {1:F1}", p.Id, heuristic);
+        public void DrawHeuristic(AI ai, GameState gs, int x, int y) {
+            var heuristic = ai.Heuristic(gs);
+            var str = String.Format ("P{0}: {1:F1}", ai.thisPlayer(gs).Id, heuristic);
             spriteBatch.DrawString(SpriteFont, str, new Vector2(x, y), Color.DarkViolet);
         }
 
-        public void DrawGameObjectCircle(GameObject go, Color c) {
-            Point pt = RasterizeCoords (go);
-            Point dim = RasterizeDims (go);
+        public void DrawCircle(float radius, Vector2 pos, Color c) {
+            Point pt = RasterizeCoords (pos + (radius*new Vector2(-1, 1)));
+            Point dim = RasterizeDims (new Vector2 (radius, 0));
 
-            spriteBatch.Draw (FilledCircle(dim.X), (pt - new Point(dim.X, 0)).ToVector2(), c);
+            spriteBatch.Draw (FilledCircle(dim.X), pt.ToVector2(), c);
+        }
+
+        public void DrawGameObjectCircle(GameObjectCircle go, Color c) {
+//            Point pt = RasterizeCoords (go);
+//            Point dim = RasterizeDims (go);
+//
+//            spriteBatch.Draw (FilledCircle(dim.X), (pt - new Point(dim.X, 0)).ToVector2(), c);
+            DrawCircle(go.Radius, go.Center, c);
         }
 
 //        http://stackoverflow.com/questions/2983809/how-to-draw-circle-with-specific-color-in-xna

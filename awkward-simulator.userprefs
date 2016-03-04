@@ -1,13 +1,14 @@
 ﻿<Properties StartupItem="awkward-simulator.csproj" RefactoringSettings.EnableRefactorings="True">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Game1.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="AStar.cs">
     <Files>
-      <File FileName="ForwardModel.cs" Line="75" Column="9" />
-      <File FileName="Game1.cs" Line="113" Column="55" />
-      <File FileName="Drawing.cs" Line="108" Column="66" />
-      <File FileName="HealthControl.cs" Line="44" Column="32" />
-      <File FileName="GameState.cs" Line="15" Column="37" />
-      <File FileName="PlayerPhysics.cs" Line="33" Column="16" />
+      <File FileName="Game1.cs" Line="65" Column="13" />
+      <File FileName="AStar.cs" Line="130" Column="17" />
+      <File FileName="PlatformAStar.cs" Line="63" Column="58" />
+      <File FileName="GameObject.cs" Line="82" Column="9" />
+      <File FileName="AI.cs" Line="51" Column="18" />
+      <File FileName="Heuristic.cs" Line="24" Column="9" />
+      <File FileName="WayPointAStar.cs" Line="42" Column="17" NotebookId="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

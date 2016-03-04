@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework.Input;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Linq;
+using System.Threading;
 
 #endregion
 
@@ -25,6 +26,7 @@ namespace awkwardsimulator
 		Drawing drawing;
         AI ai1, ai2;
         List<GameState> history;
+        PlatformAStar pas;
 
         static float GameWidth = 160f;
         static float GameHeight = 100f;
@@ -55,15 +57,15 @@ namespace awkwardsimulator
 
 //            Debug.WriteLine (PlatformAStar.PlatGraphStr(PlatformAStar.PlatformGraph (state.Platforms)));
 
-            PlatformAStar pas = new PlatformAStar (state.Platforms);
+            pas = new PlatformAStar (state.Platforms);
             Debug.WriteLine (PlatformAStar.PlatListStr(pas.PlatformPath(state.P1.Coords, state.Goal.Coords)));
 
 			forwardModel = new ForwardModel (state);
 
             history = new List<GameState> ();
 
-            ai1 = new AStar (state, PlayerId.P1);
-            ai2 = new AStar (state, PlayerId.P2);
+            ai1 = new WaypointAStar (state, PlayerId.P1);
+            ai2 = new NullAI (state, PlayerId.P2);
             startAiFutures ();
 
 			base.Initialize ();
@@ -96,7 +98,7 @@ namespace awkwardsimulator
 			KeyboardState keyState = Keyboard.GetState ();
 			if (keyState.IsKeyDown(Keys.Escape)) { Exit (); }
 
-            if (false) {
+            if (true) {
                 Tuple<Input, Input> inputs = ReadKeyboardInputs (keyState);
                 input1 = inputs.Item1;
                 input2 = inputs.Item2;
@@ -122,13 +124,12 @@ namespace awkwardsimulator
 		{
 			graphics.GraphicsDevice.Clear (Color.CornflowerBlue);
 		
-			//TODO: Add your drawing code here
 			spriteBatch.Begin();
 
             drawing.DrawFPS (gameTime);
 
             foreach (var plat in state.Platforms) {
-                drawing.DrawGameObjectRect (plat, Color.Beige);
+                drawing.DrawGameObjectRect (plat, Color.Gainsboro);
             }
 
             drawing.DrawGameObjectCircle (state.Goal, Color.BurlyWood);
@@ -139,12 +140,13 @@ namespace awkwardsimulator
             drawing.DrawHealth (state.Health);
 
             drawing.DrawPlayStatus (state.PlayStatus);
-            drawing.DrawHeuristic (state.P1, state, 20, 50);
-            drawing.DrawHeuristic (state.P2, state, 20, 80);
+            drawing.DrawHeuristic (ai1, state, 20, 50);
+            drawing.DrawHeuristic (ai1, state, 20, 80);
 
-            drawing.DrawPath (new PlatformAStar(state.Platforms).PlatformPath(state.P1.Center, state.Goal.Center).Select (s => s.Center), Color.Maroon, 2);
+            drawing.DrawPath (pas.PlatformPath(state.P1.Center, state.Goal.Center).Select (s => s.Center), Color.Maroon, 2);
+            drawing.DrawCircle (2, ((WaypointAStar)ai1).NextWaypoint(state), Color.Crimson);
 
-            drawing.DrawPath (history.Select (s => s.P1.Coords), Color.LemonChiffon, 2);
+            drawing.DrawPath (history.Select (s => s.P1.Coords), Color.Thistle, 2);
 
 
             drawing.DrawPaths (ai1.BestPaths ().Select(p => p.Select(e => e.Item2.P1.Coords)));

@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 
 namespace awkwardsimulator
 {
-    public static class Heuristic
+    public static class Heuristics
     {
         public static float linearHealthHeuristic(this AI ai, GameState state) {
             return linearHealthHeuristic (ai.thisPlayer (state), state);
@@ -16,6 +16,10 @@ namespace awkwardsimulator
             var healthWeight = 0f;
 
             return goalDistance + (healthWeight * healthScore);
+        }
+
+        public static float SqrtDistance(Vector2 a, Vector2 b) {
+            return (float)Math.Sqrt(Vector2.Distance (a, b));
         }
 
         public static float heuristic(this AI ai, GameState state) {

@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-//using Priority_Queue;
 using System.Diagnostics;
+
+
 using StateNode = awkwardsimulator.AStarNode<awkwardsimulator.GameState, awkwardsimulator.Input>;
 
 namespace awkwardsimulator
 {
-    class AStarNode<P, T> {
+    public class AStarNode<P, T> {
         private AStarNode<P, T> parent;
         public  AStarNode<P, T> Parent { get { return parent; } }
 
@@ -22,7 +23,7 @@ namespace awkwardsimulator
             get { return children;  }
             set { children = value; }
         }
-
+            
         public AStarNode(AStarNode<P, T> parent, T input, P state) {
             this.parent = parent;
             this.input = input;
@@ -70,11 +71,11 @@ namespace awkwardsimulator
 
     public class AStar : AI
     {
-        //SimplePriorityQueue<StateNode> pq = new SimplePriorityQueue<StateNode>();
-        SortedDictionary<double, StateNode> allPaths;
+        virtual protected int maxIters() {return 50;}
+    
+        protected SortedDictionary<double, StateNode> allPaths;
 
-        public AStar (GameState state, PlayerId pId) : base(state, pId)
-        {
+        public AStar (GameState state, PlayerId pId) : base(state, pId) {
             allPaths = new SortedDictionary<double, StateNode> ();
         }
 
@@ -84,14 +85,13 @@ namespace awkwardsimulator
                 myPaths = allPaths.Take (5).ToList();
             }
 
-            return myPaths
-                .Select(sn => sn.Value.ToPath()).ToList();
+            return myPaths.Select(sn => sn.Value.ToPath()).ToList();
         }
 
-        private Func<StateNode, double>  heuristicGenerator() {
+        protected virtual Func<StateNode, double>  heuristicGenerator() {
             int uniqueId = 1;
             Func<StateNode, double> heuristic = (s) => {
-                double h = Heuristic.heuristic (this.thisPlayer (s.Value), s.Value);
+                double h = Heuristics.heuristic (this.thisPlayer (s.Value), s.Value);
 
                 h =  Math.Truncate(h * 1000d) / 1000d; // remove fractional noise
                 
@@ -105,25 +105,46 @@ namespace awkwardsimulator
             return heuristic;
         }
 
+        protected Func<StateNode, double> heuristic;
+        override public float Heuristic(GameState state) {
+            if (heuristic == null) heuristic = heuristicGenerator ();
+
+            return (float)heuristic(new StateNode(null, new Input(), state));
+        }
+
         public override Input nextInput (GameState origState)
         {
-            int maxIters = 50;
             var paths = new SortedDictionary<double, StateNode>();
 
-            var heuristic = heuristicGenerator ();
+            heuristic = heuristicGenerator ();
 
             var root = new StateNode (null, new Input(), origState);
             paths.Add(heuristic(root), root);
             var best = root;
 
-            for (int i = 0; i < maxIters && !best.Value.PlayStatus.isWon() && paths.Count > 0; i++) {
-                best.Children = Input.All.ToDictionary (input=>input, input=> new StateNode(best, input, nextState(best.Value, input)));
+            for (int i = 0; i < maxIters() && !best.Value.PlayStatus.isWon() && paths.Count > 0; i++) {
+                best.Children = Input.All.ToDictionary (input=>input,
+                    input => {
+
+                        // repeat the same input a few times
+                        GameState s = best.Value;
+                        for (int j = 0; j < 3; j++) {
+                            s = nextState(s, input);
+                        }
+
+                        return new StateNode(best, input, s);
+                    });
 
                 foreach (var c in best.Children) {
                     paths.Add(heuristic (c.Value), c.Value);
                 }
 
+
+
                 best = paths.First().Value;
+
+//                Debug.WriteLine ("{0}: [{1}]", paths.Count,
+//                    string.Join(", ", paths.Select(p => p.Value.Value.P1.Coords)));
                 paths.Remove (paths.First().Key);
             }
 
@@ -134,4 +155,3 @@ namespace awkwardsimulator
         }
     }
 }
-

@@ -19,8 +19,10 @@ namespace awkwardsimulator
             this.forwardModel = new ForwardModel(state);
         }
 
+        abstract public float Heuristic (GameState state);
+
         virtual public List<List<Tuple<Input, GameState>>> BestPaths() {
-            throw new NotImplementedException();
+            return new List<List<Tuple<Input, GameState>>> ();
         }
 
         protected GameState nextState(GameState game, Input move) {
@@ -43,5 +45,17 @@ namespace awkwardsimulator
         }
 
         abstract public Input nextInput(GameState state);
+    }
+
+    public class NullAI : AI {
+        public NullAI(GameState state, PlayerId pId) : base(state, pId) { }
+
+        override public float Heuristic(GameState state) {
+            return 0f;
+        }
+
+        override public Input nextInput(GameState state) {
+            return new Input ();
+        }
     }
 }

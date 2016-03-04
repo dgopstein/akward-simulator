@@ -87,14 +87,14 @@
     <Compile Include="HealthControl.cs" />
     <Compile Include="AI.cs" />
     <Compile Include="AIUtil.cs" />
-    <Compile Include="Heuristic.cs" />
     <Compile Include="SourceLibraries\DebugViewXNA\DebugViewXNA.cs" />
     <Compile Include="SourceLibraries\DebugViewXNA\PrimitiveBatch.cs" />
     <Compile Include="SourceLibraries\FarseerSamples\AssetCreator.cs" />
     <Compile Include="Level.cs" />
-    <Compile Include="AStarPhilip.cs" />
     <Compile Include="AStar.cs" />
     <Compile Include="PlatformAStar.cs" />
+    <Compile Include="WayPointAStar.cs" />
+    <Compile Include="Heuristics.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Info.plist" />
