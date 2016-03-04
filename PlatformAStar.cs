@@ -15,11 +15,13 @@ namespace awkwardsimulator
         private PlatformGraph platformGraph;
         public PlatformGraph PlatformGraph { get { return platformGraph; } }
 
+        private List<Platform> Platforms { get { return platformGraph.Keys.ToList(); } }
+
         public PlatformAStar(List<Platform> platforms) {
             this.platformGraph = BuildPlatformGraph (platforms);
         }
 
-        public Platform NextPlatform(Vector2 start, Vector2 end) {
+        public GameObject NextPlatform(GameObject start, GameObject end) {
             var path = PlatformPath (start, end);
 
             var next = (path.Count > 1) ? path [1] : path [0];
@@ -27,11 +29,17 @@ namespace awkwardsimulator
             return next;
         }
 
-        public List<Platform> PlatformPath(Vector2 start, Vector2 end) {
-            var startPlat = nearestPlatform (start);
-            var endPlat = nearestPlatform (end);
+        public List<GameObject> PlatformPath(GameObject start, GameObject end) {
+            var startPlat = nearestPlatform (start.SurfaceCenter, Platforms);
 
-            return PlatformPath (startPlat, endPlat);
+            var endReachablePlatforms = Platforms.FindAll (p => reachable (p, end));
+
+//            Debug.WriteLine ("all platforms: "+ PlatListStr (Platforms));
+//            Debug.WriteLine ("end reachable: "+ PlatListStr (endReachablePlatforms));
+
+            var endPlat = nearestPlatform (end.Center, endReachablePlatforms);
+
+            return PlatformPath (startPlat, endPlat).Concat(end).ToList<GameObject>();
         }
 
         private List<Platform> PlatformPath(Platform start, Platform end) {
@@ -59,19 +67,30 @@ namespace awkwardsimulator
                 paths.Remove (paths.First().Key);
             }
 
+            Debug.WriteLine ("Best Platform: {0}", best);
+
             return best.ToPath().Select(tup => tup.Item2).ToList();
         }
 
-        private Platform nearestPlatform(Vector2 point) {
+        private Platform nearestPlatform(Vector2 point, List<Platform> platforms) {
             // Don't return platforms above the given point
-            var lowerPlats = PlatformGraph.Keys.ToList ()
-                .FindAll (plat => plat.Y <= (point.Y + 1)); // Sometimes the Y value waivers, so give a 1pt margin of error
+            var lowerPlats = platforms.ToList ()
+                .FindAll (plat => plat.Y <= point.Y); // Sometimes the Y value waivers, so give a 1pt margin of error
 
             if (lowerPlats.Count == 0) {
-                lowerPlats = PlatformGraph.Keys.ToList ();
+                lowerPlats = platforms.ToList ();
             }
 
-            return lowerPlats.MinBy(plat => Vector2.Distance(nearestPoint(point, plat.Surface), point));
+            return lowerPlats.MinBy(plat => {
+
+//                var delta = Vector2.Subtract(nearestPoint(point, plat.Surface), point);
+                var delta = Vector2.Subtract(plat.Center, point);
+
+
+                var scaledDelta = delta * new Vector2(2, 1); // weight X distance more than Y distance
+
+                return scaledDelta.Length();
+            });
         }
 
         private static Vector2 nearestPoint(Vector2 point, List<Vector2> list) {
@@ -94,7 +113,7 @@ namespace awkwardsimulator
             return platGraph;                
         }
 
-        public static string PlatListStr(List<Platform> platforms) {
+        public static string PlatListStr<T>(List<T> platforms) where T : GameObject {
             return string.Join (", ", platforms.Select (x => x.Coords));
         }
 
@@ -109,8 +128,8 @@ namespace awkwardsimulator
         private static bool reachable(GameObject go1, GameObject go2) {
             int maxX = 20, maxY = 15;
 
-            return go1.Surface.SelectMany ( a =>
-                go2.Surface.Select( b => Vector2.Subtract (a, b)))
+            return go1.Corners.SelectMany ( a =>
+                go2.Corners.Select( b => Vector2.Subtract (a, b)) )
                 .Any (d => Math.Abs (d.X) <= maxX && Math.Abs (d.Y) <= maxY);
         }
     }

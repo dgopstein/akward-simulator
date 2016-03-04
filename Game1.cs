@@ -58,7 +58,7 @@ namespace awkwardsimulator
 //            Debug.WriteLine (PlatformAStar.PlatGraphStr(PlatformAStar.PlatformGraph (state.Platforms)));
 
             pas = new PlatformAStar (state.Platforms);
-            Debug.WriteLine (PlatformAStar.PlatListStr(pas.PlatformPath(state.P1.Coords, state.Goal.Coords)));
+            Debug.WriteLine (PlatformAStar.PlatListStr(pas.PlatformPath(state.P1, state.Goal)));
 
 			forwardModel = new ForwardModel (state);
 
@@ -143,7 +143,7 @@ namespace awkwardsimulator
             drawing.DrawHeuristic (ai1, state, 20, 50);
             drawing.DrawHeuristic (ai1, state, 20, 80);
 
-            drawing.DrawPath (pas.PlatformPath(state.P1.Center, state.Goal.Center).Select (s => s.Center), Color.Maroon, 2);
+            drawing.DrawPath (pas.PlatformPath(state.P1, state.Goal).Select (s => s.Center), Color.Maroon, 2);
             drawing.DrawCircle (2, ((WaypointAStar)ai1).NextWaypoint(state), Color.Crimson);
 
             drawing.DrawPath (history.Select (s => s.P1.Coords), Color.Thistle, 2);

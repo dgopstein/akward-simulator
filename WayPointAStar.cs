@@ -20,8 +20,7 @@ namespace awkwardsimulator
         }
 
         public Vector2 NextWaypoint(GameState state) {
-            var pc = this.thisPlayer (state).SurfaceCenter;
-            return pas.NextPlatform (pc, state.Goal.Center).SurfaceCenter;
+            return pas.NextPlatform (this.thisPlayer (state), state.Goal).SurfaceCenter;
         }
 
         override protected Func<StateNode, double>  heuristicGenerator() {
@@ -34,7 +33,8 @@ namespace awkwardsimulator
 
 //                Debug.WriteLine("{0} {1}", pc, nextWaypoint);
 
-                double h = Heuristics.SqrtDistance (pc, nextWaypoint) + Vector2.Distance(nextWaypoint, s.Value.Goal.Center);
+                double h = Heuristics.SqrtDistance (pc, nextWaypoint) +
+                           Vector2.Distance(nextWaypoint, s.Value.Goal.Center);
 
 
                 h =  Math.Truncate(h * 1000d) / 1000d; // remove fractional noise
