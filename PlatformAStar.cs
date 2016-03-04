@@ -1,29 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using Microsoft.Xna.Framework;
+using MoreLinq;
 
 using PlatformGraph = System.Collections.Generic.Dictionary<awkwardsimulator.Platform, System.Collections.Generic.HashSet<awkwardsimulator.Platform>>;
-using System.Linq;
-using System.Diagnostics;
-using MoreLinq;
+using StateNode = awkwardsimulator.AStarNode<awkwardsimulator.Platform, awkwardsimulator.Platform>;
 
 namespace awkwardsimulator
 {
-//    class PlatformNode {
-//        private Platform platform;
-//        public Platform Platform { get { return platform; } }
-//
-//        private List<Platform> neighbors;
-//        public List<Platform> Neighbors { get { return neighbors; } }
-//
-//        public PlatformNode(Platform plaform, List<Platform> neighbors) {
-//            this.platform = platform;
-//            this.neighbors = neighbors;
-//        }
-//    }
-
-
-
     public class PlatformAStar
     {
         private PlatformGraph platformGraph;
@@ -41,14 +27,39 @@ namespace awkwardsimulator
         }
 
         private List<Platform> PlatformPath(Platform start, Platform end) {
-            //TODO A* this
-            return new List<Platform>();
+            int maxIters = 20;
+
+            var paths = new SortedDictionary<double, StateNode>();
+
+            Func<StateNode, double> heuristic = p => Vector2.Distance (p.Value.Center, end.Center);
+
+            var root = new StateNode (null, start, start);
+            paths.Add(heuristic(root), root);
+            var best = root;
+
+            for (int i = 0; i < maxIters && best.Value != end && paths.Count > 0; i++) {
+                best.Children = PlatformGraph [best.Value].ToDictionary (x => x, x => new StateNode(best, x, x));
+
+                foreach (var c in best.Children) {
+                    var h = heuristic (c.Value);
+                    if (!paths.ContainsKey(h)) {
+                        paths.Add (h, c.Value);
+                    }
+                }
+
+                best = paths.First().Value;
+                paths.Remove (paths.First().Key);
+            }
+
+//            var res = best.FirstAncestor ().Input;
+//            return res;
+            return best.ToPath().Select(tup => tup.Item2).ToList();
         }
 
         private Platform nearest(Vector2 point) {
             return PlatformGraph.Keys.ToList()
                 .FindAll(plat => plat.Y <= point.Y) // Don't return platforms above the given point
-                .MinBy(plat => Vector2.Distance(plat.Center(), point));
+                .MinBy(plat => Vector2.Distance(plat.Center, point));
         }
 
         private static PlatformGraph BuildPlatformGraph(List<Platform> platforms) {
@@ -67,10 +78,14 @@ namespace awkwardsimulator
             return platGraph;                
         }
 
-        private static string PlatGraphStr(PlatformGraph platGraph) {
+        public static string PlatListStr(List<Platform> platforms) {
+            return string.Join (", ", platforms.Select (x => x.Coords));
+        }
+
+        public static string PlatGraphStr(PlatformGraph platGraph) {
             string s = "";
             foreach (var entry in platGraph) {
-                s += String.Format ("{0}[{1}]    ", entry.Key.Coords, string.Join (", ", entry.Value.Select (x => x.Coords)));
+                s += String.Format ("{0}[{1}]    ", entry.Key.Coords, PlatListStr(entry.Value.ToList()));
             }
             return s;
         }

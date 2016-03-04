@@ -15,7 +15,7 @@ namespace awkwardsimulator
         public  T Input { get { return input; } }
 
         private P state;
-        public  P State { get { return state; } }
+        public  P Value { get { return state; } }
 
         private Dictionary<T, AStarNode<P, T>> children;
         public  Dictionary<T, AStarNode<P, T>> Children {
@@ -59,10 +59,10 @@ namespace awkwardsimulator
             Stack<Tuple<T, P>> stack = new Stack<Tuple<T, P>> ();
 
             AStarNode<P, T> node = this;
-            while (node.Parent != null) {
-                stack.Push (Tuple.Create (node.Input, node.State));
+            do {
+                stack.Push (Tuple.Create (node.Input, node.Value));
                 node = node.Parent;
-            }
+            } while (node != null);
 
             return stack.ToList ();
         }
@@ -91,7 +91,7 @@ namespace awkwardsimulator
         private Func<StateNode, double>  heuristicGenerator() {
             int uniqueId = 1;
             Func<StateNode, double> heuristic = (s) => {
-                double h = Heuristic.heuristic (this.thisPlayer (s.State), s.State);
+                double h = Heuristic.heuristic (this.thisPlayer (s.Value), s.Value);
 
                 h =  Math.Truncate(h * 1000d) / 1000d; // remove fractional noise
                 
@@ -116,8 +116,8 @@ namespace awkwardsimulator
             paths.Add(heuristic(root), root);
             var best = root;
 
-            for (int i = 0; i < maxIters && !best.State.PlayStatus.isWon() && paths.Count > 0; i++) {
-                best.Children = Input.All.ToDictionary (input=>input, input=> new StateNode(best, input, nextState(best.State, input)));
+            for (int i = 0; i < maxIters && !best.Value.PlayStatus.isWon() && paths.Count > 0; i++) {
+                best.Children = Input.All.ToDictionary (input=>input, input=> new StateNode(best, input, nextState(best.Value, input)));
 
                 foreach (var c in best.Children) {
                     paths.Add(heuristic (c.Value), c.Value);

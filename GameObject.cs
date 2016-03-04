@@ -25,9 +25,9 @@ namespace awkwardsimulator
             };
         }
 
-        virtual public Vector2 Center() {
-            return new Vector2 (X + W / 2, Y + H / 2);
-        }
+
+        virtual public Vector2 Center { get { return Coords + (Vector2.Multiply (Size, 0.5f)); } }
+
 
         public GameObject (Vector2 coords, Vector2 size) {
 			this.Coords = coords;
@@ -43,7 +43,6 @@ namespace awkwardsimulator
         public int Id { get; }
         public Vector2 Velocity { get; }
 
-        public Vector2 Center { get { return Coords + (Vector2.Multiply (Size, 0.5f)); } }
 
         public Player (int id, Vector2 coords, Vector2 velocity = default(Vector2)) : base(coords, size: new Vector2(4f, 6f)) {
             Id = id;
@@ -69,7 +68,7 @@ namespace awkwardsimulator
         private float radius;
         public float Radius { get { return radius; } }
 
-        override public Vector2 Center() { return Coords; }
+        override public Vector2 Center { get { return Coords; } }
 
         override public List<Vector2> Corners() {
             return new List<Vector2> () {
