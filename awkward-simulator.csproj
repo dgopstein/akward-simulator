@@ -69,6 +69,9 @@
     <Reference Include="Priority Queue">
       <HintPath>packages\OptimizedPriorityQueue.2.0.0\lib\net45\Priority Queue.dll</HintPath>
     </Reference>
+    <Reference Include="MoreLinq">
+      <HintPath>packages\morelinq.1.4.0\lib\net35\MoreLinq.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Game1.cs" />
@@ -91,6 +94,7 @@
     <Compile Include="Level.cs" />
     <Compile Include="AStarPhilip.cs" />
     <Compile Include="AStar.cs" />
+    <Compile Include="PlatformAStar.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Info.plist" />

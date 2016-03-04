@@ -66,7 +66,7 @@ namespace awkwardsimulator
                 platformFix (plat.X, plat.Y, plat.W, plat.H);
             }
 
-            goalFix (state.Goal.X, state.Goal.Y, state.Goal.W);
+            goalFix (state.Goal.X, state.Goal.Y, state.Goal.Radius);
 
             loadState (state);
         }

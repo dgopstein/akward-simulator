@@ -53,6 +53,8 @@ namespace awkwardsimulator
 		{
             state = Level.Level1;
 
+//            Debug.WriteLine (PlatformAStar.PlatGraphStr(PlatformAStar.PlatformGraph (state.Platforms)));
+
 			forwardModel = new ForwardModel (state);
 
             history = new List<GameState> ();
