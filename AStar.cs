@@ -3,35 +3,36 @@ using System.Collections.Generic;
 using System.Linq;
 //using Priority_Queue;
 using System.Diagnostics;
+using StateNode = awkwardsimulator.AStarNode<awkwardsimulator.GameState, awkwardsimulator.Input>;
 
 namespace awkwardsimulator
 {
-    class StateNode {
-        private StateNode parent;
-        public  StateNode Parent { get { return parent; } }
+    class AStarNode<P, T> {
+        private AStarNode<P, T> parent;
+        public  AStarNode<P, T> Parent { get { return parent; } }
 
-        private Input input;
-        public  Input Input { get { return input; } }
+        private T input;
+        public  T Input { get { return input; } }
 
-        private GameState state;
-        public  GameState State { get { return state; } }
+        private P state;
+        public  P State { get { return state; } }
 
-        private Dictionary<Input, StateNode> children;
-        public  Dictionary<Input, StateNode> Children {
+        private Dictionary<T, AStarNode<P, T>> children;
+        public  Dictionary<T, AStarNode<P, T>> Children {
             get { return children;  }
             set { children = value; }
         }
 
-        public StateNode(StateNode parent, Input input, GameState state) {
+        public AStarNode(AStarNode<P, T> parent, T input, P state) {
             this.parent = parent;
             this.input = input;
             this.state = state;
 
-            this.children = new Dictionary<Input, StateNode> ();
+            this.children = new Dictionary<T, AStarNode<P, T>> ();
         }
 
-        public StateNode FirstAncestor () {
-            StateNode node;
+        public AStarNode<P, T> FirstAncestor () {
+            AStarNode<P, T> node;
 
             if (parent == null) {
                 Debug.WriteLine ("Returning the root!!!");
@@ -54,10 +55,10 @@ namespace awkwardsimulator
             return depth;
         }
 
-        public List<Tuple<Input, GameState>> ToPath() {
-            Stack<Tuple<Input, GameState>> stack = new Stack<Tuple<Input, GameState>> ();
+        public List<Tuple<T, P>> ToPath() {
+            Stack<Tuple<T, P>> stack = new Stack<Tuple<T, P>> ();
 
-            StateNode node = this;
+            AStarNode<P, T> node = this;
             while (node.Parent != null) {
                 stack.Push (Tuple.Create (node.Input, node.State));
                 node = node.Parent;
