@@ -67,8 +67,6 @@ namespace awkwardsimulator
                 paths.Remove (paths.First().Key);
             }
 
-            Debug.WriteLine ("Best Platform: {0}", best);
-
             return best.ToPath().Select(tup => tup.Item2).ToList();
         }
 

@@ -40,14 +40,15 @@ namespace awkwardsimulator
 		}
 
         Input input1, input2;
-        Task<Input> fAi1, fAi2;
-        Stopwatch aiWatch = new Stopwatch();
-        protected void startAiFutures() {
-            aiWatch.Reset ();
-            aiWatch.Start ();
-            fAi1 = Task.Factory.StartNew<Input>(() => ai1.nextInput (state));
-            fAi2 = Task.Factory.StartNew<Input>(() => ai2.nextInput (state));
+        List<Input> inputQ1, inputQ2;
+        Task<List<Input>> fAi1, fAi2;
+        protected void startFAi1(GameState state) {
+            fAi1 = Task.Factory.StartNew<List<Input>>(() => ai1.nextInputs (state));
         }
+        protected void startFAi2(GameState state) {
+            fAi2 = Task.Factory.StartNew<List<Input>> (() => ai2.nextInputs (state));
+        }
+
 
 		// load any non-graphic related content.  Calling base.Initialize will enumerate through any components
 		/// and initialize them as well.
@@ -64,9 +65,14 @@ namespace awkwardsimulator
 
             history = new List<GameState> ();
 
-            ai1 = new WaypointAStar (state, PlayerId.P1);
-            ai2 = new NullAI (state, PlayerId.P2);
-            startAiFutures ();
+            inputQ1 = inputQ2 = new List<Input> (){ new Input () };
+
+//            ai1 = new WaypointAStar (state, PlayerId.P1);
+            ai1 = new NullAI (state, PlayerId.P1);
+            ai2 = new WaypointAStar (state, PlayerId.P2);
+//            ai2 = new NullAI (state, PlayerId.P2);
+            startFAi1 (state);
+            startFAi2 (state);
 
 			base.Initialize ();
 		}
@@ -98,21 +104,33 @@ namespace awkwardsimulator
 			KeyboardState keyState = Keyboard.GetState ();
 			if (keyState.IsKeyDown(Keys.Escape)) { Exit (); }
 
-            if (true) {
+            if (false) {
                 Tuple<Input, Input> inputs = ReadKeyboardInputs (keyState);
                 input1 = inputs.Item1;
                 input2 = inputs.Item2;
-            } else if (aiWatch.ElapsedMilliseconds >= 0) {
-                input1 = fAi1.Result;
-                input2 = fAi2.Result;
+            } else  {
+                if (fAi1.IsCompleted) inputQ1 = fAi1.Result;
+                if (fAi2.IsCompleted) inputQ2 = fAi2.Result;
+
+                if (inputQ1.Count > 0) {
+                    input1 = inputQ1.First ();
+                    inputQ1.RemoveAt (0);
+                } else {
+                    inputQ1 = fAi1.Result;
+                }
+
+                if (inputQ2.Count > 0) {
+                    input2 = inputQ2.First ();
+                    inputQ2.RemoveAt (0);
+                } else {
+                    inputQ2 = fAi2.Result;
+                }
             }
 
             state = forwardModel.nextState (state, input1, input2);
 
-
-            if (fAi1.IsCompleted && fAi2.IsCompleted) {
-                startAiFutures ();
-            }
+            if (fAi1.IsCompleted) startFAi1 (state);
+            if (fAi2.IsCompleted) startFAi2 (state);
 
             history.Add (state);
 
@@ -141,10 +159,10 @@ namespace awkwardsimulator
 
             drawing.DrawPlayStatus (state.PlayStatus);
             drawing.DrawHeuristic (ai1, state, 20, 50);
-            drawing.DrawHeuristic (ai1, state, 20, 80);
+            drawing.DrawHeuristic (ai2, state, 20, 80);
 
             drawing.DrawPath (pas.PlatformPath(state.P1, state.Goal).Select (s => s.Center), Color.Maroon, 2);
-            drawing.DrawCircle (2, ((WaypointAStar)ai1).NextWaypoint(state), Color.Crimson);
+            drawing.DrawCircle (2, ((WaypointAStar)ai2).NextWaypoint(state), Color.Crimson);
 
             drawing.DrawPath (history.Select (s => s.P1.Coords), Color.Thistle, 2);
 

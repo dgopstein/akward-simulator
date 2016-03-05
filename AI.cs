@@ -44,7 +44,11 @@ namespace awkwardsimulator
             return lastState;
         }
 
-        abstract public Input nextInput(GameState state);
+        abstract public List<Input> nextInputs(GameState state);
+
+        public Input nextInput(GameState origState) {
+            return nextInputs (origState).First ();
+        }
     }
 
     public class NullAI : AI {
@@ -54,8 +58,8 @@ namespace awkwardsimulator
             return 0f;
         }
 
-        override public Input nextInput(GameState state) {
-            return new Input ();
+        override public List<Input> nextInputs(GameState state) {
+            return new List<Input>() { new Input () };
         }
     }
 }

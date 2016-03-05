@@ -71,7 +71,7 @@ namespace awkwardsimulator
 
     public class AStar : AI
     {
-        virtual protected int maxIters() {return 50;}
+        virtual protected int maxIters() {return 10;}
     
         protected SortedDictionary<double, StateNode> allPaths;
 
@@ -112,9 +112,11 @@ namespace awkwardsimulator
             return (float)heuristic(new StateNode(null, new Input(), state));
         }
 
-        public override Input nextInput (GameState origState)
+        override public List<Input> nextInputs (GameState origState)
         {
             var paths = new SortedDictionary<double, StateNode>();
+
+            int nRepetitions = 3;
 
             heuristic = heuristicGenerator ();
 
@@ -128,7 +130,7 @@ namespace awkwardsimulator
 
                         // repeat the same input a few times
                         GameState s = best.Value;
-                        for (int j = 0; j < 3; j++) {
+                        for (int j = 0; j < nRepetitions; j++) {
                             s = nextState(s, input);
                         }
 
@@ -138,9 +140,6 @@ namespace awkwardsimulator
                 foreach (var c in best.Children) {
                     paths.Add(heuristic (c.Value), c.Value);
                 }
-
-
-
                 best = paths.First().Value;
 
 //                Debug.WriteLine ("{0}: [{1}]", paths.Count,
@@ -150,7 +149,7 @@ namespace awkwardsimulator
 
             lock (allPaths) { allPaths = paths; }
 
-            var res = best.FirstAncestor ().Input;
+            var res = best.ToPath ().SelectMany (t => Enumerable.Repeat(t.Item1,nRepetitions)).ToList();
             return res;
         }
     }

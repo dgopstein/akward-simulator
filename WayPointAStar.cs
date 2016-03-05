@@ -11,7 +11,7 @@ namespace awkwardsimulator
 {
     public class WaypointAStar : AStar
     {
-        override protected int maxIters() {return 50;}
+        override protected int maxIters() {return 30;}
 
         PlatformAStar pas;
 
@@ -31,11 +31,8 @@ namespace awkwardsimulator
 
                 var nextWaypoint = NextWaypoint(s.Value);
 
-//                Debug.WriteLine("{0} {1}", pc, nextWaypoint);
-
-                double h = Heuristics.SqrtDistance (pc, nextWaypoint) +
+                double h = Heuristics.SqrtDistance(s.Value, pc, nextWaypoint) +
                            Vector2.Distance(nextWaypoint, s.Value.Goal.Center);
-
 
                 h =  Math.Truncate(h * 1000d) / 1000d; // remove fractional noise
                 h += (0.0000001 * uniqueId++); // add marginal unique id to avoid collisions
