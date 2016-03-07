@@ -308,10 +308,20 @@ namespace awkwardsimulator
             //new Color(000, 000, 000),
         };
 
-        public void DrawPaths(IEnumerable<IEnumerable<Vector2>> paths) {
+        public void DrawPaths(IEnumerable<Tuple<double, IEnumerable<Vector2>>> paths) {
+            if (paths.Count() == 0) return;
+
             int i = 0;
-            foreach (var path in paths) {
-                var c = colors [i++ % colors.Count ()] * 0.8f;
+
+            var minH = paths.Min (x => x.Item1);
+            var maxH = paths.Max (x => x.Item1);
+
+            foreach (var tup in paths) {
+                var h = (tup.Item1 - minH) / (maxH - minH);
+                var path = tup.Item2;
+
+                var c = HeatmapColor(1 - h);
+
                 DrawPath (path, c, thickness: 2);
             }
         }
@@ -358,6 +368,33 @@ namespace awkwardsimulator
             foreach (var tex in triangleTexturesCache.Values) {
                 tex.Dispose();
             }
+        }
+
+        private static List<Color> HeatmapColors = new List<Color>() {
+            Color.Blue, Color.Cyan, Color.Green, Color.Yellow, Color.Red};
+
+        private static Color InterpolateColors(List<Color> colors, double value) {
+            int nColors = colors.Count ();
+            int index = (int)Math.Truncate (value * (nColors - 1));
+            var distance = 1.0 / nColors;
+            var d = (value % distance) / distance;
+
+            var low = colors [index];
+            var high = colors [index + (index == nColors - 1 ? 0 : 1)];
+
+//            Debug.WriteLine ("{2} {0} {1}", index, d, value);
+//            Debug.WriteLine ("{0} {1}", low, high);
+
+            var c = new Color (
+                (byte) (d * low.R + (1 - d) * high.R),
+                (byte) (d * low.G + (1 - d) * high.G),
+                (byte) (d * low.B + (1 - d) * high.B));
+
+            return c;
+        }
+
+        private static Color HeatmapColor(double v) {
+            return InterpolateColors(HeatmapColors, v);
         }
 	}
 }

@@ -79,13 +79,22 @@ namespace awkwardsimulator
             allPaths = new SortedDictionary<double, StateNode> ();
         }
 
-        override public List<List<Tuple<Input, GameState>>> BestPaths() {
+        override public List<Tuple<double, List<Tuple<Input, GameState>>>> BestPaths(int n) {
             List<KeyValuePair<double,StateNode>> myPaths;
             lock(allPaths) {
-                myPaths = allPaths.Take (5).ToList();
+                myPaths = allPaths.Take (n).ToList();
             }
 
-            return myPaths.Select(sn => sn.Value.ToPath()).ToList();
+            return myPaths.Select(sn => Tuple.Create(sn.Key, sn.Value.ToPath())).ToList();
+        }
+
+        override public List<Tuple<double, List<Tuple<Input, GameState>>>> AllPaths() {
+            List<KeyValuePair<double,StateNode>> myPaths;
+            lock(allPaths) {
+                myPaths = allPaths.ToList();
+            }
+
+            return myPaths.Select(sn => Tuple.Create(sn.Key, sn.Value.ToPath())).ToList();
         }
 
         protected virtual Func<StateNode, double>  heuristicGenerator() {

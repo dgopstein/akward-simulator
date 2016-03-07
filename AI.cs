@@ -21,8 +21,12 @@ namespace awkwardsimulator
 
         abstract public float Heuristic (GameState state);
 
-        virtual public List<List<Tuple<Input, GameState>>> BestPaths() {
-            return new List<List<Tuple<Input, GameState>>> ();
+        virtual public List<Tuple<double, List<Tuple<Input, GameState>>>> BestPaths(int n) {
+            return new List<Tuple<double, List<Tuple<Input, GameState>>>> ();
+        }
+
+        virtual public List<Tuple<double, List<Tuple<Input, GameState>>>> AllPaths() {
+            return new List<Tuple<double, List<Tuple<Input, GameState>>>> ();
         }
 
         protected GameState nextState(GameState game, Input move) {
