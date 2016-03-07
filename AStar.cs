@@ -71,7 +71,7 @@ namespace awkwardsimulator
 
     public class AStar : AI
     {
-        virtual protected int maxIters() {return 10;}
+        virtual protected int maxIters() {return 30;}
     
         protected SortedDictionary<double, StateNode> allPaths;
 

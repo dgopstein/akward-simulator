@@ -11,7 +11,7 @@ namespace awkwardsimulator
 {
     public class WaypointAStar : AStar
     {
-        override protected int maxIters() {return 30;}
+        override protected int maxIters() {return 50;}
 
         PlatformAStar pas;
 

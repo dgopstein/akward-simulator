@@ -55,7 +55,7 @@ namespace awkwardsimulator
         public NullAI(GameState state, PlayerId pId) : base(state, pId) { }
 
         override public float Heuristic(GameState state) {
-            return 0f;
+            return -1337f;
         }
 
         override public List<Input> nextInputs(GameState state) {

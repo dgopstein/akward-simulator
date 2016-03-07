@@ -47,7 +47,7 @@ namespace awkwardsimulator
             this.gameDimensions = gameDimensions;
 
 			blankTexture = new Texture2D(graphicsDevice, 1, 1);
-			blankTexture.SetData(new[] { Color.White });
+            blankTexture.SetData(new[] { Color.White });
 		}
 
         Matrix debugProjMat;
@@ -311,7 +311,8 @@ namespace awkwardsimulator
         public void DrawPaths(IEnumerable<IEnumerable<Vector2>> paths) {
             int i = 0;
             foreach (var path in paths) {
-                DrawPath (path, colors [i++ % colors.Count()], 1);
+                var c = colors [i++ % colors.Count ()] * 0.8f;
+                DrawPath (path, c, thickness: 2);
             }
         }
 
@@ -341,12 +342,22 @@ namespace awkwardsimulator
                     (int)edge.ToVector2().Length(), //sb will strech the texture to fill this rectangle
                     thickness), //width of line, change this to make thicker line
                 null,
-                c, //colour of line
-                angle,     //angle of line (calulated above)
-                new Vector2(0, 0), // point in line about which to rotate
-                SpriteEffects.None,
-                0);
+                color: c, //colour of line
+                rotation: angle,     //angle of line (calulated above)
+                origin: new Vector2(0, 0), // point in line about which to rotate
+                effects: SpriteEffects.None,
+                layerDepth: 0);
 
+        }
+
+        public void DisposeTextures() {
+            blankTexture.Dispose ();
+            foreach (var tex in circleTexturesCache.Values) {
+                tex.Dispose ();
+            }
+            foreach (var tex in triangleTexturesCache.Values) {
+                tex.Dispose();
+            }
         }
 	}
 }
