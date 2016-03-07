@@ -5,6 +5,9 @@ using System.Diagnostics;
 
 
 using StateNode = awkwardsimulator.AStarNode<awkwardsimulator.GameState, awkwardsimulator.Input>;
+using Heuristic = System.Func<awkwardsimulator.GameState, awkwardsimulator.Player, float>;
+using StateNodeScorer = System.Func<awkwardsimulator.AStarNode<awkwardsimulator.GameState, awkwardsimulator.Input>, awkwardsimulator.Player, double>;
+
 
 namespace awkwardsimulator
 {
@@ -75,7 +78,7 @@ namespace awkwardsimulator
     
         protected SortedDictionary<double, StateNode> allPaths;
 
-        public AStar (GameState state, PlayerId pId) : base(state, pId) {
+        public AStar (GameState state, PlayerId pId, Heuristic heuristic) : base(state, pId, heuristic) {
             allPaths = new SortedDictionary<double, StateNode> ();
         }
 
@@ -97,13 +100,13 @@ namespace awkwardsimulator
             return myPaths.Select(sn => Tuple.Create(sn.Key, sn.Value.ToPath())).ToList();
         }
 
-        protected virtual Func<StateNode, double>  heuristicGenerator() {
+        protected virtual Func<StateNode, Player, double>  scorerGenerator(Heuristic heuristic) {
             int uniqueId = 1;
-            Func<StateNode, double> heuristic = (s) => {
-                double h = Heuristics.heuristic (this.thisPlayer (s.Value), s.Value);
+            Func<StateNode, Player, double> scorer = (s, p) => {
+                double h = heuristic (s.Value, p);
 
                 h =  Math.Truncate(h * 1000d) / 1000d; // remove fractional noise
-                
+
                 h += (0.0000001 * uniqueId++); // add marginal unique id to avoid collisions
                 
                 h += 1 * s.Depth(); // discourage long paths
@@ -111,26 +114,26 @@ namespace awkwardsimulator
                 return h;
             };
 
-            return heuristic;
+            return scorer;
         }
 
-        protected Func<StateNode, double> heuristic;
+        protected StateNodeScorer stateNodeScorer;
         override public float Heuristic(GameState state) {
-            if (heuristic == null) heuristic = heuristicGenerator ();
+            if (stateNodeScorer == null) stateNodeScorer = scorerGenerator (Heuristics.heuristic);
 
-            return (float)heuristic(new StateNode(null, new Input(), state));
+            return (float)stateNodeScorer(new StateNode(null, new Input(), state), this.thisPlayer(state));
         }
 
-        override public List<Input> nextInputs (GameState origState)
+        override public List<Input> nextInputs (GameState origState, Player player, Heuristic heuristic)
         {
             var paths = new SortedDictionary<double, StateNode>();
 
             int nRepetitions = 3;
 
-            heuristic = heuristicGenerator ();
+            stateNodeScorer = scorerGenerator (heuristic);
 
             var root = new StateNode (null, new Input(), origState);
-            paths.Add(heuristic(root), root);
+            paths.Add(stateNodeScorer(root, player), root);
             var best = root;
 
             for (int i = 0; i < maxIters() && !best.Value.PlayStatus.isWon() && paths.Count > 0; i++) {
@@ -147,7 +150,7 @@ namespace awkwardsimulator
                     });
 
                 foreach (var c in best.Children) {
-                    paths.Add(heuristic (c.Value), c.Value);
+                    paths.Add(stateNodeScorer (c.Value, player), c.Value);
                 }
                 best = paths.First().Value;
 
@@ -160,6 +163,10 @@ namespace awkwardsimulator
 
             var res = best.ToPath ().SelectMany (t => Enumerable.Repeat(t.Item1,nRepetitions)).ToList();
             return res;
+        }
+
+        override protected Input predictPartnerInput(GameState state, Player player, Heuristic heuristic) {
+            return nextInputs (state, player, heuristic).First();
         }
     }
 }

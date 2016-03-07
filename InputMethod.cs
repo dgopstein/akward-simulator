@@ -97,7 +97,7 @@ namespace awkwardsimulator
 
             //            ai1 = new WaypointAStar (state, PlayerId.P1);
             ai1 = new NullAI (state, PlayerId.P1);
-            ai2 = new WaypointAStar (state, PlayerId.P2);
+            ai2 = new WaypointAStar (state, PlayerId.P2, Heuristics.heuristic);
             //            ai2 = new NullAI (state, PlayerId.P2);
             startFAi1 (state);
             startFAi2 (state);

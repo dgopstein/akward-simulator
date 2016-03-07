@@ -130,9 +130,6 @@ namespace awkwardsimulator
 //            drawing.DrawPath (history.Select (s => s.P1.Coords), Color.Thistle, 2);
             drawing.DrawPath (history.Select (s => s.P2.Coords + (Player.Size *.5f)), Color.Thistle, 2);
 
-//            drawing.DrawPaths (aiInput.ai1.BestPaths (5).Select(p => p.Select(e => e.Item2.P1.Coords)));
-//            drawing.DrawPaths (aiInput.ai2.BestPaths (5).Select(p => p.Select(e => e.Item2.P2.Coords)));
-
             drawing.DrawPaths (aiInput.ai1.AllPaths().Select(t =>
                 Tuple.Create(t.Item1, t.Item2.Select(e => e.Item2.P1.Coords))));
             drawing.DrawPaths (aiInput.ai2.AllPaths().Select(t =>

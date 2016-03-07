@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using StateInput = System.Tuple<awkwardsimulator.GameState, awkwardsimulator.Input>;
-using SMath = System.Math;
+using Heuristic = System.Func<awkwardsimulator.GameState, awkwardsimulator.Player, float>;
 
 namespace awkwardsimulator
 {
@@ -13,10 +13,12 @@ namespace awkwardsimulator
         public PlayerId pId;
 
         private ForwardModel forwardModel;
+        Func<GameState, Player, float> heuristic;
 
-        public AI(GameState state, PlayerId pId) {
+        public AI(GameState state, PlayerId pId, Func<GameState, Player, float>  heuristic) {
             this.pId = pId;
             this.forwardModel = new ForwardModel(state);
+            this.heuristic = heuristic;
         }
 
         abstract public float Heuristic (GameState state);
@@ -29,8 +31,8 @@ namespace awkwardsimulator
             return new List<Tuple<double, List<Tuple<Input, GameState>>>> ();
         }
 
-        protected GameState nextState(GameState game, Input move) {
-            return nextState(game, move, move); //TODO don't just copy this-player's move
+        protected GameState nextState(GameState state, Input move) {
+            return nextState(state, move, predictPartnerInput(state, this.otherPlayer(state), Heuristics.heuristic));
         }
 
         protected GameState nextState(GameState game, Input thisPlayerMove, Input otherPlayerMove) {
@@ -48,7 +50,13 @@ namespace awkwardsimulator
             return lastState;
         }
 
-        abstract public List<Input> nextInputs(GameState state);
+        abstract protected Input predictPartnerInput (GameState state, Player p, Heuristic heuristic);
+
+        abstract public List<Input> nextInputs(GameState state, Player p, Heuristic heuristic);
+
+        public List<Input> nextInputs (GameState origState) {
+            return nextInputs (origState, this.thisPlayer(origState), Heuristics.heuristic);
+        }
 
         public Input nextInput(GameState origState) {
             return nextInputs (origState).First ();
@@ -56,14 +64,18 @@ namespace awkwardsimulator
     }
 
     public class NullAI : AI {
-        public NullAI(GameState state, PlayerId pId) : base(state, pId) { }
+        public NullAI(GameState state, PlayerId pId) : base(state, pId, Heuristics.heuristic) { }
 
         override public float Heuristic(GameState state) {
             return -1337f;
         }
 
-        override public List<Input> nextInputs(GameState state) {
+        override public List<Input> nextInputs(GameState state, Player player, Func<GameState, Player, float> heuristic) {
             return new List<Input>() { new Input () };
+        }
+
+        override protected Input predictPartnerInput(GameState state, Player player, Heuristic heuristic) {
+            return new Input ();
         }
     }
 }
