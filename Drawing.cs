@@ -164,16 +164,60 @@ namespace awkwardsimulator
         }
 
         public void DrawGameObjectCircle(GameObjectCircle go, Color c) {
-//            Point pt = RasterizeCoords (go);
-//            Point dim = RasterizeDims (go);
-//
-//            spriteBatch.Draw (FilledCircle(dim.X), (pt - new Point(dim.X, 0)).ToVector2(), c);
             DrawCircle(go.Radius, go.Center, c);
         }
 
-//        http://stackoverflow.com/questions/2983809/how-to-draw-circle-with-specific-color-in-xna
-//        public Texture2D CreateCircle(int radius)
+        public void DrawTriangle(Vector2 size, Vector2 pos, float rotation, Color c) {
+            Point pt = RasterizeCoords (pos);
+            Point dim = RasterizeDims (size);
 
+            var triangle = FilledTriangle (dim.X, dim.Y);
+
+            spriteBatch.Draw (triangle, position: pt.ToVector2(), rotation: rotation,
+                color: c, origin: .5f * dim.ToVector2());
+
+        }
+
+        public void DrawButtonArrow(Player p, Input input, Color c) {
+            var size = new Vector2 (1f, 0.5f) * Player.Size;
+
+            double rotation = 0;
+            Vector2 offset;
+
+//            Debug.WriteLine ("{0}: {1}", input.shortString(), input.ToInt);
+
+            switch (input.ToInt) {
+            case 1: //Input.Up.ToInt:
+                rotation = 0;
+                offset = new Vector2 (0, 1);
+                break;
+            case 2: //Input.Right.ToInt:
+                rotation = 0.5;
+                offset = new Vector2 (1, 0);
+                break;
+            case 3: //Input.UpRight.ToInt:
+                rotation = 0.25;
+                offset = new Vector2 (1, 1);
+                break;
+            case 4: //Input.Left.ToInt:
+                rotation = -.5;
+                offset = new Vector2 (-1, 0);
+                break;
+            case 5: //Input.UpLeft.ToInt:
+                rotation = -.25;
+                offset = new Vector2 (-1, 1);
+                break;
+            default: // This can happen when pressing left/right at the same time
+                rotation = 1;
+                offset = new Vector2 (0, -1);
+//                throw new KeyNotFoundException ();
+                break;
+            }
+
+            DrawTriangle (size, p.Center + (offset * Player.Size), (float)(Math.PI*rotation), c);
+        }
+
+//        http://stackoverflow.com/questions/2983809/how-to-draw-circle-with-specific-color-in-xna
         Dictionary<int, Texture2D> circleTexturesCache = new Dictionary<int, Texture2D>();
         public Texture2D FilledCircle(int radius) {
             Texture2D texture;
@@ -210,6 +254,40 @@ namespace awkwardsimulator
             return texture;
         }
 
+        Dictionary<Tuple<int, int>, Texture2D> triangleTexturesCache = new Dictionary<Tuple<int, int>, Texture2D>();
+        public Texture2D FilledTriangle(int width, int height) {
+            Texture2D texture;
+
+            var key = Tuple.Create (width, height);
+
+            if (triangleTexturesCache.ContainsKey (key)) {
+                texture = triangleTexturesCache [key];
+            } else {
+                texture = CreateFilledTriangle (width, height);
+                triangleTexturesCache [key] = texture;
+            }
+
+            return texture;
+        }
+        private Texture2D CreateFilledTriangle(int width, int height) {
+            Texture2D texture = new Texture2D(GraphicsDevice, width, height);
+
+            Color[] data = new Color[width * height];
+
+            for (int i = 0; i < data.Length; i++) {
+                int row = i / height;
+                int col = i % width;
+
+                var center = width / 2;
+                var dist = Math.Abs (center - col);
+
+                data[i] = (dist <= row/2) ? Color.White : Color.Transparent;
+            }
+
+            texture.SetData(data);
+
+            return texture;
+        }
         Color[] colors = new Color[] {
             new Color(255, 255, 000),
             new Color(255, 127, 000),

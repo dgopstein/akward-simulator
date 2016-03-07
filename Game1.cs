@@ -104,7 +104,7 @@ namespace awkwardsimulator
 			KeyboardState keyState = Keyboard.GetState ();
 			if (keyState.IsKeyDown(Keys.Escape)) { Exit (); }
 
-            if (false) {
+            if (true) {
                 Tuple<Input, Input> inputs = ReadKeyboardInputs (keyState);
                 input1 = inputs.Item1;
                 input2 = inputs.Item2;
@@ -155,6 +155,11 @@ namespace awkwardsimulator
             drawing.DrawPlayer (state.P1);
             drawing.DrawPlayer (state.P2);
 
+            var c1 = Color.Black;
+            var c2 = Color.Black;
+            drawing.DrawButtonArrow (state.P1, input1, c1);
+            drawing.DrawButtonArrow (state.P2, input2, c2);
+
             drawing.DrawHealth (state.Health);
 
             drawing.DrawPlayStatus (state.PlayStatus);
@@ -178,15 +183,19 @@ namespace awkwardsimulator
 		}
 
 		private Tuple<Input, Input> ReadKeyboardInputs(KeyboardState newKeyboardState) {
-			Input input1 = new Input(), input2 = new Input();
+            bool left1, right1, up1, left2, right2, up2;
+            left1 = right1 = up1 = left2 = right2 = up2 = false;
 
-			if (newKeyboardState.IsKeyDown (Keys.A    )) { input1.left  = true; }
-			if (newKeyboardState.IsKeyDown (Keys.D    )) { input1.right = true; }
-			if (newKeyboardState.IsKeyDown (Keys.W    )) { input1.up    = true; }
+			if (newKeyboardState.IsKeyDown (Keys.A    )) { left1  = true; }
+			if (newKeyboardState.IsKeyDown (Keys.D    )) { right1 = true; }
+			if (newKeyboardState.IsKeyDown (Keys.W    )) { up1   = true; }
 
-			if (newKeyboardState.IsKeyDown (Keys.Left )) { input2.left  = true; }
-			if (newKeyboardState.IsKeyDown (Keys.Right)) { input2.right = true; }
-			if (newKeyboardState.IsKeyDown (Keys.Up   )) { input2.up    = true; }
+			if (newKeyboardState.IsKeyDown (Keys.Left )) { left2  = true; }
+			if (newKeyboardState.IsKeyDown (Keys.Right)) { right2 = true; }
+			if (newKeyboardState.IsKeyDown (Keys.Up   )) { up2    = true; }
+
+            Input input1 = new Input (left1, right1, up1);
+            Input input2 = new Input (left2, right2, up2);
 
 			return Tuple.Create (input1, input2);
 		}

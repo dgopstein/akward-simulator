@@ -4,20 +4,20 @@ using System.Collections.Generic;
 namespace awkwardsimulator
 {
 	public class Input {
-		public bool left;
-		public bool right;
-		public bool up;
+		public readonly bool left;
+        public readonly bool right;
+        public readonly bool up;
 
-		public Input() {
-			left = false;
-			right = false;
-			up = false;
-		}
+        public readonly int ToInt;
+
+        public Input() : this(false, false, false) {}
 
 		public Input(bool left, bool right, bool up) {
 			this.left  = left;
 			this.right = right;
 			this.up    = up;
+
+            ToInt = InputToInt (left, right, up);
 		}
 
 		override public string ToString() {
@@ -104,17 +104,27 @@ namespace awkwardsimulator
 			return left.GetHashCode() ^ right.GetHashCode() ^ up.GetHashCode();
 		}
 
+        private static int InputToInt(bool left, bool right, bool up) {
+            Func<bool, int> b2i = b => b ? 1 : 0;
+
+            return b2i (left) << 2 |
+                b2i (right) << 1 |
+                b2i (up);
+        }
+
 		public Input Clone() {
 			return new Input(left, right, up);
 		}
 
+        public static Input Noop = new Input (false, false, false);
+        public static Input Up = new Input (false, false, true);
+        public static Input Right = new Input(false,  true, false);
+        public static Input UpRight = new Input(false,  true,  true);
+        public static Input Left = new Input(true,  false, false);
+        public static Input UpLeft = new Input (true, false, true);
+
         public static List<Input> All = new List<Input> () {
-            new Input(false, false, false),
-            new Input(false, false,  true),
-            new Input(false,  true, false),
-            new Input(false,  true,  true),
-            new Input(true,  false, false),
-            new Input(true,  false,  true)
+            Noop, Up, Right, UpRight, Left, UpLeft
         };
 	}
 }
