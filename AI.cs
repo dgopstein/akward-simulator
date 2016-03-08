@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using StateInput = System.Tuple<awkwardsimulator.GameState, awkwardsimulator.Input>;
-using Heuristic = System.Func<awkwardsimulator.GameState, awkwardsimulator.PlayerId, float>;
+//using Heuristic = System.Func<awkwardsimulator.GameState, awkwardsimulator.PlayerId, float>;
 
 namespace awkwardsimulator
 {
@@ -13,7 +13,9 @@ namespace awkwardsimulator
         public PlayerId pId;
 
         private ForwardModel forwardModel;
-        public Heuristic heuristic;
+
+        private Heuristic heuristic;
+        public Heuristic Heuristic { get { return heuristic; } }
 
         public AI(GameState state, PlayerId pId, Heuristic heuristic) {
             this.pId = pId;
@@ -62,7 +64,7 @@ namespace awkwardsimulator
     }
 
     public class NullAI : AI {
-        public NullAI(GameState state, PlayerId pId) : base(state, pId, Heuristics.linearHealthHeuristic) { }
+        public NullAI(GameState state, PlayerId pId) : base(state, pId, new WaypointHeuristic(state, pId)) { }
 
         override public List<Input> nextInputs(GameState state, PlayerId pId, Heuristic heuristic) {
             return new List<Input>() { new Input () };

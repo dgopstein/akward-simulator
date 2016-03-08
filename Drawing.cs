@@ -151,7 +151,7 @@ namespace awkwardsimulator
         }
 
         public void DrawHeuristic(AI ai, GameState state, int x, int y) {
-            var heuristic = ai.heuristic(state, ai.pId);
+            var heuristic = ai.Heuristic.Score(state, ai.pId);
             var str = String.Format ("P{0}: {1:F1}", ai.thisPlayer(state).Id, heuristic);
             spriteBatch.DrawString(SpriteFont, str, new Vector2(x, y), Color.DarkViolet);
         }

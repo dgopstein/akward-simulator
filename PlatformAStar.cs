@@ -21,18 +21,33 @@ namespace awkwardsimulator
             this.platformGraph = BuildPlatformGraph (platforms);
         }
 
-        public GameObject NextPlatform(GameObject start, GameObject end) {
-            var path = PlatformPath (start, end);
+        public GameObject NextPlatform(Player player, GameObject end) {
+            var path = PlatformPath (nearestPlatform(player, Platforms), end);
 
             var next = (path.Count > 1) ? path [1] : path [0];
 
             return next;
         }
 
+//        public GameObject NextPlatform(Player player, Vector2 start, GameObject end) {
+//            var path = PlatformPath (nearestPlatform(start, Platforms), end);
+//
+//            var nearestPlat = nearestPlatform (player, Platforms);
+//
+//            bool approachingNearest = SameDirection (player.Velocity, nearestPlat.SurfaceCenter - player.SurfaceCenter) &&
+//                                      (player.RightBoundary < nearestPlat.LeftBoundary ||
+//                                       player.LeftBoundary > nearestPlat.RightBoundary);
+//
+//            var next = (path.Count > 1 && !approachingNearest) ? path [1] : path [0];
+//
+//            return next;
+//        }
+
+//        //todo: return all platforms and an index because we need to be able to see where we came from
         public List<GameObject> PlatformPath(GameObject start, GameObject end) {
             var startPlat = nearestPlatform (start.SurfaceCenter, Platforms);
 
-            var endReachablePlatforms = Platforms.FindAll (p => reachable (p, end));
+            var endReachablePlatforms = Platforms.FindAll (p => adjacent (p, end));
 
 //            Debug.WriteLine ("all platforms: "+ PlatListStr (Platforms));
 //            Debug.WriteLine ("end reachable: "+ PlatListStr (endReachablePlatforms));
@@ -70,25 +85,35 @@ namespace awkwardsimulator
             return best.ToPath().Select(tup => tup.Item2).ToList();
         }
 
-        private Platform nearestPlatform(Vector2 point, List<Platform> platforms) {
-            // Don't return platforms above the given point
-            var lowerPlats = platforms.ToList ()
-                .FindAll (plat => plat.Y <= point.Y); // Sometimes the Y value waivers, so give a 1pt margin of error
+        private Boolean unreachable(Platform plat, Player player) {
+            return true;
+        }
 
-            if (lowerPlats.Count == 0) {
-                lowerPlats = platforms.ToList ();
+        private float distanceScore(Vector2 point, Platform plat) {
+            var delta = Vector2.Subtract (plat.Center, point);
+
+            var scaledDelta = delta * new Vector2 (2, 1); // weight X distance more than Y distance
+
+            return scaledDelta.Length ();
+        }
+
+        private Platform nearestPlatform(Player player, List<Platform> platforms) {
+            // Eliminate platforms we've fallen below
+            var lowerPlats = platforms.FindAll (plat => !(player.Velocity.Y <= 0 && plat.Y > player.SurfaceCenter.Y));
+
+            Platform nearest;
+
+            if (lowerPlats.Count > 0) {
+                nearest = lowerPlats.MinBy (plat => distanceScore(player.SurfaceCenter, plat));
+            } else {
+                nearest = platforms.First ();
             }
 
-            return lowerPlats.MinBy(plat => {
+            return nearest;
+        }
 
-//                var delta = Vector2.Subtract(nearestPoint(point, plat.Surface), point);
-                var delta = Vector2.Subtract(plat.Center, point);
-
-
-                var scaledDelta = delta * new Vector2(2, 1); // weight X distance more than Y distance
-
-                return scaledDelta.Length();
-            });
+        private Platform nearestPlatform(Vector2 point, List<Platform> platforms) {
+            return platforms.MinBy (plat => distanceScore(point, plat));
         }
 
         private static Vector2 nearestPoint(Vector2 point, List<Vector2> list) {
@@ -101,7 +126,7 @@ namespace awkwardsimulator
             foreach (var plat1 in platforms) {
                 HashSet<Platform> hs = new HashSet<Platform> ();
                 foreach (var plat2 in platforms) {
-                    if (plat1 != plat2 && reachable (plat1, plat2)) {
+                    if (plat1 != plat2 && adjacent (plat1, plat2)) {
                         hs.Add (plat2);
                     }
                 }
@@ -123,7 +148,7 @@ namespace awkwardsimulator
             return s;
         }
 
-        private static bool reachable(GameObject go1, GameObject go2) {
+        private static bool adjacent(GameObject go1, GameObject go2) {
             int maxX = 20, maxY = 15;
 
             return go1.Corners.SelectMany ( a =>

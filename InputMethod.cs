@@ -3,6 +3,9 @@ using Microsoft.Xna.Framework.Input;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive;
+using System.Reactive.Linq;
+
 
 namespace awkwardsimulator
 {
@@ -55,7 +58,10 @@ namespace awkwardsimulator
         public AI ai1, ai2;
 
 
-        public AiInput(GameState state) : base(state) {}
+        public AiInput(AI ai1, AI ai2, GameState state) : base(state) {
+            this.ai1 = ai1;
+            this.ai2 = ai2;
+        }
 
         abstract public void Update (GameState state);
     }
@@ -63,7 +69,7 @@ namespace awkwardsimulator
     class SingleAiInput : AiInput {
         protected Task<Input> fAi1, fAi2;
 
-        public SingleAiInput(GameState state) : base(state) {
+        public SingleAiInput(AI ai1, AI ai2, GameState state) : base(ai1, ai2, state) {
             startFAis(state);
         }
 
@@ -92,11 +98,8 @@ namespace awkwardsimulator
             fAi2 = Task.Factory.StartNew<List<Input>> (() => ai2.nextInputs (state));
         }
 
-        public ListAiInput(AI ai1, AI ai2, GameState state) : base(state) {
+        public ListAiInput(AI ai1, AI ai2, GameState state) : base(ai1, ai2, state) {
             inputQ1 = inputQ2 = new List<Input> (){ new Input () };
-
-            this.ai1 = ai1;
-            this.ai2 = ai2;
 
             startFAi1 (state);
             startFAi2 (state);

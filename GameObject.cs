@@ -16,6 +16,9 @@ namespace awkwardsimulator
         public float W { get { return Size.X; } }
         public float H { get { return Size.Y; } }
 
+        public float LeftBoundary  { get { return X;     } }
+        public float RightBoundary { get { return X + W; } }
+
         virtual public List<Vector2> Surface { get {
                 return new List<Vector2> () {
                     new Vector2 (X, Y + H),

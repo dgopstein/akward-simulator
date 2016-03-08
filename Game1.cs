@@ -43,7 +43,6 @@ namespace awkwardsimulator
             state = Level.Level1;
 
             pas = new PlatformAStar (state.Platforms);
-            Debug.WriteLine (PlatformAStar.PlatListStr(pas.PlatformPath(state.P1, state.Goal)));
 
 			forwardModel = new ForwardModel (state);
 
@@ -51,12 +50,13 @@ namespace awkwardsimulator
 
             humanInput = new HumanInput (state);
             aiInput = new ListAiInput (
+//            aiInput = new SingleAiInput (
                 new NullAI(state, PlayerId.P1),
-                new AStar (state, PlayerId.P2, Heuristics.WaypointDistance),
+                new AStar (state, PlayerId.P2, new WaypointHeuristic(state, PlayerId.P2)),
                 state);
 
-            inputMethod = humanInput;
-//            inputMethod = aiInput;
+//            inputMethod = humanInput;
+            inputMethod = aiInput;
 
 			base.Initialize ();
 		}
@@ -78,21 +78,35 @@ namespace awkwardsimulator
 			spriteBatch.Dispose();
 			drawing.DisposeTextures();
 		}
-			
+
+        bool spaceHeld = false;
+        private bool isSpaceTapped(KeyboardState keyState) {
+            bool ret  = keyState.IsKeyDown (Keys.Space) && !spaceHeld;
+            spaceHeld = keyState.IsKeyDown (Keys.Space);
+
+//            return ret; 
+            return ret || true;
+        }
+
 		// checking for collisions, gathering input, and playing audio.
 		protected override void Update (GameTime gameTime)
 		{
-            if (Keyboard.GetState ().IsKeyDown(Keys.Escape)) { Exit (); }
+            KeyboardState keyState = Keyboard.GetState ();
 
-            Tuple<Input, Input> inputs = inputMethod.Inputs ();
+            if (keyState.IsKeyDown (Keys.Escape)) {
+                Exit ();
+            } else if (isSpaceTapped(keyState)) {
+                Tuple<Input, Input> inputs = inputMethod.Inputs ();
 
-            state = forwardModel.nextState (state, inputs.Item1, inputs.Item2);
+                Debug.WriteLine ("{0}", inputs.Item2);
+                state = forwardModel.nextState (state, inputs.Item1, inputs.Item2);
 
-            aiInput.Update (state); // Always update AiInput because it calculates pretty pictures
+                aiInput.Update (state); // Always update AiInput because it calculates pretty pictures
 
-            history.Add (state);
+                history.Add (state);
+            }
 
-			base.Update (gameTime);
+            base.Update (gameTime);
 		}
 			
 		/// This is called when the game should draw itself.
@@ -127,7 +141,7 @@ namespace awkwardsimulator
             drawing.DrawPos (state.P2, 20, 140);
 
             drawing.DrawPath (pas.PlatformPath(state.P2, state.Goal).Select (s => s.Center), Color.Maroon, 2);
-            drawing.DrawCircle (2, Heuristics.NextWaypoint(state, PlayerId.P2), Color.Crimson);
+            drawing.DrawCircle (2, ((WaypointHeuristic)aiInput.ai2.Heuristic).NextWaypoint(state), Color.Crimson);
 
 //            drawing.DrawPath (history.Select (s => s.P1.Coords), Color.Thistle, 2);
             drawing.DrawPath (history.Select (s => s.P2.Coords + (Player.Size *.5f)), Color.Thistle, 2);

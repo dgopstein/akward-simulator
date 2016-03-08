@@ -4,3 +4,6 @@
 /Users/dgopstein/nyu/awkward_simulator/packages/FarseerPhysics.MonoGame.Unofficial.3.5.0/lib/FarseerPhysics MonoGame.dll
 /Users/dgopstein/nyu/awkward_simulator/packages/OptimizedPriorityQueue.2.0.0/lib/net45/Priority Queue.dll
 /Users/dgopstein/nyu/awkward_simulator/packages/morelinq.1.4.0/lib/net35/MoreLinq.dll
+/Users/dgopstein/nyu/awkward_simulator/packages/Rx-Interfaces.2.2.5/lib/net45/System.Reactive.Interfaces.dll
+/Users/dgopstein/nyu/awkward_simulator/packages/Rx-Core.2.2.5/lib/net45/System.Reactive.Core.dll
+/Users/dgopstein/nyu/awkward_simulator/packages/Rx-Linq.2.2.5/lib/net45/System.Reactive.Linq.dll

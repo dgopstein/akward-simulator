@@ -6,7 +6,7 @@ using System.Diagnostics;
 
 using StateNode = awkwardsimulator.AStarNode<awkwardsimulator.GameState, awkwardsimulator.Input>;
 using StateNodeScorer = System.Func<awkwardsimulator.AStarNode<awkwardsimulator.GameState, awkwardsimulator.Input>, awkwardsimulator.PlayerId, double>;
-using Heuristic = System.Func<awkwardsimulator.GameState, awkwardsimulator.PlayerId, float>;
+//using Heuristic = System.Func<awkwardsimulator.GameState, awkwardsimulator.PlayerId, float>;
 
 
 
@@ -104,15 +104,15 @@ namespace awkwardsimulator
             StateNodeScorer scorer = (s, pId) => {
                 var state = s.Value;
 
-                double h = heuristic (state, pId);
+                double h = heuristic.Score (state, pId);
 
                 h =  Math.Truncate(h * 1000d) / 1000d; // remove fractional noise
 
                 h += (0.0000001 * uniqueId++); // add marginal unique id to avoid collisions
                 
-                h += 1 * s.Depth(); // discourage long paths
+//                h += 1 * s.Depth(); // discourage long paths
 
-//                Debug.WriteLine("[{0}] {1}: {2}", s.Depth(), s.Input, h);
+//                Debug.WritreeLine("[{0}] {1}: {2}", s.Depth(), s.Input, h);
 
                 return h;
             };
@@ -133,7 +133,7 @@ namespace awkwardsimulator
             paths.Add(stateNodeScorer(root, pId), root);
             var best = root;
 
-            int maxIters = 50;
+            int maxIters = 10;
             int nRepetitions = 3;
 
             for (int i = 0; i < maxIters && !best.Value.PlayStatus.isWon() && paths.Count > 0; i++) {
