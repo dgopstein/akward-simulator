@@ -150,9 +150,14 @@ namespace awkwardsimulator
             spriteBatch.DrawString(SpriteFont, status.ToString (), new Vector2(20, 20), Color.Black);
         }
 
-        public void DrawHeuristic(AI ai, GameState gs, int x, int y) {
-            var heuristic = ai.Heuristic(gs);
-            var str = String.Format ("P{0}: {1:F1}", ai.thisPlayer(gs).Id, heuristic);
+        public void DrawHeuristic(AI ai, GameState state, int x, int y) {
+            var heuristic = ai.heuristic(state, ai.pId);
+            var str = String.Format ("P{0}: {1:F1}", ai.thisPlayer(state).Id, heuristic);
+            spriteBatch.DrawString(SpriteFont, str, new Vector2(x, y), Color.DarkViolet);
+        }
+
+        public void DrawPos(Player p, int x, int y) {
+            var str = String.Format ("P{0}: {1:F1}", p.Id, p.Coords);
             spriteBatch.DrawString(SpriteFont, str, new Vector2(x, y), Color.DarkViolet);
         }
 

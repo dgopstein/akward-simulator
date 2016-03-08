@@ -25,9 +25,6 @@ namespace awkwardsimulator
         List<GameState> history;
         PlatformAStar pas;
 
-        static float GameWidth = 160f;
-        static float GameHeight = 100f;
-
         public Game1 ()
 		{
 			graphics = new GraphicsDeviceManager (this);
@@ -53,7 +50,10 @@ namespace awkwardsimulator
             history = new List<GameState> ();
 
             humanInput = new HumanInput (state);
-            aiInput = new ListAiInput (state);
+            aiInput = new ListAiInput (
+                new NullAI(state, PlayerId.P1),
+                new AStar (state, PlayerId.P2, Heuristics.WaypointDistance),
+                state);
 
             inputMethod = humanInput;
 //            inputMethod = aiInput;
@@ -69,7 +69,7 @@ namespace awkwardsimulator
 			spriteFont = Content.Load<SpriteFont>("Default");
 
             drawing = new Drawing (GraphicsDevice, spriteBatch, spriteFont,
-                Content, forwardModel.World, new Vector2(GameWidth, GameHeight));
+                Content, forwardModel.World, new Vector2(GameState.Width, GameState.Height));
 		}
 
 		protected override void UnloadContent()
@@ -123,6 +123,8 @@ namespace awkwardsimulator
             drawing.DrawPlayStatus (state.PlayStatus);
             drawing.DrawHeuristic (aiInput.ai1, state, 20, 50);
             drawing.DrawHeuristic (aiInput.ai2, state, 20, 80);
+            drawing.DrawPos (state.P1, 20, 110);
+            drawing.DrawPos (state.P2, 20, 140);
 
             drawing.DrawPath (pas.PlatformPath(state.P2, state.Goal).Select (s => s.Center), Color.Maroon, 2);
             drawing.DrawCircle (2, Heuristics.NextWaypoint(state, PlayerId.P2), Color.Crimson);

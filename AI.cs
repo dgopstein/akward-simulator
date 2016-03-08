@@ -13,15 +13,13 @@ namespace awkwardsimulator
         public PlayerId pId;
 
         private ForwardModel forwardModel;
-        protected Heuristic heuristic;
+        public Heuristic heuristic;
 
         public AI(GameState state, PlayerId pId, Heuristic heuristic) {
             this.pId = pId;
             this.forwardModel = new ForwardModel(state);
             this.heuristic = heuristic;
         }
-
-        abstract public float Heuristic (GameState state);
 
         virtual public List<Tuple<double, List<Tuple<Input, GameState>>>> BestPaths(int n) {
             return new List<Tuple<double, List<Tuple<Input, GameState>>>> ();
@@ -65,10 +63,6 @@ namespace awkwardsimulator
 
     public class NullAI : AI {
         public NullAI(GameState state, PlayerId pId) : base(state, pId, Heuristics.linearHealthHeuristic) { }
-
-        override public float Heuristic(GameState state) {
-            return -1337f;
-        }
 
         override public List<Input> nextInputs(GameState state, PlayerId pId, Heuristic heuristic) {
             return new List<Input>() { new Input () };

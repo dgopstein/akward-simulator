@@ -27,6 +27,9 @@ namespace awkwardsimulator
 
 	public class GameState
 	{
+        public const int Width = 160;
+        public const int Height = 100;
+
         private Player p1, p2;
         public Player P1 { get { return p1; } }
         public Player P2 { get { return p2; } }

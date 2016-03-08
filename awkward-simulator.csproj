@@ -93,7 +93,6 @@
     <Compile Include="Level.cs" />
     <Compile Include="AStar.cs" />
     <Compile Include="PlatformAStar.cs" />
-    <Compile Include="WayPointAStar.cs" />
     <Compile Include="Heuristics.cs" />
     <Compile Include="InputMethod.cs" />
   </ItemGroup>

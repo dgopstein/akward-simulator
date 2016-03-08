@@ -92,14 +92,12 @@ namespace awkwardsimulator
             fAi2 = Task.Factory.StartNew<List<Input>> (() => ai2.nextInputs (state));
         }
 
-        public ListAiInput(GameState state) : base(state) {
+        public ListAiInput(AI ai1, AI ai2, GameState state) : base(state) {
             inputQ1 = inputQ2 = new List<Input> (){ new Input () };
 
-            //            ai1 = new WaypointAStar (state, PlayerId.P1);
-            ai1 = new NullAI (state, PlayerId.P1);
-//            ai2 = new WaypointAStar (state, PlayerId.P2, Heuristics.heuristic);
-            ai2 = new AStar(state, PlayerId.P2, Heuristics.WaypointDistance);
-            //            ai2 = new NullAI (state, PlayerId.P2);
+            this.ai1 = ai1;
+            this.ai2 = ai2;
+
             startFAi1 (state);
             startFAi2 (state);
         }
