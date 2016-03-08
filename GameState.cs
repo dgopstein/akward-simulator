@@ -30,6 +30,18 @@ namespace awkwardsimulator
         private Player p1, p2;
         public Player P1 { get { return p1; } }
         public Player P2 { get { return p2; } }
+
+        public Player Player(PlayerId pId) {
+            Player player;
+
+            switch (pId) {
+            case PlayerId.P1: player = P1; break;
+            case PlayerId.P2: player = P2; break;
+            default: throw new Exception("Unknown player id!");
+            }
+
+            return player;
+        }
 		
         private float health;
         public float Health { get { return health; } }

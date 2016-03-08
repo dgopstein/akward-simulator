@@ -97,7 +97,8 @@ namespace awkwardsimulator
 
             //            ai1 = new WaypointAStar (state, PlayerId.P1);
             ai1 = new NullAI (state, PlayerId.P1);
-            ai2 = new WaypointAStar (state, PlayerId.P2, Heuristics.heuristic);
+//            ai2 = new WaypointAStar (state, PlayerId.P2, Heuristics.heuristic);
+            ai2 = new AStar(state, PlayerId.P2, Heuristics.WaypointDistance);
             //            ai2 = new NullAI (state, PlayerId.P2);
             startFAi1 (state);
             startFAi2 (state);
@@ -124,7 +125,6 @@ namespace awkwardsimulator
         override public void Update(GameState state) {
             if (fAi1.IsCompleted) startFAi1 (state);
             if (fAi2.IsCompleted) startFAi2 (state);
-
         }
     } 
 }

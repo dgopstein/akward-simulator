@@ -124,8 +124,8 @@ namespace awkwardsimulator
             drawing.DrawHeuristic (aiInput.ai1, state, 20, 50);
             drawing.DrawHeuristic (aiInput.ai2, state, 20, 80);
 
-            drawing.DrawPath (pas.PlatformPath(state.P1, state.Goal).Select (s => s.Center), Color.Maroon, 2);
-            drawing.DrawCircle (2, ((WaypointAStar)aiInput.ai2).NextWaypoint(state), Color.Crimson);
+            drawing.DrawPath (pas.PlatformPath(state.P2, state.Goal).Select (s => s.Center), Color.Maroon, 2);
+            drawing.DrawCircle (2, Heuristics.NextWaypoint(state, PlayerId.P2), Color.Crimson);
 
 //            drawing.DrawPath (history.Select (s => s.P1.Coords), Color.Thistle, 2);
             drawing.DrawPath (history.Select (s => s.P2.Coords + (Player.Size *.5f)), Color.Thistle, 2);
