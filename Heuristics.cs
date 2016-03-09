@@ -54,6 +54,7 @@ namespace awkwardsimulator
 
             var dist =
                 Vector2.Distance (player.SurfaceCenter, next.SurfaceCenter) +
+                fallHazard(player, next.SurfaceCenter) +
                 rank * (GameState.Width+GameState.Height);
 
             //            Debug.WriteLine("{0} {1}",
@@ -71,11 +72,13 @@ namespace awkwardsimulator
             return CosineSimilarity (a, b) > 0;
         }
 
-//        private static float fallHazard(Player player, Vector2 target) {
-//            bool approachingNearest = SameDirection (player.Velocity, target - player.SurfaceCenter) &&
-////                (player.RightBoundary < nearestPlat.LeftBoundary ||
-////                    player.LeftBoundary > nearestPlat.RightBoundary);
-//        }
+        private static float fallHazard(Player player, Vector2 target) {
+            if (player.Y <= target.Y && player.Velocity.Y < 0) {
+                return 10;
+            } else {
+                return 0;
+            }
+        }
 
     }
 

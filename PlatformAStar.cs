@@ -35,11 +35,11 @@ namespace awkwardsimulator
                 var plat1 = path [1];
 
                 var between0and1 = plat1.Distance(plat0) > plat1.Distance(player);
-                var closeEnough = player.Distance(plat0) < (2 * Player.Size.X);
+                var closeEnough = player.Distance(plat0) < (2 * Player.Size.X) && player.Y >= plat0.Y;
 
 //                Debug.WriteLine ("d1:{0}, d2:{1}", plat1.Distance(plat0), plat1.Distance(player));
 
-                Debug.WriteLine ("btwn:{0}, close:{1}", between0and1?"T":"F", closeEnough?"T":"F");
+//                Debug.WriteLine ("btwn:{0}, close:{1}", between0and1?"T":"F", closeEnough?"T":"F");
 
                 next = (between0and1 || closeEnough) ? plat1 : plat0;
             }
