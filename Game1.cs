@@ -55,8 +55,8 @@ namespace awkwardsimulator
                 new AStar (state, PlayerId.P2, new WaypointHeuristic(state, PlayerId.P2)),
                 state);
 
-//            inputMethod = humanInput;
-            inputMethod = aiInput;
+            inputMethod = humanInput;
+//            inputMethod = aiInput;
 
 			base.Initialize ();
 		}
@@ -84,7 +84,6 @@ namespace awkwardsimulator
             bool ret  = keyState.IsKeyDown (Keys.Space) && !spaceHeld;
             spaceHeld = keyState.IsKeyDown (Keys.Space);
 
-//            return ret; 
             return ret || true;
         }
 
@@ -98,7 +97,7 @@ namespace awkwardsimulator
             } else if (isSpaceTapped(keyState)) {
                 Tuple<Input, Input> inputs = inputMethod.Inputs ();
 
-                Debug.WriteLine ("{0}", inputs.Item2);
+//                Debug.WriteLine ("{0}", inputs.Item2);
                 state = forwardModel.nextState (state, inputs.Item1, inputs.Item2);
 
                 aiInput.Update (state); // Always update AiInput because it calculates pretty pictures
@@ -141,7 +140,7 @@ namespace awkwardsimulator
             drawing.DrawPos (state.P2, 20, 140);
 
             drawing.DrawPath (pas.PlatformPath(state.P2, state.Goal).Select (s => s.Center), Color.Maroon, 2);
-            drawing.DrawCircle (2, ((WaypointHeuristic)aiInput.ai2.Heuristic).NextWaypoint(state), Color.Crimson);
+            drawing.DrawCircle (2, ((WaypointHeuristic)aiInput.ai2.Heuristic).NextPlatform(state).SurfaceCenter, Color.Crimson);
 
 //            drawing.DrawPath (history.Select (s => s.P1.Coords), Color.Thistle, 2);
             drawing.DrawPath (history.Select (s => s.P2.Coords + (Player.Size *.5f)), Color.Thistle, 2);

@@ -110,7 +110,7 @@ namespace awkwardsimulator
 
                 h += (0.0000001 * uniqueId++); // add marginal unique id to avoid collisions
                 
-//                h += 1 * s.Depth(); // discourage long paths
+                h += 1 * s.Depth(); // discourage long paths
 
 //                Debug.WritreeLine("[{0}] {1}: {2}", s.Depth(), s.Input, h);
 
@@ -133,13 +133,14 @@ namespace awkwardsimulator
             paths.Add(stateNodeScorer(root, pId), root);
             var best = root;
 
-            int maxIters = 10;
+            int maxIters = 20;
             int nRepetitions = 3;
 
             for (int i = 0; i < maxIters && !best.Value.PlayStatus.isWon() && paths.Count > 0; i++) {
+                Debug.WriteLine("");
+
                 best.Children = Input.All.ToDictionary (input=>input,
                     input => {
-
                         // repeat the same input a few times
                         GameState s = best.Value;
                         for (int j = 0; j < nRepetitions; j++) {

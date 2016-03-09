@@ -22,9 +22,27 @@ namespace awkwardsimulator
         }
 
         public GameObject NextPlatform(Player player, GameObject end) {
-            var path = PlatformPath (nearestPlatform(player, Platforms), end);
+            var nearest = nearestPlatform (player, Platforms);
 
-            var next = (path.Count > 1) ? path [1] : path [0];
+            var path = PlatformPath (nearest, end);
+
+            GameObject next;
+
+            if (path.Count == 1) {
+                next = path.First ();
+            } else {
+                var plat0 = path [0];
+                var plat1 = path [1];
+
+                var between0and1 = plat1.Distance(plat0) > plat1.Distance(player);
+                var closeEnough = player.Distance(plat0) < (2 * Player.Size.X);
+
+//                Debug.WriteLine ("d1:{0}, d2:{1}", plat1.Distance(plat0), plat1.Distance(player));
+
+                Debug.WriteLine ("btwn:{0}, close:{1}", between0and1?"T":"F", closeEnough?"T":"F");
+
+                next = (between0and1 || closeEnough) ? plat1 : plat0;
+            }
 
             return next;
         }

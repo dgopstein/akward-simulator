@@ -39,6 +39,9 @@ namespace awkwardsimulator
         virtual public Vector2 Center { get { return Coords + (Vector2.Multiply (Size, 0.5f)); } }
         virtual public Vector2 SurfaceCenter { get { return Coords + (Vector2.Multiply (Size, new Vector2(0.5f, 1f))); } }
 
+        public float Distance(GameObject b) {
+            return Vector2.Distance (SurfaceCenter, b.SurfaceCenter);
+        }
 
         public GameObject (Vector2 coords, Vector2 size) {
 			this.Coords = coords;
