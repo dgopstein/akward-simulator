@@ -1,21 +1,29 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using System.Diagnostics;
+using System.Linq;
 
 namespace awkwardsimulator
 {
     public abstract class Heuristic {
-        abstract public float Score (GameState state, PlayerId pId);
+        protected readonly PlayerId pId;
 
-        public static float statusWrap(GameState state, float s) {
+        public Heuristic(PlayerId pId) {
+            this.pId = pId;
+        }
+
+        abstract public float Score (GameState state);
+
+        protected float statusWrap(GameState state, float s) {
             float healthScore  = System.Math.Abs(state.Health);
 
             var healthWeight = 0f;
 
             var score = s  + (healthWeight * healthScore);
 
-            if (state.PlayStatus.isDied ()) {
-                score = 99999;
+            if (//state.PlayStatus.isDied ()){// ||
+                state.Player(pId).Bottom < state.Platforms.Min(x => x.Top)) {
+                score = GameState.Width;
             } else if (state.PlayStatus.isWon ()) {
                 score = 0;
             }
@@ -26,14 +34,10 @@ namespace awkwardsimulator
 
     public class WaypointHeuristic : Heuristic {
 //        readonly GameState initialState;
-        readonly PlayerId pId;
-
         readonly PlatformAStar pas;
 
-        public WaypointHeuristic(GameState initialState, PlayerId pId) {
+        public WaypointHeuristic(GameState initialState, PlayerId pId) : base(pId) {
 //            this.initialState = initialState;
-            this.pId = pId;
-
             pas = new PlatformAStar (initialState.Platforms);
         }
 
@@ -41,27 +45,33 @@ namespace awkwardsimulator
             return pas.NextPlatform (state.Player(pId), state.Goal);
         }
 
-        private int PlatformRank(GameState state, PlayerId pId, GameObject platform) {
-            var path = pas.PlatformPath (state.Player (pId), state.Goal);
-            return path.Count - path.IndexOf (platform);
+        private float PlatformPathDistance(GameState state, PlayerId pId, GameObject platform) {
+            var path = pas.PlatformPath (state.Player (pId), state.Goal).SkipWhile(x => x != platform).ToArray();
+
+            float dist = 0f;
+            for (int i = 0; i < path.Count () - 1; i++) {
+                dist += path [i].Distance (path [i + 1]);
+            }
+
+            return dist;
         }
 
-        override public float Score(GameState state, PlayerId pId) {
+        override public float Score(GameState state) {
             Player player = state.Player (pId);
 
             GameObject next = NextPlatform (state);
-            int rank = PlatformRank (state, pId, next);
 
             var dist =
                 Vector2.Distance (player.SurfaceCenter, next.SurfaceCenter) +
                 fallHazard(player, next.SurfaceCenter) +
-                rank * (GameState.Width+GameState.Height);
-
+                PlatformPathDistance (state, pId, next);
+            
             //            Debug.WriteLine("{0} {1}",
             //                Vector2.Distance (player.SurfaceCenter, nextWaypoint),
             //                Vector2.Distance (nextWaypoint, state.Goal.SurfaceCenter));
 
-            return (float)dist;
+            return statusWrap(state, dist);
+//            return dist;
         }
 
         private static double CosineSimilarity(Vector2 a, Vector2 b) {
@@ -83,9 +93,9 @@ namespace awkwardsimulator
     }
 
     public class LinearHeuristic : Heuristic {
-        public LinearHeuristic() {}
+        public LinearHeuristic(PlayerId pId) : base(pId)  {}
 
-        override public float Score(GameState state, PlayerId pId) {
+        override public float Score(GameState state) {
             float goalDistance = Vector2.Distance(state.Player(pId).Coords, state.Goal.Coords);
             float healthScore  = System.Math.Abs(state.Health);
 

@@ -71,6 +71,12 @@ namespace awkwardsimulator
 
             return stack.ToList ();
         }
+
+        override public string ToString() {
+            var prefix = (parent != null) ? parent.ToString() : "";
+
+            return prefix + " " + Value.ToString();
+        }
     }
 
     public class AStar : AI
@@ -104,7 +110,7 @@ namespace awkwardsimulator
             StateNodeScorer scorer = (s, pId) => {
                 var state = s.Value;
 
-                double h = heuristic.Score (state, pId);
+                double h = heuristic.Score (state);
 
                 h =  Math.Truncate(h * 1000d) / 1000d; // remove fractional noise
 
@@ -126,15 +132,14 @@ namespace awkwardsimulator
         {
             var paths = new SortedDictionary<double, StateNode>();
 
-
             stateNodeScorer = scorerGenerator (heuristic);
 
             var root = new StateNode (null, new Input(), origState);
             paths.Add(stateNodeScorer(root, pId), root);
             var best = root;
 
-            int maxIters = 10;
-            int nRepetitions = 3;
+            int maxIters = 40;
+            int nRepetitions = 4;
 
             for (int i = 0; i < maxIters && !best.Value.PlayStatus.isWon() && paths.Count > 0; i++) {
                 best.Children = Input.All.ToDictionary (input=>input,
@@ -144,21 +149,33 @@ namespace awkwardsimulator
                         for (int j = 0; j < nRepetitions; j++) {
                             s = nextState(s, input);
                         }
-
+                            
                         return new StateNode(best, input, s);
                     });
 
                 foreach (var c in best.Children) {
-                    paths.Add(stateNodeScorer (c.Value, pId), c.Value);
+                    var score = stateNodeScorer (c.Value, pId);
+//                    Debug.WriteLine ("{0} {1}", c.Value.Input, score);
+                    paths.Add(score, c.Value);
                 }
                 best = paths.First().Value;
+//                Debug.WriteLine ("best: {0} {1}", best.Input, paths.First().Key);
+
 
                 paths.Remove (paths.First().Key);
             }
 
             lock (allPaths) { allPaths = paths; }
 
-            var res = best.ToPath ().SelectMany (t => Enumerable.Repeat(t.Item1,nRepetitions)).ToList();
+            var path = best.ToPath ();
+
+            var deRooted = path.Count > 1 ? path.Skip (1) : path; // Ignore the root node
+
+            var res = deRooted
+                .SelectMany (t => Enumerable.Repeat(t.Item1,nRepetitions)).ToList();
+
+//            Debug.WriteLine ("res " + string.Join(" ", res.Select(x => x.shortString())));
+
             return res;
         }
 

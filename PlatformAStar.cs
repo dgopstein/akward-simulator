@@ -24,6 +24,9 @@ namespace awkwardsimulator
         public GameObject NextPlatform(Player player, GameObject end) {
             var nearest = nearestPlatform (player, Platforms);
 
+//            Debug.WriteLine ("{0}", nearest);
+
+
             var path = PlatformPath (nearest, end);
 
             GameObject next;
@@ -35,31 +38,37 @@ namespace awkwardsimulator
                 var plat1 = path [1];
 
                 var between0and1 = plat1.Distance(plat0) > plat1.Distance(player);
-                var closeEnough = player.Distance(plat0) < (2 * Player.Size.X) && player.Y >= plat0.Y;
+                var closeEnough = player.Distance(plat0) < (1 * Player.Size.X) && player.Y >= plat0.Y;
+                var unreachable1 = unreachable (player, plat1);
+                var bothAbove = plat1.Top > player.Bottom && plat0.Top > player.Bottom;
 
+//                Debug.WriteLine ("");
 //                Debug.WriteLine ("d1:{0}, d2:{1}", plat1.Distance(plat0), plat1.Distance(player));
-
 //                Debug.WriteLine ("btwn:{0}, close:{1}", between0and1?"T":"F", closeEnough?"T":"F");
 
-                next = (between0and1 || closeEnough) ? plat1 : plat0;
+                next = ((!bothAbove || !unreachable1) && (between0and1 || closeEnough)) ? plat1 : plat0;
             }
 
             return next;
         }
 
-//        public GameObject NextPlatform(Player player, Vector2 start, GameObject end) {
-//            var path = PlatformPath (nearestPlatform(start, Platforms), end);
-//
-//            var nearestPlat = nearestPlatform (player, Platforms);
-//
-//            bool approachingNearest = SameDirection (player.Velocity, nearestPlat.SurfaceCenter - player.SurfaceCenter) &&
-//                                      (player.RightBoundary < nearestPlat.LeftBoundary ||
-//                                       player.LeftBoundary > nearestPlat.RightBoundary);
-//
-//            var next = (path.Count > 1 && !approachingNearest) ? path [1] : path [0];
-//
-//            return next;
-//        }
+        private bool grounded(Player player) {
+            return Platforms.Any (plat => {
+
+                var horizontal =
+                    plat.Right >= player.Left &&
+                    plat.Left <= player.Right;
+
+                var vertical = Math.Abs (player.Bottom - plat.Top) < 0.1;
+
+                return horizontal && vertical;
+            });
+        }
+
+        public static float remainingJumpDist(Player player) {
+            return (float)Math.Pow (player.Velocity.Y, 2) / (2f * 50f); //TODO 50 is a guess...
+        }
+
 
 //        //todo: return all platforms and an index because we need to be able to see where we came from
         public List<GameObject> PlatformPath(GameObject start, GameObject end) {
@@ -103,21 +112,21 @@ namespace awkwardsimulator
             return best.ToPath().Select(tup => tup.Item2).ToList();
         }
 
-        private Boolean unreachable(Platform plat, Player player) {
-            return true;
-        }
-
         private float distanceScore(Vector2 point, Platform plat) {
             var delta = Vector2.Subtract (plat.Center, point);
 
-            var scaledDelta = delta * new Vector2 (2, 1); // weight X distance more than Y distance
+            delta *= new Vector2 (1.5f, 1); // weight X distance more than Y distance
 
-            return scaledDelta.Length ();
+            return delta.Length ();
         }
 
         private Platform nearestPlatform(Player player, List<Platform> platforms) {
             // Eliminate platforms we've fallen below
-            var lowerPlats = platforms.FindAll (plat => !(player.Velocity.Y <= 0 && plat.Y > player.SurfaceCenter.Y));
+//            var lowerPlats = platforms.FindAll (plat => !(player.Velocity.Y <= 0 && plat.Y > player.SurfaceCenter.Y));
+
+            var lowerPlats = platforms.FindAll (plat => plat.Y <= player.SurfaceCenter.Y);
+//            Debug.WriteLine(string.Join(", ", lowerPlats.Select(x => x.ToString())));
+//            var lowerPlats = platforms;
 
             Platform nearest;
 
@@ -166,12 +175,36 @@ namespace awkwardsimulator
             return s;
         }
 
+        const int MaxReachX = 20;
+        const int MaxReachY = 15;
         private static bool adjacent(GameObject go1, GameObject go2) {
-            int maxX = 20, maxY = 15;
-
             return go1.Corners.SelectMany ( a =>
                 go2.Corners.Select( b => Vector2.Subtract (a, b)) )
-                .Any (d => Math.Abs (d.X) <= maxX && Math.Abs (d.Y) <= maxY);
+                .Any (d => Math.Abs (d.X) <= MaxReachX && Math.Abs (d.Y) <= MaxReachY);
+        }
+
+        private bool unreachable(Player player, GameObject plat) {
+            var ret = false;
+
+            var vert = plat.Top - player.Bottom;
+
+            if (vert > 0) { // Platform is above you
+                if (grounded (player)) {
+                    if (vert > MaxReachY) {
+                        ret = true;
+                    }
+                } else {
+                    if ((vert/2f) > (player.Velocity.Y * .4)) { // You won't jump high enough
+                        ret = true;
+                    }
+                }
+            }
+
+            if (plat.Bottom == 40) {
+                Debug.WriteLine ("unreachable: {0} {1} {2}", ret, vert, player.Velocity.Y);
+            }
+
+            return ret;
         }
     }
 }

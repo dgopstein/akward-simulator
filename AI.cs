@@ -64,7 +64,7 @@ namespace awkwardsimulator
     }
 
     public class NullAI : AI {
-        public NullAI(GameState state, PlayerId pId) : base(state, pId, new LinearHeuristic()) { }
+        public NullAI(GameState state, PlayerId pId) : base(state, pId, new LinearHeuristic(pId)) { }
 
         override public List<Input> nextInputs(GameState state, PlayerId pId, Heuristic heuristic) {
             return new List<Input>() { new Input () };

@@ -35,6 +35,7 @@ namespace awkwardsimulator
 		// load any non-graphic related content.  Calling base.Initialize will enumerate through any components
 		/// and initialize them as well.
         AiInput aiInput;
+        AI ai1, ai2;
         HumanInput humanInput;
         InputMethod inputMethod;
 
@@ -49,11 +50,12 @@ namespace awkwardsimulator
             history = new List<GameState> ();
 
             humanInput = new HumanInput (state);
+
+            ai1 = new NullAI (state, PlayerId.P1);
+            ai2 = new AStar (state, PlayerId.P2, new WaypointHeuristic (state, PlayerId.P2));
             aiInput = new ListAiInput (
 //            aiInput = new SingleAiInput (
-                new NullAI(state, PlayerId.P1),
-                new AStar (state, PlayerId.P2, new WaypointHeuristic(state, PlayerId.P2)),
-                state);
+                ai1, ai2, state);
 
             inputMethod = humanInput;
 //            inputMethod = aiInput;
@@ -84,7 +86,7 @@ namespace awkwardsimulator
             bool ret  = keyState.IsKeyDown (Keys.Space) && !spaceHeld;
             spaceHeld = keyState.IsKeyDown (Keys.Space);
 
-            return ret || true;
+            return ret || false;
         }
 
 		// checking for collisions, gathering input, and playing audio.
@@ -111,6 +113,9 @@ namespace awkwardsimulator
 		/// This is called when the game should draw itself.
 		protected override void Draw (GameTime gameTime)
 		{
+            Player p1 = ai1.thisPlayer (state);
+            Player p2 = ai2.thisPlayer (state);
+
 			graphics.GraphicsDevice.Clear (Color.CornflowerBlue);
 		
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
@@ -134,22 +139,29 @@ namespace awkwardsimulator
             drawing.DrawHealth (state.Health);
 
             drawing.DrawPlayStatus (state.PlayStatus);
-            drawing.DrawHeuristic (aiInput.ai1, state, 20, 50);
-            drawing.DrawHeuristic (aiInput.ai2, state, 20, 80);
+            drawing.DrawHeuristic (ai1, state, 20, 50);
+            drawing.DrawHeuristic (ai2, state, 20, 80);
             drawing.DrawPos (state.P1, 20, 110);
             drawing.DrawPos (state.P2, 20, 140);
 
             drawing.DrawPath (pas.PlatformPath(state.P2, state.Goal).Select (s => s.Center), Color.Maroon, 2);
-            drawing.DrawCircle (2, ((WaypointHeuristic)aiInput.ai2.Heuristic).NextPlatform(state).SurfaceCenter, Color.Crimson);
+            drawing.DrawCircle (2, ((WaypointHeuristic)ai2.Heuristic).NextPlatform(state).SurfaceCenter, Color.Crimson);
 
 //            drawing.DrawPath (history.Select (s => s.P1.Coords), Color.Thistle, 2);
             drawing.DrawPath (history.Select (s => s.P2.Coords + (Player.Size *.5f)), Color.Thistle, 2);
 
-            drawing.DrawPaths (aiInput.ai1.AllPaths().Select(t =>
+            drawing.DrawPaths (ai1.AllPaths().Select(t =>
                 Tuple.Create(t.Item1, t.Item2.Select(e => e.Item2.P1.Coords))));
-            drawing.DrawPaths (aiInput.ai2.AllPaths().Select(t =>
+            drawing.DrawPaths (ai2.AllPaths().Select(t =>
                 Tuple.Create(t.Item1, t.Item2.Select(e => e.Item2.P2.Coords))));
 			
+            // Jump height
+            drawing.DrawLine(
+                new Vector2(p2.Left , p2.Top+PlatformAStar.remainingJumpDist(p2)),
+                new Vector2(p2.Right, p2.Top+PlatformAStar.remainingJumpDist(p2)),
+                Color.Fuchsia, 6
+            );
+
 			spriteBatch.End();
             			
 //            drawing.DrawDebug ();

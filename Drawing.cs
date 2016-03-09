@@ -151,7 +151,7 @@ namespace awkwardsimulator
         }
 
         public void DrawHeuristic(AI ai, GameState state, int x, int y) {
-            var heuristic = ai.Heuristic.Score(state, ai.pId);
+            var heuristic = ai.Heuristic.Score(state);
             var str = String.Format ("P{0}: {1:F1}", ai.thisPlayer(state).Id, heuristic);
             spriteBatch.DrawString(SpriteFont, str, new Vector2(x, y), Color.DarkViolet);
         }
@@ -341,6 +341,13 @@ namespace awkwardsimulator
             }
         }
 
+        public void DrawLine(Vector2 start, Vector2 end, Color c = default(Color), int thickness = 1) {
+            var startPt = RasterizeCoords (start);
+            var endPt = RasterizeCoords (end);
+
+            DrawLine (startPt, endPt, c, thickness);
+        }
+
         // http://gamedev.stackexchange.com/questions/44015/how-can-i-draw-a-simple-2d-line-in-xna-without-using-3d-primitives-and-shders
         public void DrawLine(Point start, Point end, Color c = default(Color), int thickness = 1)
         {
@@ -376,7 +383,8 @@ namespace awkwardsimulator
         }
 
         private static List<Color> HeatmapColors = new List<Color>() {
-            Color.Blue, Color.Cyan, Color.Green, Color.Yellow, Color.Red};
+//            Color.Blue, Color.Cyan, Color.Green, Color.Yellow, Color.Red};
+            Color.Cyan, Color.Green, Color.Yellow, Color.Red};
 
         private static Color InterpolateColors(List<Color> colors, double value) {
             int nColors = colors.Count ();
@@ -391,9 +399,9 @@ namespace awkwardsimulator
 //            Debug.WriteLine ("{0} {1}", low, high);
 
             var c = new Color (
-                (byte) (d * low.R + (1 - d) * high.R),
-                (byte) (d * low.G + (1 - d) * high.G),
-                (byte) (d * low.B + (1 - d) * high.B));
+                (byte) ((1 - d) * low.R + d * high.R),
+                (byte) ((1 - d) * low.G + d * high.G),
+                (byte) ((1 - d) * low.B + d * high.B));
 
             return c;
         }
