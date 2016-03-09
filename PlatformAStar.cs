@@ -22,12 +22,14 @@ namespace awkwardsimulator
         }
 
         public GameObject NextPlatform(Player player, GameObject end) {
-            var nearest = nearestPlatform (player, Platforms);
+//            var nearest = nearestPlatform (player, Platforms);
 
 //            Debug.WriteLine ("{0}", nearest);
 
 
-            var path = PlatformPath (nearest, end);
+//            var path = PlatformPath (nearest, end);
+            var path = PlatformPath (player, end);
+
 
             GameObject next;
 
@@ -46,7 +48,7 @@ namespace awkwardsimulator
 //                Debug.WriteLine ("d1:{0}, d2:{1}", plat1.Distance(plat0), plat1.Distance(player));
 //                Debug.WriteLine ("btwn:{0}, close:{1}", between0and1?"T":"F", closeEnough?"T":"F");
 
-                next = ((!bothAbove || !unreachable1) && (between0and1 || closeEnough)) ? plat1 : plat0;
+                next = (!bothAbove && !unreachable1 && (between0and1 || closeEnough)) ? plat1 : plat0;
             }
 
             return next;
@@ -71,8 +73,8 @@ namespace awkwardsimulator
 
 
 //        //todo: return all platforms and an index because we need to be able to see where we came from
-        public List<GameObject> PlatformPath(GameObject start, GameObject end) {
-            var startPlat = nearestPlatform (start.SurfaceCenter, Platforms);
+        public List<GameObject> PlatformPath(Player start, GameObject end) {
+            var startPlat = nearestReachablePlatform (start, Platforms);
 
             var endReachablePlatforms = Platforms.FindAll (p => adjacent (p, end));
 
@@ -120,18 +122,13 @@ namespace awkwardsimulator
             return delta.Length ();
         }
 
-        private Platform nearestPlatform(Player player, List<Platform> platforms) {
+        private Platform nearestReachablePlatform(Player player, List<Platform> platforms) {
             // Eliminate platforms we've fallen below
-//            var lowerPlats = platforms.FindAll (plat => !(player.Velocity.Y <= 0 && plat.Y > player.SurfaceCenter.Y));
-
-            var lowerPlats = platforms.FindAll (plat => plat.Y <= player.SurfaceCenter.Y);
-//            Debug.WriteLine(string.Join(", ", lowerPlats.Select(x => x.ToString())));
-//            var lowerPlats = platforms;
+            var lowerPlats = platforms.FindAll (plat => !unreachable(player, plat));
 
             Platform nearest;
-
             if (lowerPlats.Count > 0) {
-                nearest = lowerPlats.MinBy (plat => distanceScore(player.SurfaceCenter, plat));
+                nearest = nearestPlatform (player.SurfaceCenter, lowerPlats);
             } else {
                 nearest = platforms.First ();
             }
@@ -194,7 +191,7 @@ namespace awkwardsimulator
                         ret = true;
                     }
                 } else {
-                    if ((vert/2f) > (player.Velocity.Y * .4)) { // You won't jump high enough
+                    if (vert > remainingJumpDist(player)) { // You won't jump high enough
                         ret = true;
                     }
                 }

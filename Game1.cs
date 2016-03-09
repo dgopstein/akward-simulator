@@ -57,8 +57,8 @@ namespace awkwardsimulator
 //            aiInput = new SingleAiInput (
                 ai1, ai2, state);
 
-            inputMethod = humanInput;
-//            inputMethod = aiInput;
+//            inputMethod = humanInput;
+            inputMethod = aiInput;
 
 			base.Initialize ();
 		}
@@ -86,7 +86,7 @@ namespace awkwardsimulator
             bool ret  = keyState.IsKeyDown (Keys.Space) && !spaceHeld;
             spaceHeld = keyState.IsKeyDown (Keys.Space);
 
-            return ret || false;
+            return ret || true;
         }
 
 		// checking for collisions, gathering input, and playing audio.
