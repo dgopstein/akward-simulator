@@ -54,12 +54,12 @@ namespace awkwardsimulator
 //            ai1 = new NullAI (state, PlayerId.P1);
             ai1 = new AStar (state, PlayerId.P1, new WaypointHeuristic (state, PlayerId.P1));
             ai2 = new AStar (state, PlayerId.P2, new WaypointHeuristic (state, PlayerId.P2));
-//            aiInput = new ListAiInput (
-            aiInput = new SingleAiInput (
+            aiInput = new ListAiInput (
+//            aiInput = new SingleAiInput (
                 ai1, ai2, state);
 
-//            inputMethod = humanInput;
-            inputMethod = aiInput;
+            inputMethod = humanInput;
+//            inputMethod = aiInput;
 
 			base.Initialize ();
 		}
@@ -137,7 +137,10 @@ namespace awkwardsimulator
             drawing.DrawPos (state.P1, 20, 110);
             drawing.DrawPos (state.P2, 20, 140);
 
-            drawing.DrawPath (pas.PlatformPath(state.P2, state.Goal).Select (s => s.Center), Color.Maroon, 2);
+
+            drawing.DrawPath (pas.PlatformPath(state.P1, state.Goal).Select (s => s.Target), Color.Maroon, 2);
+            drawing.DrawCircle (2, ((WaypointHeuristic)ai1.Heuristic).NextPlatform(state).Target, Color.Crimson);
+            drawing.DrawPath (pas.PlatformPath(state.P2, state.Goal).Select (s => s.Target), Color.Maroon, 2);
             drawing.DrawCircle (2, ((WaypointHeuristic)ai2.Heuristic).NextPlatform(state).Target, Color.Crimson);
 
 //            drawing.DrawPath (history.Select (s => s.P1.Coords), Color.Thistle, 2);
@@ -151,8 +154,8 @@ namespace awkwardsimulator
 			
             // Jump height
             drawing.DrawLine(
-                new Vector2(p2.Left , p2.Top+PlatformAStar.remainingJumpDist(p2)),
-                new Vector2(p2.Right, p2.Top+PlatformAStar.remainingJumpDist(p2)),
+                new Vector2(p2.LeftBoundary , p2.TopBoundary+PlatformAStar.remainingJumpDist(p2)),
+                new Vector2(p2.RightBoundary, p2.TopBoundary+PlatformAStar.remainingJumpDist(p2)),
                 Color.Fuchsia, 6
             );
 

@@ -397,7 +397,7 @@ namespace awkwardsimulator
                 d = 1;
             }
 
-            Debug.WriteLine (index);
+            Debug.WriteLineIf (index < 0, String.Format("index: {0}, value: {1}", index, value));
 
             var low = colors [index];
             var high = colors [index + (index == nColors - 1 ? 0 : 1)];

@@ -16,10 +16,10 @@ namespace awkwardsimulator
         public float W { get { return Size.X; } }
         public float H { get { return Size.Y; } }
 
-        public float Left   { get { return X;     } }
-        public float Right  { get { return X + W; } }
-        public float Top    { get { return Y + H; } }
-        public float Bottom { get { return Y;     } }
+        public float LeftBoundary   { get { return X;     } }
+        public float RightBoundary  { get { return X + W; } }
+        public float TopBoundary    { get { return Y + H; } }
+        public float BottomBoundary { get { return Y;     } }
 
         virtual public List<Vector2> Surface { get {
                 return new List<Vector2> () {
@@ -28,12 +28,17 @@ namespace awkwardsimulator
             };
         } }
 
+        public Vector2 BottomLeft  { get { return new Vector2 (X    , Y    ); } }
+        public Vector2 BottomRight { get { return new Vector2 (X + W, Y    ); } }
+        public Vector2 TopRight    { get { return new Vector2 (X + W, Y + H); } }
+        public Vector2 TopLeft     { get { return new Vector2 (X    , Y + H); } }
+
         virtual public List<Vector2> Corners { get {
             return new List<Vector2>() {
-                new Vector2(X    , Y    ),
-                new Vector2(X + W, Y    ),
-                new Vector2(X    , Y + H),
-                new Vector2(X + W, Y + H)
+                        BottomLeft,
+                        BottomRight,
+                        TopRight,
+                        TopLeft,
             };
         } }
 
