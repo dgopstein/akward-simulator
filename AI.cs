@@ -31,19 +31,19 @@ namespace awkwardsimulator
             return new List<Tuple<double, List<Tuple<Input, GameState>>>> ();
         }
 
-        protected GameState nextState(GameState state, Input move) {
-            return nextState(state, move, predictPartnerInput(state));
+        protected GameState nextState(GameState state, Input move, int nSteps = 1) {
+            return nextState(state, move, predictPartnerInput(state), nSteps);
         }
 
-        protected GameState nextState(GameState game, Input thisPlayerMove, Input otherPlayerMove) {
+        protected GameState nextState(GameState game, Input thisPlayerMove, Input otherPlayerMove, int nSteps = 1) {
             GameState lastState = game;
 
             int intermediateSteps = 1; // set to match a reasonable Gameloop#humanInputDelayFrames() value...
             for (int i = 0; i < intermediateSteps; i++) {
                 if (pId == PlayerId.P1) {
-                    lastState = forwardModel.nextState(lastState, thisPlayerMove, otherPlayerMove);
+                    lastState = forwardModel.nextState(lastState, thisPlayerMove, otherPlayerMove, nSteps);
                 } else {
-                    lastState = forwardModel.nextState(lastState, otherPlayerMove, thisPlayerMove);
+                    lastState = forwardModel.nextState(lastState, otherPlayerMove, thisPlayerMove, nSteps);
                 }
             }
 

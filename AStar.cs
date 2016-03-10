@@ -138,7 +138,7 @@ namespace awkwardsimulator
             paths.Add(stateNodeScorer(root, pId), root);
             var best = root;
 
-            int maxIters = 40;
+            int maxIters = 20;
             int nRepetitions = 4;
 
             for (int i = 0; i < maxIters && !best.Value.PlayStatus.isWon() && paths.Count > 0; i++) {

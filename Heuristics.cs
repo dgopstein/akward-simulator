@@ -62,8 +62,7 @@ namespace awkwardsimulator
             GameObject next = NextPlatform (state);
 
             var dist =
-                Vector2.Distance (player.SurfaceCenter, next.SurfaceCenter) +
-                fallHazard(player, next.SurfaceCenter) +
+                Vector2.Distance (player.SurfaceCenter, next.Target) +
                 PlatformPathDistance (state, pId, next);
             
             //            Debug.WriteLine("{0} {1}",
@@ -81,15 +80,6 @@ namespace awkwardsimulator
         private static bool SameDirection(Vector2 a, Vector2 b) {
             return CosineSimilarity (a, b) > 0;
         }
-
-        private static float fallHazard(Player player, Vector2 target) {
-            if (player.Y <= target.Y && player.Velocity.Y < 0) {
-                return 10;
-            } else {
-                return 0;
-            }
-        }
-
     }
 
     public class LinearHeuristic : Heuristic {

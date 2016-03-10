@@ -183,7 +183,7 @@ namespace awkwardsimulator
         private bool unreachable(Player player, GameObject plat) {
             var ret = false;
 
-            var vert = plat.Top - player.Bottom;
+            var vert = plat.SurfaceCenter.Y - player.Bottom;
 
             if (vert > 0) { // Platform is above you
                 if (grounded (player)) {
@@ -195,10 +195,6 @@ namespace awkwardsimulator
                         ret = true;
                     }
                 }
-            }
-
-            if (plat.Bottom == 40) {
-                Debug.WriteLine ("unreachable: {0} {1} {2}", ret, vert, player.Velocity.Y);
             }
 
             return ret;

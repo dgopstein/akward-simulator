@@ -53,8 +53,8 @@ namespace awkwardsimulator
 
             ai1 = new NullAI (state, PlayerId.P1);
             ai2 = new AStar (state, PlayerId.P2, new WaypointHeuristic (state, PlayerId.P2));
-            aiInput = new ListAiInput (
-//            aiInput = new SingleAiInput (
+//            aiInput = new ListAiInput (
+            aiInput = new SingleAiInput (
                 ai1, ai2, state);
 
 //            inputMethod = humanInput;
@@ -128,14 +128,6 @@ namespace awkwardsimulator
 
             drawing.DrawGameObjectCircle (state.Goal, Color.BurlyWood);
 
-            drawing.DrawPlayer (state.P1);
-            drawing.DrawPlayer (state.P2);
-
-            var c1 = Color.Black;
-            var c2 = Color.Black;
-            drawing.DrawButtonArrow (state.P1, inputMethod.input1, c1);
-            drawing.DrawButtonArrow (state.P2, inputMethod.input2, c2);
-
             drawing.DrawHealth (state.Health);
 
             drawing.DrawPlayStatus (state.PlayStatus);
@@ -145,15 +137,15 @@ namespace awkwardsimulator
             drawing.DrawPos (state.P2, 20, 140);
 
             drawing.DrawPath (pas.PlatformPath(state.P2, state.Goal).Select (s => s.Center), Color.Maroon, 2);
-            drawing.DrawCircle (2, ((WaypointHeuristic)ai2.Heuristic).NextPlatform(state).SurfaceCenter, Color.Crimson);
+            drawing.DrawCircle (2, ((WaypointHeuristic)ai2.Heuristic).NextPlatform(state).Target, Color.Crimson);
 
 //            drawing.DrawPath (history.Select (s => s.P1.Coords), Color.Thistle, 2);
             drawing.DrawPath (history.Select (s => s.P2.Coords + (Player.Size *.5f)), Color.Thistle, 2);
 
             drawing.DrawPaths (ai1.AllPaths().Select(t =>
-                Tuple.Create(t.Item1, t.Item2.Select(e => e.Item2.P1.Coords))));
+                Tuple.Create(t.Item1, t.Item2.Select(e => e.Item2.P1.SurfaceCenter))));
             drawing.DrawPaths (ai2.AllPaths().Select(t =>
-                Tuple.Create(t.Item1, t.Item2.Select(e => e.Item2.P2.Coords))));
+                Tuple.Create(t.Item1, t.Item2.Select(e => e.Item2.P2.SurfaceCenter))));
 			
             // Jump height
             drawing.DrawLine(
@@ -161,6 +153,14 @@ namespace awkwardsimulator
                 new Vector2(p2.Right, p2.Top+PlatformAStar.remainingJumpDist(p2)),
                 Color.Fuchsia, 6
             );
+
+            drawing.DrawPlayer (state.P1);
+            drawing.DrawPlayer (state.P2);
+
+            var c1 = Color.Black;
+            var c2 = Color.Black;
+            drawing.DrawButtonArrow (state.P1, inputMethod.input1, c1);
+            drawing.DrawButtonArrow (state.P2, inputMethod.input2, c2);
 
 			spriteBatch.End();
             			
