@@ -41,7 +41,7 @@ namespace awkwardsimulator
 
 		protected override void Initialize ()
 		{
-            state = Level.Level2;
+            state = Level.Level1;
 
             pas = new PlatformAStar (state.Platforms);
 
@@ -124,7 +124,7 @@ namespace awkwardsimulator
             drawing.DrawFPS (gameTime);
 
             foreach (var plat in state.Platforms) {
-                drawing.DrawGameObjectRect (plat, Color.Gainsboro);
+                drawing.DrawPlatform (plat, Color.Gainsboro);
             }
 
             drawing.DrawGameObjectCircle (state.Goal, Color.BurlyWood);

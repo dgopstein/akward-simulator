@@ -61,27 +61,6 @@ namespace awkwardsimulator
         }
 	}
 
-    abstract public class GameObjectCircle : GameObject {
-        private float radius;
-        public float Radius { get { return radius; } }
-
-        public GameObjectCircle (Vector2 coords, float radius) : base (coords, size: new Vector2(radius, radius)) {
-            this.radius = radius;
-        }
-
-        override public Vector2 Center { get { return Coords; } }
-        override public Vector2 SurfaceCenter { get { return Coords; } }
-
-        override public List<Vector2> Corners { get {
-                return new List<Vector2> () {
-                    new Vector2 (X - Radius, Y - Radius),
-                    new Vector2 (X - Radius, Y + Radius),
-                    new Vector2 (X + Radius, Y - Radius),
-                    new Vector2 (X + Radius, Y + Radius),
-                };
-            } }
-    }
-
 	public class Player : GameObject {
         public int Id { get; }
         public Vector2 Velocity { get; }
@@ -107,13 +86,46 @@ namespace awkwardsimulator
 	}
 
 	public class Platform : GameObject {
+        private string name;
+
         public Platform (Vector2 coords, Vector2 size) : base (coords, size) {}
+        public Platform (string name, Vector2 coords, Vector2 size) : base (coords, size) {
+            this.name = name;
+        }
+
+        override public string ToString() {
+            return name;
+        }
 	}
+
+    abstract public class GameObjectCircle : GameObject {
+        private float radius;
+        public float Radius { get { return radius; } }
+
+        public GameObjectCircle (Vector2 coords, float radius) : base (coords, size: new Vector2(radius, radius)) {
+            this.radius = radius;
+        }
+
+        override public Vector2 Center { get { return Coords; } }
+        override public Vector2 SurfaceCenter { get { return Coords; } }
+
+        override public List<Vector2> Corners { get {
+                return new List<Vector2> () {
+                    new Vector2 (X - Radius, Y - Radius),
+                    new Vector2 (X - Radius, Y + Radius),
+                    new Vector2 (X + Radius, Y - Radius),
+                    new Vector2 (X + Radius, Y + Radius),
+                };
+            } }
+    }
 
     public class Goal : GameObjectCircle {
         public Goal (Vector2 coords, float radius) : base (coords, radius) { }
         override public Vector2 SurfaceCenter { get { return Coords - new Vector2(0, Radius); } }
         override public Vector2 Target { get { return Center; } }
+        override public List<Vector2> Surface { get {
+                return Corners;
+        } }
     }
 }
 

@@ -206,10 +206,16 @@ namespace awkwardsimulator
         const int MaxReachX = 20;
         const int MaxReachY = 15;
         private static bool adjacent(List<Platform> plats, GameObject go1, GameObject go2) {
-            var dist = Vector2.Subtract (go1.SurfaceCenter, go2.SurfaceCenter);
-            var closeEnough = Math.Abs (dist.X) <= MaxReachX && Math.Abs (dist.Y) <= MaxReachY;
+//            var dist = Vector2.Subtract (go1.SurfaceCenter, go2.SurfaceCenter);
+//            var closeEnough = Math.Abs (dist.X) <= MaxReachX && Math.Abs (dist.Y) <= MaxReachY;
 
-            return closeEnough && isLineOfSight (plats, go1, go2);
+            var dists =
+                go1.Surface.SelectMany (a =>
+                    go2.Surface.Select (b => Vector2.Subtract (a, b)));
+
+            var closeEnough = dists.Any (d => Math.Abs (d.X) <= MaxReachX && Math.Abs (d.Y) <= MaxReachY);
+
+            return closeEnough && isLineOfSight (plats, go1, go2); //TODO add element
         }
 
         private bool unreachable(Player player, GameObject plat) {

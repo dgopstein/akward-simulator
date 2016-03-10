@@ -123,6 +123,13 @@ namespace awkwardsimulator
             spriteBatch.Draw (blankTexture, new Rectangle (pt.X, pt.Y, dim.X, dim.Y), c);
         }
 
+        public void DrawPlatform(Platform plat, Color c) {
+            Point pt = RasterizeCoords (plat.Center + new Vector2(-1, 1));
+
+            DrawGameObjectRect (plat, c);
+            spriteBatch.DrawString(SpriteFont, plat.ToString(), pt.ToVector2(), Color.DarkViolet);
+        }
+
         public void DrawHealth(float health) {
             float screenWidth = graphicsDevice.Viewport.Width;
             float screenHeight = graphicsDevice.Viewport.Height;
