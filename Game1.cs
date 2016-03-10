@@ -41,7 +41,7 @@ namespace awkwardsimulator
 
 		protected override void Initialize ()
 		{
-            state = Level.Level1;
+            state = Level.Level2;
 
             pas = new PlatformAStar (state.Platforms);
 
@@ -51,7 +51,8 @@ namespace awkwardsimulator
 
             humanInput = new HumanInput (state);
 
-            ai1 = new NullAI (state, PlayerId.P1);
+//            ai1 = new NullAI (state, PlayerId.P1);
+            ai1 = new AStar (state, PlayerId.P1, new WaypointHeuristic (state, PlayerId.P1));
             ai2 = new AStar (state, PlayerId.P2, new WaypointHeuristic (state, PlayerId.P2));
 //            aiInput = new ListAiInput (
             aiInput = new SingleAiInput (
@@ -142,10 +143,11 @@ namespace awkwardsimulator
 //            drawing.DrawPath (history.Select (s => s.P1.Coords), Color.Thistle, 2);
             drawing.DrawPath (history.Select (s => s.P2.Coords + (Player.Size *.5f)), Color.Thistle, 2);
 
-            drawing.DrawPaths (ai1.AllPaths().Select(t =>
-                Tuple.Create(t.Item1, t.Item2.Select(e => e.Item2.P1.SurfaceCenter))));
+
             drawing.DrawPaths (ai2.AllPaths().Select(t =>
                 Tuple.Create(t.Item1, t.Item2.Select(e => e.Item2.P2.SurfaceCenter))));
+//            drawing.DrawPath (ai1.AllPaths().First().Item2.Select(e => e.Item2.P1.SurfaceCenter),
+//                Color.WhiteSmoke, 3);
 			
             // Jump height
             drawing.DrawLine(

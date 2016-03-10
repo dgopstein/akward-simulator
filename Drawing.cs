@@ -392,6 +392,13 @@ namespace awkwardsimulator
             var distance = 1.0 / nColors;
             var d = (value % distance) / distance;
 
+            if (index == nColors) {
+                index = nColors - 1;
+                d = 1;
+            }
+
+            Debug.WriteLine (index);
+
             var low = colors [index];
             var high = colors [index + (index == nColors - 1 ? 0 : 1)];
 

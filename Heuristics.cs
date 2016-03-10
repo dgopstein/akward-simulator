@@ -21,7 +21,7 @@ namespace awkwardsimulator
 
             var score = s  + (healthWeight * healthScore);
 
-            if (//state.PlayStatus.isDied ()){// ||
+            if (state.PlayStatus.isDied () ||
                 state.Player(pId).Bottom < state.Platforms.Min(x => x.Top)) {
                 score = GameState.Width;
             } else if (state.PlayStatus.isWon ()) {

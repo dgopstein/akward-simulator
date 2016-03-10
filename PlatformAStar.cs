@@ -78,6 +78,8 @@ namespace awkwardsimulator
 
             var endReachablePlatforms = Platforms.FindAll (p => adjacent (p, end));
 
+            Debug.WriteLineIf (endReachablePlatforms.Count == 0, "No platforms within reach of the goal!");
+
 //            Debug.WriteLine ("all platforms: "+ PlatListStr (Platforms));
 //            Debug.WriteLine ("end reachable: "+ PlatListStr (endReachablePlatforms));
 
