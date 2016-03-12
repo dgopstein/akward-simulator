@@ -51,8 +51,8 @@ namespace awkwardsimulator
 
             humanInput = new HumanInput (state);
 
-//            ai1 = new NullAI (state, PlayerId.P1);
-            ai1 = new AStar (state, PlayerId.P1, new WaypointHeuristic (state, PlayerId.P1));
+            ai1 = new NullAI (state, PlayerId.P1);
+//            ai1 = new AStar (state, PlayerId.P1, new WaypointHeuristic (state, PlayerId.P1));
             ai2 = new AStar (state, PlayerId.P2, new WaypointHeuristic (state, PlayerId.P2));
             aiInput = new ListAiInput (
 //            aiInput = new SingleAiInput (
@@ -138,8 +138,8 @@ namespace awkwardsimulator
             drawing.DrawPos (state.P2, 20, 140);
 
 
-            drawing.DrawPath (pas.PlatformPath(state.P1, state.Goal).Select (s => s.Target), Color.Maroon, 2);
-            drawing.DrawCircle (2, ((WaypointHeuristic)ai1.Heuristic).NextPlatform(state).Target, Color.Crimson);
+//            drawing.DrawPath (pas.PlatformPath(state.P1, state.Goal).Select (s => s.Target), Color.Maroon, 2);
+//            drawing.DrawCircle (2, ((WaypointHeuristic)ai1.Heuristic).NextPlatform(state).Target, Color.Crimson);
             drawing.DrawPath (pas.PlatformPath(state.P2, state.Goal).Select (s => s.Target), Color.Maroon, 2);
             drawing.DrawCircle (2, ((WaypointHeuristic)ai2.Heuristic).NextPlatform(state).Target, Color.Crimson);
 

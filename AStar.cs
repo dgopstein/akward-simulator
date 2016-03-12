@@ -7,6 +7,9 @@ using System.Diagnostics;
 using StateNode = awkwardsimulator.AStarNode<awkwardsimulator.GameState, awkwardsimulator.Input>;
 using StateNodeScorer = System.Func<awkwardsimulator.AStarNode<awkwardsimulator.GameState, awkwardsimulator.Input>, awkwardsimulator.PlayerId, double>;
 //using Heuristic = System.Func<awkwardsimulator.GameState, awkwardsimulator.PlayerId, float>;
+using SD.Tools.Algorithmia.GeneralDataStructures;
+using MoreLinq;
+using Microsoft.Xna.Framework;
 
 
 
@@ -126,46 +129,90 @@ namespace awkwardsimulator
             return scorer;
         }
 
+//        static readonly List<Tuple<Input, Vector2>> moveVectors =
+//            new List<Tuple<Input, Vector2>>(){
+//                Tuple.Create(Input.Noop, new Vector2(0, 0)),
+//                Tuple.Create(Input.Up, new Vector2(0, 1)),
+//                Tuple.Create(Input.Right, new Vector2(1, 0)),
+//                Tuple.Create(Input.UpRight, new Vector2(Math.Sqrt(2)/2, Math.Sqrt(2)/2)),
+//                Tuple.Create(Input.Left, new Vector2(-1, 0)),
+//                Tuple.Create(Input.UpLeft, new Vector2(-Math.Sqrt(2)/2, Math.Sqrt(2)/2))
+//            };
+
+        static readonly List<Input> wheelOfMoves = new List<Input>() {
+            Input.Noop, Input.Left, Input.UpLeft, Input.Up, Input.UpRight, Input.Right
+        };
+
+        float estimateHeuristic(StateNode node, Input move) {
+            // Favor similar moves
+            int parentMoveIdx = wheelOfMoves.IndexOf (node.Input);
+            int newMoveIdx = wheelOfMoves.IndexOf (move);
+
+            float score = .2f * (wheelOfMoves.Count - (parentMoveIdx - newMoveIdx));
+
+            if (score < 0) score *= -.8f;
+
+            return score;
+        }
+
+        void addChildrenToOpenSet(SortedDictionary<double, StateNode> dict, StateNode parent, GameState state) {
+            if (parent == null) {
+                parent = new StateNode (parent, Input.Noop, state);
+            }
+
+            var parentScore = stateNodeScorer (parent, pId);
+            foreach (var input in Input.All) {
+                var stateNode = new StateNode (parent, input, state);
+                dict.Add (parentScore + estimateHeuristic(parent, input), stateNode);
+            }
+        }
+
         protected StateNodeScorer stateNodeScorer;
 
         override public List<Input> nextInputs (GameState origState, PlayerId pId, Heuristic heuristic)
         {
-            var paths = new SortedDictionary<double, StateNode>();
+            var openSet = new SortedDictionary<double, StateNode>(); // Known, but unexplored
+            var closedSet = new SortedDictionary<double, StateNode>(); // Fully explored
 
             stateNodeScorer = scorerGenerator (heuristic);
 
-            var root = new StateNode (null, new Input(), origState);
-            paths.Add(stateNodeScorer(root, pId), root);
-            var best = root;
+//            var root = new StateNode (null, new Input(), origState);
+//            openSet.Add(stateNodeScorer(root, pId), root);
+            addChildrenToOpenSet(openSet, null, origState);
 
             int maxIters = 50;
             int nRepetitions = 4;
 
-            for (int i = 0; i < maxIters && !best.Value.PlayStatus.isWon() && paths.Count > 0; i++) {
-                best.Children = Input.All.ToDictionary (input=>input,
-                    input => {
-                        // repeat the same input a few times
-                        GameState s = best.Value;
-                        for (int j = 0; j < nRepetitions; j++) {
-                            s = nextState(s, input);
-                        }
-                            
-                        return new StateNode(best, input, s);
-                    });
+            StateNode best;
 
-                foreach (var c in best.Children) {
-                    var score = stateNodeScorer (c.Value, pId);
-//                    Debug.WriteLine ("{0} {1}", c.Value.Input, score);
-                    paths.Add(score, c.Value);
+            int i = 0;
+            do {
+                var bestKV = openSet.First ();
+                openSet.Remove(bestKV.Key);
+
+                best = bestKV.Value;
+
+                if (pId == PlayerId.P2)
+                    Debug.WriteLine("{0}: {1} {2}", bestKV.Key, best.Input, best.Value.P2.Coords);
+
+                var bestNextMove = best.Input;
+
+                // repeat the same input a few times
+                GameState resultState = best.Value;
+                for (int j = 0; j < nRepetitions; j++) {
+                    resultState = nextState(resultState, bestNextMove);
                 }
-                best = paths.First().Value;
-//                Debug.WriteLine ("best: {0} {1}", best.Input, paths.First().Key);
 
+                addChildrenToOpenSet(openSet, best, resultState);
 
-                paths.Remove (paths.First().Key);
-            }
+                var stateNode = new StateNode (best, bestNextMove, resultState);
+                var score = stateNodeScorer (stateNode, pId);
 
-            lock (allPaths) { allPaths = paths; }
+                closedSet.Add(score, stateNode);
+
+            } while(i++ < maxIters && !best.Value.PlayStatus.isWon() && openSet.Count > 0);
+
+            lock (allPaths) { allPaths = closedSet; }
 
             var path = best.ToPath ();
 
