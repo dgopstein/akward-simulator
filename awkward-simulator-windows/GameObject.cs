@@ -7,8 +7,11 @@ namespace awkwardsimulator
 {
 
     public abstract class GameObject {
-        public Vector2 Coords { get; }
-        public Vector2 Size { get; }
+		private Vector2 coords;
+		public Vector2 Coords { get { return coords; } }
+
+		private Vector2 size;
+		public Vector2 Size { get { return size; } }
 
 		public float X { get { return Coords.X; } }
 		public float Y { get { return Coords.Y; } }
@@ -52,8 +55,8 @@ namespace awkwardsimulator
         }
 
         public GameObject (Vector2 coords, Vector2 size) {
-			this.Coords = coords;
-            this.Size = size;
+			this.coords = coords;
+            this.size = size;
 		}
 
         override public string ToString() {
@@ -62,14 +65,17 @@ namespace awkwardsimulator
 	}
 
 	public class Player : GameObject {
-        public int Id { get; }
-        public Vector2 Velocity { get; }
+		private int id;
+		public int Id { get { return id; }  }
+
+		private Vector2 velocity;
+		public Vector2 Velocity { get { return velocity; } }
 
         public static Vector2 Size = new Vector2(4f, 6f);
 
         public Player (int id, Vector2 coords, Vector2 velocity = default(Vector2)) : base(coords, size: Size) {
-            Id = id;
-            this.Velocity = velocity;
+			this.id = id;
+            this.velocity = velocity;
         }
 
         // Player surface is on the bottom, because that's where it stands on platforms from

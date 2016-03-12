@@ -14,7 +14,8 @@ namespace awkwardsimulator
         protected Fixture fix;
         public Fixture Fixture { get { return fix; } }
 
-        virtual protected bool Grounded { get; }
+		private bool grounded;
+		virtual protected bool Grounded { get { return grounded; } }
 
         public PlayerPhysics (Fixture fix) {
             this.fix = fix;

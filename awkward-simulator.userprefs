@@ -1,32 +1,24 @@
 ﻿<Properties StartupItem="awkward-simulator.csproj" RefactoringSettings.EnableRefactorings="True">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="AStar.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="awkward-simulator-windows\Main.cs">
     <Files>
-      <File FileName="Game1.cs" Line="87" Column="31" />
-      <File FileName="Heuristics.cs" Line="26" Column="83" />
-      <File FileName="GameState.cs" Line="33" Column="31" />
-      <File FileName="Level.cs" Line="14" Column="47" />
-      <File FileName="GameObject.cs" Line="19" Column="58" />
-      <File FileName="Drawing.cs" Line="154" Column="61" />
-      <File FileName="InputMethod.cs" Line="58" Column="17" NotebookId="1" />
-      <File FileName="AI.cs" Line="6" Column="40" NotebookId="1" />
-      <File FileName="AStar.cs" Line="130" Column="59" NotebookId="1" />
-      <File FileName="PlatformAStar.cs" Line="22" Column="10" NotebookId="1" />
+      <File FileName="awkward-simulator-windows\SourceLibraries\DebugViewXNA\DebugViewXNA.cs" Line="6" Column="22" />
+      <File FileName="awkward-simulator-windows\InputMethod.cs" Line="1" Column="1" />
+      <File FileName="awkward-simulator-windows\Main.cs" Line="21" Column="29" />
+      <File FileName="awkward-simulator-windows\PlatformAStar.cs" Line="95" Column="29" />
+      <File FileName="awkward-simulator-windows\SourceLibraries\DebugViewXNA\PrimitiveBatch.cs" Line="1" Column="1" />
+      <File FileName="awkward-simulator-windows\SourceLibraries\FarseerSamples\AssetCreator.cs" Line="1" Column="1" />
+      <File FileName="awkward-simulator-windows\GameObject.cs" Line="78" Column="19" />
+      <File FileName="awkward-simulator-windows\AStar.cs" Line="43" Column="22" />
+      <File FileName="d:\NYU\Projects\CAGD - Demo\Awkward Date Simulator\Mono Game\awkward-simulator-windows\GameState.cs" Line="27" Column="19" />
+      <File FileName="d:\NYU\Projects\CAGD - Demo\Awkward Date Simulator\Mono Game\awkward-simulator-windows\PlayerPhysics.cs" Line="17" Column="25" />
     </Files>
-    <Pads>
-      <Pad Id="ProjectPad">
-        <State name="__root__">
-          <Node name="awkward-simulator" expanded="True">
-            <Node name="awkward-simulator" expanded="True">
-              <Node name="AStar.cs" selected="True" />
-            </Node>
-          </Node>
-        </State>
-      </Pad>
-    </Pads>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <DisabledProjects>
+    <String>awkward-simulator.csproj</String>
+  </DisabledProjects>
 </Properties>

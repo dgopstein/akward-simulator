@@ -2,11 +2,31 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Diagnostics;
 
-using MonoMac.AppKit;
-using MonoMac.Foundation;
 
 #endregion
+
+namespace awkwardsimulator
+{
+	static class Program
+	{
+		/// <summary>
+		/// The main entry point for the application.
+		/// </summary>
+		static void Main (string[] args)
+		{
+			Console.WriteLine ("OSVersion: {0}", System.Environment.OSVersion.Platform);
+			if (System.Environment.OSVersion.Platform == PlatformID.Win32NT) {
+				Console.WriteLine ("y");
+			}
+		}
+	}
+}
+
+/*using MonoMac.AppKit;
+using MonoMac.Foundation;
+
 
 namespace awkwardsimulator
 {
@@ -50,5 +70,4 @@ namespace awkwardsimulator
 	}
 
 }
-
-
+*/

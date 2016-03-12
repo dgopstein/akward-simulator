@@ -16,12 +16,15 @@ namespace awkwardsimulator
     public class Won : PlayStatus { override public string ToString() { return "Won"; } }
 
     public class Stage {
-        public List<Platform> Platforms { get; }
-        public Goal Goal { get; }
+		private List<Platform> platforms;
+		public List<Platform> Platforms { get { return platforms; } }
+
+		private Goal goal;
+		public Goal Goal { get { return goal; } }
 
         public Stage(Goal goal, List<Platform> platforms) {
-            Goal = goal;
-            Platforms = platforms;
+            this.goal = goal;
+            this.platforms = platforms;
         }
     }
 

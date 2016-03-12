@@ -83,32 +83,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Game1.cs" />
-    <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Input.cs" />
-    <Compile Include="ForwardModel.cs" />
-    <Compile Include="GameState.cs" />
-    <Compile Include="Drawing.cs" />
-    <Compile Include="PlayerPhysics.cs" />
-    <Compile Include="GameObject.cs" />
-    <Compile Include="Util.cs" />
-    <Compile Include="HealthControl.cs" />
-    <Compile Include="AI.cs" />
-    <Compile Include="AIUtil.cs" />
-    <Compile Include="SourceLibraries\DebugViewXNA\DebugViewXNA.cs" />
-    <Compile Include="SourceLibraries\DebugViewXNA\PrimitiveBatch.cs" />
-    <Compile Include="SourceLibraries\FarseerSamples\AssetCreator.cs" />
-    <Compile Include="Level.cs" />
-    <Compile Include="AStar.cs" />
-    <Compile Include="PlatformAStar.cs" />
-    <Compile Include="Heuristics.cs" />
-    <Compile Include="InputMethod.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Info.plist" />
     <None Include="Content\Content.mgcb" />
-    <None Include="packages.config" />
     <None Include="Content\JingJing.spritefont" />
     <None Include="Content\Lindsey.spritefont" />
   </ItemGroup>
@@ -128,9 +106,4 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
-  <ItemGroup>
-    <Folder Include="SourceLibraries\" />
-    <Folder Include="SourceLibraries\DebugViewXNA\" />
-    <Folder Include="SourceLibraries\FarseerSamples\" />
-  </ItemGroup>
 </Project>
