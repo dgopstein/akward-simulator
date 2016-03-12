@@ -117,31 +117,15 @@ namespace awkwardsimulator
 
         protected virtual StateNodeScorer scorerGenerator(Heuristic heuristic) {
             StateNodeScorer scorer = (s, pId) => {
-                var state = s.Value;
+                float h = (float)heuristic.Score (s.Value);
 
-                float h = (float)heuristic.Score (state);
-
-                h += .3f * s.Depth(); // discourage long paths
-
-//                Debug.WritreeLine("[{0}] {1}: {2}", s.Depth(), s.Input, h);
+                h += .1f * s.Depth(); // discourage long paths
 
                 return addNoise(h);
             };
 
             return scorer;
         }
-
-//        static readonly List<Tuple<Input, Vector2>> moveVectors =
-//            new List<Tuple<Input, Vector2>>(){
-//                Tuple.Create(Input.Noop, new Vector2(0, 0)),
-//                Tuple.Create(Input.Up, new Vector2(0, 1)),
-//                Tuple.Create(Input.Right, new Vector2(1, 0)),
-//                Tuple.Create(Input.UpRight, new Vector2(Math.Sqrt(2)/2, Math.Sqrt(2)/2)),
-//                Tuple.Create(Input.Left, new Vector2(-1, 0)),
-//                Tuple.Create(Input.UpLeft, new Vector2(-Math.Sqrt(2)/2, Math.Sqrt(2)/2))
-//            };
-
-
 
         void addChildrenToOpenSet(SortedDictionary<double, StateNode> dict,
             StateNode parent, GameState state, Heuristic heuristic) {
@@ -167,11 +151,9 @@ namespace awkwardsimulator
 
             stateNodeScorer = scorerGenerator (heuristic);
 
-//            var root = new StateNode (null, new Input(), origState);
-//            openSet.Add(stateNodeScorer(root, pId), root);
             addChildrenToOpenSet(openSet, null, origState, heuristic);
 
-            int maxIters = 50;
+            int maxIters = 100;
             int nRepetitions = 4;
 
             StateNode best;
@@ -182,9 +164,6 @@ namespace awkwardsimulator
                 openSet.Remove(bestKV.Key);
 
                 best = bestKV.Value;
-
-//                if (pId == PlayerId.P2)
-//                    Debug.WriteLine("{0}: {1} {2}", bestKV.Key, best.Input, best.Value.P2.Coords);
 
                 var bestNextMove = best.Input;
 
@@ -212,14 +191,11 @@ namespace awkwardsimulator
             var res = deRooted
                 .SelectMany (t => Enumerable.Repeat(t.Item1,nRepetitions)).ToList();
 
-//            Debug.WriteLine ("res " + string.Join(" ", res.Select(x => x.shortString())));
-
             return res;
         }
 
         override protected Input predictPartnerInput(GameState state) {
             return Input.UpRight;
-//            return nextInputs (state, this.otherPlayer(state), heuristic).First();
         }
     }
 }

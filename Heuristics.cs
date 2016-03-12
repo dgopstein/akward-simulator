@@ -96,12 +96,7 @@ namespace awkwardsimulator
                 Vector2.Distance (player.SurfaceCenter, next.Target) +
                 PlatformPathDistance (state, pId, next);
             
-            //            Debug.WriteLine("{0} {1}",
-            //                Vector2.Distance (player.SurfaceCenter, nextWaypoint),
-            //                Vector2.Distance (nextWaypoint, state.Goal.SurfaceCenter));
-
             return statusWrap(state, dist);
-//            return dist;
         }
     }
 
