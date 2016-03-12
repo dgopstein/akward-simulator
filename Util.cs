@@ -42,6 +42,14 @@ namespace awkwardsimulator
         {
             return (float) System.Math.Sqrt(System.Math.Pow(p2.X - p1.X, 2) + System.Math.Pow(p2.Y - p1.Y, 2));
         }
+
+        public static double CosineSimilarity(Vector2 a, Vector2 b) {
+            return Vector2.Dot (a, b) / (a.Length () * b.Length ());
+        }
+
+        public static bool SameDirection(Vector2 a, Vector2 b) {
+            return CosineSimilarity (a, b) > 0;
+        }
     }
 }
 

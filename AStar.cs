@@ -108,22 +108,24 @@ namespace awkwardsimulator
             return myPaths.Select(sn => Tuple.Create(sn.Key, sn.Value.ToPath())).ToList();
         }
 
+        int uniqueId = 1;
+        private double addNoise(double f) {
+            double ret = Math.Truncate(f * 1000) / 1000; // remove fractional noise
+            ret += (0.0000001f * uniqueId++); // add marginal unique id to avoid collisions
+            return ret;
+        }
+
         protected virtual StateNodeScorer scorerGenerator(Heuristic heuristic) {
-            int uniqueId = 1;
             StateNodeScorer scorer = (s, pId) => {
                 var state = s.Value;
 
-                double h = heuristic.Score (state);
+                float h = (float)heuristic.Score (state);
 
-                h =  Math.Truncate(h * 1000d) / 1000d; // remove fractional noise
-
-                h += (0.0000001 * uniqueId++); // add marginal unique id to avoid collisions
-                
-//                h += 1 * s.Depth(); // discourage long paths
+                h += .3f * s.Depth(); // discourage long paths
 
 //                Debug.WritreeLine("[{0}] {1}: {2}", s.Depth(), s.Input, h);
 
-                return h;
+                return addNoise(h);
             };
 
             return scorer;
@@ -139,23 +141,10 @@ namespace awkwardsimulator
 //                Tuple.Create(Input.UpLeft, new Vector2(-Math.Sqrt(2)/2, Math.Sqrt(2)/2))
 //            };
 
-        static readonly List<Input> wheelOfMoves = new List<Input>() {
-            Input.Noop, Input.Left, Input.UpLeft, Input.Up, Input.UpRight, Input.Right
-        };
 
-        float estimateHeuristic(StateNode node, Input move) {
-            // Favor similar moves
-            int parentMoveIdx = wheelOfMoves.IndexOf (node.Input);
-            int newMoveIdx = wheelOfMoves.IndexOf (move);
 
-            float score = .2f * (wheelOfMoves.Count - (parentMoveIdx - newMoveIdx));
-
-            if (score < 0) score *= -.8f;
-
-            return score;
-        }
-
-        void addChildrenToOpenSet(SortedDictionary<double, StateNode> dict, StateNode parent, GameState state) {
+        void addChildrenToOpenSet(SortedDictionary<double, StateNode> dict,
+            StateNode parent, GameState state, Heuristic heuristic) {
             if (parent == null) {
                 parent = new StateNode (parent, Input.Noop, state);
             }
@@ -163,7 +152,9 @@ namespace awkwardsimulator
             var parentScore = stateNodeScorer (parent, pId);
             foreach (var input in Input.All) {
                 var stateNode = new StateNode (parent, input, state);
-                dict.Add (parentScore + estimateHeuristic(parent, input), stateNode);
+                var score = parentScore + heuristic.EstimateScore (parent.Value, input);
+                var noiseyScore = addNoise (score);
+                dict.Add (noiseyScore, stateNode);
             }
         }
 
@@ -178,7 +169,7 @@ namespace awkwardsimulator
 
 //            var root = new StateNode (null, new Input(), origState);
 //            openSet.Add(stateNodeScorer(root, pId), root);
-            addChildrenToOpenSet(openSet, null, origState);
+            addChildrenToOpenSet(openSet, null, origState, heuristic);
 
             int maxIters = 50;
             int nRepetitions = 4;
@@ -192,8 +183,8 @@ namespace awkwardsimulator
 
                 best = bestKV.Value;
 
-                if (pId == PlayerId.P2)
-                    Debug.WriteLine("{0}: {1} {2}", bestKV.Key, best.Input, best.Value.P2.Coords);
+//                if (pId == PlayerId.P2)
+//                    Debug.WriteLine("{0}: {1} {2}", bestKV.Key, best.Input, best.Value.P2.Coords);
 
                 var bestNextMove = best.Input;
 
@@ -203,7 +194,7 @@ namespace awkwardsimulator
                     resultState = nextState(resultState, bestNextMove);
                 }
 
-                addChildrenToOpenSet(openSet, best, resultState);
+                addChildrenToOpenSet(openSet, best, resultState, heuristic);
 
                 var stateNode = new StateNode (best, bestNextMove, resultState);
                 var score = stateNodeScorer (stateNode, pId);

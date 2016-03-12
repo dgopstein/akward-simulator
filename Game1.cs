@@ -54,12 +54,12 @@ namespace awkwardsimulator
             ai1 = new NullAI (state, PlayerId.P1);
 //            ai1 = new AStar (state, PlayerId.P1, new WaypointHeuristic (state, PlayerId.P1));
             ai2 = new AStar (state, PlayerId.P2, new WaypointHeuristic (state, PlayerId.P2));
-            aiInput = new ListAiInput (
-//            aiInput = new SingleAiInput (
+//            aiInput = new ListAiInput (
+            aiInput = new SingleAiInput (
                 ai1, ai2, state);
 
-            inputMethod = humanInput;
-//            inputMethod = aiInput;
+//            inputMethod = humanInput;
+            inputMethod = aiInput;
 
 			base.Initialize ();
 		}

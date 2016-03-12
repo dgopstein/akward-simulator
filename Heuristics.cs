@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using System.Diagnostics;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace awkwardsimulator
 {
@@ -13,6 +14,30 @@ namespace awkwardsimulator
         }
 
         abstract public float Score (GameState state);
+        abstract public float EstimateScore (GameState state, Input move);
+
+        private static readonly float diagonangle = (float)Math.Sqrt(2)/2;
+        private static readonly Dictionary<Input, Vector2> moveVectors =
+            new Dictionary<Input, Vector2>(){
+            { Input.Noop, new Vector2(0, 0) },
+            { Input.Up, new Vector2(0, 1) },
+            { Input.Right, new Vector2(1, 0) },
+            { Input.UpRight, new Vector2(diagonangle, diagonangle) },
+            { Input.Left, new Vector2(-1, 0) },
+            { Input.UpLeft, new Vector2(-diagonangle, diagonangle) },
+        };
+
+        protected float EstimateScore(GameState state, Input move, Vector2 target) {
+            if (move == Input.Noop)
+                return 0f;
+
+            Vector2 targetVector = Vector2.Subtract (target, state.Player (pId).Target);
+
+            float similarity = (float)Util.CosineSimilarity(targetVector, moveVectors[move]);
+
+            return -similarity;
+        }
+
 
         protected float statusWrap(GameState state, float s) {
             float healthScore  = System.Math.Abs(state.Health);
@@ -56,6 +81,12 @@ namespace awkwardsimulator
             return dist;
         }
 
+        override public float EstimateScore(GameState state, Input input) {
+            GameObject target = NextPlatform (state);
+            return EstimateScore (state, input, target.Target);
+        }
+
+
         override public float Score(GameState state) {
             Player player = state.Player (pId);
 
@@ -72,18 +103,14 @@ namespace awkwardsimulator
             return statusWrap(state, dist);
 //            return dist;
         }
-
-        private static double CosineSimilarity(Vector2 a, Vector2 b) {
-            return Vector2.Dot (a, b) / (a.Length () * b.Length ());
-        }
-
-        private static bool SameDirection(Vector2 a, Vector2 b) {
-            return CosineSimilarity (a, b) > 0;
-        }
     }
 
     public class LinearHeuristic : Heuristic {
         public LinearHeuristic(PlayerId pId) : base(pId)  {}
+
+        override public float EstimateScore(GameState state, Input input) {
+            return EstimateScore (state, input, state.Goal.Target);
+        }
 
         override public float Score(GameState state) {
             float goalDistance = Vector2.Distance(state.Player(pId).Coords, state.Goal.Coords);
