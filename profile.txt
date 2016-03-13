@@ -1,0 +1,4 @@
+# to profile this application on mac use:
+
+MONO_ENV_OPTIONS="--profile=log" ./bin/Debug/monogame-monomac.app/Contents/MacOS/monogame-monomac
+mprof-report output.mlpd
