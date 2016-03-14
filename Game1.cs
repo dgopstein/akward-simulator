@@ -58,8 +58,8 @@ namespace awkwardsimulator
 //            aiInput = new SingleAiInput (
                 ai1, ai2, state);
 
-            inputMethod = humanInput;
-//            inputMethod = aiInput;
+//            inputMethod = humanInput;
+            inputMethod = aiInput;
 
 			base.Initialize ();
 		}

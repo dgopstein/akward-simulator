@@ -115,41 +115,57 @@ namespace awkwardsimulator
             return ret;
         }
 
-        protected virtual StateNodeScorer scorerGenerator(Heuristic heuristic) {
-            StateNodeScorer scorer = (s, pId) => {
-                float h = (float)heuristic.Score (s.Value);
+//        protected virtual StateNodeScorer scorerGenerator(Heuristic heuristic) {
+//            StateNodeScorer scorer = (s, pId) => {
+//                float h = (float)heuristic.Score (s.Value);
+//
+//                h += .1f * s.Depth(); // discourage long paths
+//
+//                return addNoise(h);
+//            };
+//
+//            return scorer;
+//        }
 
-                h += .1f * s.Depth(); // discourage long paths
+        protected virtual double stateNodeScorer(Heuristic heuristic, StateNode node) {
+            float h = (float)heuristic.Score (node.Value);
 
-                return addNoise(h);
-            };
+            h += .1f * node.Depth(); // discourage long paths
 
-            return scorer;
+            return addNoise(h);
         }
 
+        int nRuns = 0;
+        Stopwatch sw = new Stopwatch();
         void addChildrenToOpenSet(SortedDictionary<double, StateNode> dict,
-            StateNode parent, GameState state, Heuristic heuristic) {
+                                  StateNode parent, GameState state, Heuristic heuristic) {
+            sw.Start ();
+
             if (parent == null) {
                 parent = new StateNode (parent, Input.Noop, state);
             }
 
-            var parentScore = stateNodeScorer (parent, pId);
+            var parentScore = stateNodeScorer (heuristic, parent);
             foreach (var input in Input.All) {
                 var stateNode = new StateNode (parent, input, state);
                 var score = parentScore + heuristic.EstimateScore (parent.Value, input);
                 var noiseyScore = addNoise (score);
                 dict.Add (noiseyScore, stateNode);
             }
+
+            sw.Stop ();
+            nRuns++;
+            Debug.WriteLine ("addChildren: {0}", sw.ElapsedMilliseconds / (float)nRuns);
         }
 
-        protected StateNodeScorer stateNodeScorer;
+//        protected StateNodeScorer stateNodeScorer;
 
         override public List<Input> nextInputs (GameState origState, PlayerId pId, Heuristic heuristic)
         {
             var openSet = new SortedDictionary<double, StateNode>(); // Known, but unexplored
             var closedSet = new SortedDictionary<double, StateNode>(); // Fully explored
 
-            stateNodeScorer = scorerGenerator (heuristic);
+//            stateNodeScorer = scorerGenerator (heuristic);
 
             addChildrenToOpenSet(openSet, null, origState, heuristic);
 
@@ -176,7 +192,7 @@ namespace awkwardsimulator
                 addChildrenToOpenSet(openSet, best, resultState, heuristic);
 
                 var stateNode = new StateNode (best, bestNextMove, resultState);
-                var score = stateNodeScorer (stateNode, pId);
+                var score = stateNodeScorer (heuristic, stateNode);
 
                 closedSet.Add(score, stateNode);
 
