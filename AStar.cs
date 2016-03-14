@@ -135,6 +135,7 @@ namespace awkwardsimulator
             return addNoise(h);
         }
 
+        int nSkip = 3;
         int nRuns = 0;
         Stopwatch sw = new Stopwatch();
         void addChildrenToOpenSet(SortedDictionary<double, StateNode> dict,
@@ -155,7 +156,12 @@ namespace awkwardsimulator
 
             sw.Stop ();
             nRuns++;
-            Debug.WriteLine ("addChildren: {0}", sw.ElapsedMilliseconds / (float)nRuns);
+
+            if (nRuns <= nSkip) {
+                sw.Reset ();
+            } else if (nRuns == 3000) {
+                Debug.WriteLine ("addChildren: {0}", sw.ElapsedTicks / (float)(nRuns - nSkip));
+            }
         }
 
 //        protected StateNodeScorer stateNodeScorer;
