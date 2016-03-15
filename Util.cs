@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
+using System.Diagnostics;
 
 namespace awkwardsimulator
 {
@@ -49,6 +50,38 @@ namespace awkwardsimulator
 
         public static bool SameDirection(Vector2 a, Vector2 b) {
             return CosineSimilarity (a, b) > 0;
+        }
+    }
+
+    public class Profiler {
+        int printAfter;
+        int nSkip;
+        int nRuns = 0;
+        string name;
+
+        Stopwatch sw;
+        public Profiler(string name, int printAfter = 3000, int nSkip = 100) {
+            this.name = name;
+
+            this.nSkip = nSkip;
+            this.printAfter = printAfter;
+
+            this.sw = new Stopwatch();
+        }
+
+        public void Start() {
+            sw.Start ();
+        }
+
+        public void End() {
+            sw.Stop ();
+            nRuns++;
+
+            if (nRuns <= nSkip) {
+                sw.Reset ();
+            } else if (nRuns == printAfter) {
+                Debug.Print ("{0}: {1}", name, sw.ElapsedTicks / (float)(nRuns - nSkip));
+            }
         }
     }
 }

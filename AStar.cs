@@ -135,33 +135,24 @@ namespace awkwardsimulator
             return addNoise(h);
         }
 
-        int nSkip = 3;
-        int nRuns = 0;
-        Stopwatch sw = new Stopwatch();
+ 
+
+//        Profiler prof = new Profiler ("addChildren", 3000, 3);
         void addChildrenToOpenSet(SortedDictionary<double, StateNode> dict,
                                   StateNode parent, GameState state, Heuristic heuristic) {
-            sw.Start ();
-
-            if (parent == null) {
-                parent = new StateNode (parent, Input.Noop, state);
-            }
+//            prof.Start ();
 
             var parentScore = stateNodeScorer (heuristic, parent);
             foreach (var input in Input.All) {
                 var stateNode = new StateNode (parent, input, state);
-                var score = parentScore + heuristic.EstimateScore (parent.Value, input);
+
+                var score = parentScore + heuristic.EstimateScore (state, input);
+
                 var noiseyScore = addNoise (score);
                 dict.Add (noiseyScore, stateNode);
             }
 
-            sw.Stop ();
-            nRuns++;
-
-            if (nRuns <= nSkip) {
-                sw.Reset ();
-            } else if (nRuns == 3000) {
-                Debug.WriteLine ("addChildren: {0}", sw.ElapsedTicks / (float)(nRuns - nSkip));
-            }
+//            prof.End ();
         }
 
 //        protected StateNodeScorer stateNodeScorer;
@@ -173,9 +164,10 @@ namespace awkwardsimulator
 
 //            stateNodeScorer = scorerGenerator (heuristic);
 
-            addChildrenToOpenSet(openSet, null, origState, heuristic);
+            StateNode parentStub = new StateNode (null, Input.Noop, origState);
+            addChildrenToOpenSet(openSet, parentStub, origState, heuristic);
 
-            int maxIters = 100;
+            int maxIters = 10;
             int nRepetitions = 4;
 
             StateNode best;

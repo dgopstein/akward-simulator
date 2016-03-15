@@ -27,17 +27,33 @@ namespace awkwardsimulator
             { Input.UpLeft, new Vector2(-diagonangle, diagonangle) },
         };
 
+//        Profiler prof = new Profiler ("EstimateScore", 30000, 3);
+        private Vector2 gravity = new Vector2 (0, -PlatformAStar.MaxReachY);
         protected float EstimateScore(GameState state, Input move, Vector2 target) {
-            if (move == Input.Noop)
-                return 0f;
+//            prof.Start ();
 
-            Vector2 targetVector = Vector2.Subtract (target, state.Player (pId).Target);
+            float similarity;
 
-            float similarity = (float)Util.CosineSimilarity(targetVector, moveVectors[move]);
+            if (move == Input.Noop) {
+                similarity = 0f;
+            } else {
+                var player = state.Player (pId);
+
+                Vector2 gravOffset = state.IsGrounded (player) ? Vector2.Zero : gravity;
+
+                Vector2 targetVector = Vector2.Subtract (target, player.Target + gravOffset);
+
+                Vector2.Normalize (targetVector);
+
+//                Debug.WriteLine("targetVector: {0}", gravOffset);
+
+                similarity = (float)Util.CosineSimilarity(targetVector, moveVectors [move]);
+            }
+
+//            prof.End ();
 
             return -similarity;
         }
-
 
         protected float statusWrap(GameState state, float s) {
             float healthScore  = System.Math.Abs(state.Health);
@@ -96,7 +112,8 @@ namespace awkwardsimulator
                 Vector2.Distance (player.SurfaceCenter, next.Target) +
                 PlatformPathDistance (state, pId, next);
             
-            return statusWrap(state, dist);
+//            return statusWrap(state, dist);
+            return dist;
         }
     }
 

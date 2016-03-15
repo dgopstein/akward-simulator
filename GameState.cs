@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace awkwardsimulator
 {
@@ -92,6 +93,23 @@ namespace awkwardsimulator
 
         private bool inGoal(Player p) {
             return Util.euclideanDistance (p.Center, goal.Coords) <= goal.Radius;
+        }
+
+        public static bool IsGrounded(List<Platform> platforms, Player player) {
+            return platforms.Any (plat => {
+
+                var horizontal =
+                    plat.RightBoundary >= player.LeftBoundary &&
+                    plat.LeftBoundary <= player.RightBoundary;
+
+                var vertical = Math.Abs (player.BottomBoundary - plat.TopBoundary) < 0.1;
+
+                return horizontal && vertical;
+            });
+        }
+
+        public bool IsGrounded(Player player) {
+            return IsGrounded (Platforms, player);
         }
 
         public PlayStatus PlayStatus { get {

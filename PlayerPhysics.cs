@@ -37,8 +37,6 @@ namespace awkwardsimulator
 		float GroundFriction = 40.0f; //Applied to horizontal movement if neither key is held
 		float AirFriction = 30.0f;
 
-		bool holdingJumpButton = true;
-
         bool grounded = true;
         override protected bool Grounded { get { return grounded; } }
 
@@ -50,7 +48,7 @@ namespace awkwardsimulator
 
 			bool jumpButton = input.up;
 
-            //TODO this will repeatedly jump
+            //TODO this will repeatedly jump and not respect stateful jump boosting
             if (jumpButton && Grounded) {
                 my = JumpVelocity;
             } else if (!jumpButton && !Grounded && my > 0.0f) {

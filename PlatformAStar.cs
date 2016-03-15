@@ -42,7 +42,7 @@ namespace awkwardsimulator
 
                 var between0and1 = plat1.Distance(plat0) > plat1.Distance(player);
                 var closeEnough = player.Distance(plat0) < (1 * Player.Size.X) && player.Y >= plat0.Y;
-                var unreachable1 = unreachable (player, plat1);
+                var unreachable1 = unreachable (Platforms, player, plat1);
                 var bothAbove = plat1.TopBoundary > player.BottomBoundary && plat0.TopBoundary > player.BottomBoundary;
 
 //                Debug.WriteLine ("");
@@ -53,19 +53,6 @@ namespace awkwardsimulator
             }
 
             return next;
-        }
-
-        private bool grounded(Player player) {
-            return Platforms.Any (plat => {
-
-                var horizontal =
-                    plat.RightBoundary >= player.LeftBoundary &&
-                    plat.LeftBoundary <= player.RightBoundary;
-
-                var vertical = Math.Abs (player.BottomBoundary - plat.TopBoundary) < 0.1;
-
-                return horizontal && vertical;
-            });
         }
 
         public static float remainingJumpDist(Player player) {
@@ -127,7 +114,7 @@ namespace awkwardsimulator
 
         private Platform nearestReachablePlatform(Player player, List<Platform> platforms) {
             // Eliminate platforms we've fallen below
-            var lowerPlats = platforms.FindAll (plat => !unreachable(player, plat));
+            var lowerPlats = platforms.FindAll (plat => !unreachable(platforms, player, plat));
 
             Platform nearest;
             if (lowerPlats.Count > 0) {
@@ -204,7 +191,7 @@ namespace awkwardsimulator
         }
 
         const int MaxReachX = 20;
-        const int MaxReachY = 15;
+        public static readonly int MaxReachY = 15;
         private static bool adjacent(List<Platform> plats, GameObject go1, GameObject go2) {
 //            var dist = Vector2.Subtract (go1.SurfaceCenter, go2.SurfaceCenter);
 //            var closeEnough = Math.Abs (dist.X) <= MaxReachX && Math.Abs (dist.Y) <= MaxReachY;
@@ -218,13 +205,13 @@ namespace awkwardsimulator
             return closeEnough && isLineOfSight (plats, go1, go2); //TODO add element
         }
 
-        private bool unreachable(Player player, GameObject plat) {
+        private bool unreachable(List<Platform> platforms, Player player, GameObject plat) {
             var ret = false;
 
             var vert = plat.SurfaceCenter.Y - player.BottomBoundary;
 
             if (vert > 0) { // Platform is above you
-                if (grounded (player)) {
+                if (GameState.IsGrounded (platforms, player)) {
                     if (vert > MaxReachY) {
                         ret = true;
                     }

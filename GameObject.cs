@@ -65,7 +65,7 @@ namespace awkwardsimulator
         public int Id { get; }
         public Vector2 Velocity { get; }
 
-        public static Vector2 Size = new Vector2(4f, 6f);
+        public static new readonly Vector2 Size = new Vector2(4f, 6f);
 
         public Player (int id, Vector2 coords, Vector2 velocity = default(Vector2)) : base(coords, size: Size) {
             Id = id;

@@ -83,7 +83,7 @@ namespace awkwardsimulator
         }
 
         override public void Update(GameState state) {
-            if (fAi1.IsCompleted && fAi1.IsCompleted) startFAis (state);
+            if (fAi1.IsCompleted && fAi2.IsCompleted) startFAis (state);
         }
     }
 
