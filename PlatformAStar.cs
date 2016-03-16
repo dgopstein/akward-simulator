@@ -22,14 +22,14 @@ namespace awkwardsimulator
             this.platformGraph = BuildPlatformGraph (platforms);
         }
 
-        public GameObject NextPlatform(Player player, GameObject end) {
+        public GameObject NextPlatform(List<Platform> path, Player player, GameObject end) {
 //            var nearest = nearestPlatform (player, Platforms);
 
 //            Debug.WriteLine ("{0}", nearest);
 
 
 //            var path = PlatformPath (nearest, end);
-            var path = PlatformPath (player, end);
+//            var path = PlatformPath (player, end);
 
 
             GameObject next;

@@ -141,7 +141,7 @@ namespace awkwardsimulator
 //            drawing.DrawPath (pas.PlatformPath(state.P1, state.Goal).Select (s => s.Target), Color.Maroon, 2);
 //            drawing.DrawCircle (2, ((WaypointHeuristic)ai1.Heuristic).NextPlatform(state).Target, Color.Crimson);
             drawing.DrawPath (pas.PlatformPath(state.P2, state.Goal).Select (s => s.Target), Color.Maroon, 2);
-            drawing.DrawCircle (2, ((WaypointHeuristic)ai2.Heuristic).NextPlatform(state).Target, Color.Crimson);
+            drawing.DrawCircle (2, ((WaypointHeuristic)ai2.Heuristic).CurrentNextPlatform.Target, Color.Crimson);
 
 //            drawing.DrawPath (history.Select (s => s.P1.Coords), Color.Thistle, 2);
             drawing.DrawPath (history.Select (s => s.P2.Coords + (Player.Size *.5f)), Color.Thistle, 2);
