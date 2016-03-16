@@ -83,6 +83,29 @@ namespace awkwardsimulator
         public override string ToString () {
             return string.Format ("P{0}{1}", Id, base.ToString());
         }
+
+        public override bool Equals (object obj) {
+            if (obj == null) {
+                return false;
+            }
+
+            Player p = obj as Player;
+            if ((System.Object)p == null) {
+                return false;
+            }
+
+            return (Coords == p.Coords) && (Velocity == p.Velocity) && (Id == p.Id);
+        }
+
+        // http://stackoverflow.com/questions/12393467/generate-hash-of-object-consistently
+        public override int GetHashCode() {
+            unchecked {
+                int result = Coords.GetHashCode ();
+                result = (result*397) ^ Velocity.GetHashCode();
+                result = (result*397) ^ Id.GetHashCode();
+                return result;
+            }
+        }
 	}
 
 	public class Platform : GameObject {

@@ -22,15 +22,8 @@ namespace awkwardsimulator
             this.platformGraph = BuildPlatformGraph (platforms);
         }
 
-        public GameObject NextPlatform(List<Platform> path, Player player, GameObject end) {
-//            var nearest = nearestPlatform (player, Platforms);
-
-//            Debug.WriteLine ("{0}", nearest);
-
-
-//            var path = PlatformPath (nearest, end);
-//            var path = PlatformPath (player, end);
-
+        public GameObject NextPlatform(Player player, GameObject end) {
+            var path = PlatformPath (player, end);
 
             GameObject next;
 
@@ -60,23 +53,37 @@ namespace awkwardsimulator
         }
 
 
-//        //todo: return all platforms and an index because we need to be able to see where we came from
+        Dictionary<Tuple<Player, GameObject>, List<GameObject>> paths =
+            new Dictionary<Tuple<Player, GameObject>, List<GameObject>> ();
+
         public List<GameObject> PlatformPath(Player start, GameObject end) {
-            var startPlat = nearestReachablePlatform (start, Platforms);
+            var tup = Tuple.Create (start, end);
 
-            var endReachablePlatforms = Platforms.FindAll (p => adjacent (Platforms, p, end));
+            List<GameObject> path;
 
-            Debug.WriteLineIf (endReachablePlatforms.Count == 0, "No platforms within reach of the goal!");
+            if (paths.ContainsKey(tup)) {
+                path = paths[tup];
+            } else {
+                var startPlat = nearestReachablePlatform (start, Platforms);
 
-//            Debug.WriteLine ("all platforms: "+ PlatListStr (Platforms));
-//            Debug.WriteLine ("end reachable: "+ PlatListStr (endReachablePlatforms));
+                var endReachablePlatforms = Platforms.FindAll (p => adjacent (Platforms, p, end));
 
-            var endPlat = nearestPlatform (end.Center, endReachablePlatforms);
+                Debug.WriteLineIf (endReachablePlatforms.Count == 0, "No platforms within reach of the goal!");
 
-            return PlatformPath (startPlat, endPlat).Concat(end).ToList<GameObject>();
+    //            Debug.WriteLine ("all platforms: "+ PlatListStr (Platforms));
+    //            Debug.WriteLine ("end reachable: "+ PlatListStr (endReachablePlatforms));
+
+                var endPlat = nearestPlatform (end.Center, endReachablePlatforms);
+
+                path = runAStar (startPlat, endPlat).Concat(end).ToList<GameObject>();
+
+                paths[tup] = path;
+            }
+
+            return path;
         }
 
-        private List<Platform> PlatformPath(Platform start, Platform end) {
+        private List<Platform> runAStar(Platform start, Platform end) {
             int maxIters = 20;
 
             var paths = new SortedDictionary<double, StateNode>();

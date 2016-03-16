@@ -2,4 +2,4 @@
 *.log
 bin/
 output.mlpd
-mprof-report.txt
+mprof-report.txt*

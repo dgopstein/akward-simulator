@@ -13,8 +13,8 @@ namespace awkwardsimulator
             this.pId = pId;
         }
 
-        abstract public float Score (List<Platform> path, GameState state);
-        abstract public float EstimateScore (List<Platform> path, GameState state, Input move);
+        abstract public float Score (GameState state);
+        abstract public float EstimateScore (GameState state, Input move);
 
         private static readonly float diagonangle = (float)Math.Sqrt(2)/2;
         private static readonly Dictionary<Input, Vector2> moveVectors =
@@ -77,16 +77,13 @@ namespace awkwardsimulator
 //        readonly GameState initialState;
         readonly PlatformAStar pas;
 
-        Platform currentNextPlatform;
-        public Platform CurrentNextPlatform { get { return CurrentNextPlatform; } }
-
         public WaypointHeuristic(GameState initialState, PlayerId pId) : base(pId) {
 //            this.initialState = initialState;
             pas = new PlatformAStar (initialState.Platforms);
         }
 
-        public GameObject NextPlatform(List<Platform> path, GameState state) {
-            return pas.NextPlatform (path, state.Player(pId), state.Goal);
+        public GameObject NextPlatform(GameState state) {
+            return pas.NextPlatform (state.Player(pId), state.Goal);
         }
 
         private float PlatformPathDistance(GameState state, PlayerId pId, GameObject platform) {
@@ -100,35 +97,34 @@ namespace awkwardsimulator
             return dist;
         }
 
-        override public float EstimateScore(List<Platform> path, GameState state, Input input) {
+        override public float EstimateScore(GameState state, Input input) {
             GameObject target = NextPlatform (state);
             return EstimateScore (state, input, target.Target);
         }
 
 
-        override public float Score(List<Platform> path, GameState state) {
+        override public float Score(GameState state) {
             Player player = state.Player (pId);
 
             GameObject next = NextPlatform (state);
-            currentNextPlatform = next;
 
             var dist =
                 Vector2.Distance (player.SurfaceCenter, next.Target) +
                 PlatformPathDistance (state, pId, next);
             
-//            return statusWrap(state, dist);
-            return dist;
+            return statusWrap(state, dist);
+//            return dist;
         }
     }
 
     public class LinearHeuristic : Heuristic {
         public LinearHeuristic(PlayerId pId) : base(pId)  {}
 
-        override public float EstimateScore(List<Platform> path, GameState state, Input input) {
+        override public float EstimateScore(GameState state, Input input) {
             return EstimateScore (state, input, state.Goal.Target);
         }
 
-        override public float Score(List<Platform> path, GameState state) {
+        override public float Score(GameState state) {
             float goalDistance = Vector2.Distance(state.Player(pId).Coords, state.Goal.Coords);
             float healthScore  = System.Math.Abs(state.Health);
 
