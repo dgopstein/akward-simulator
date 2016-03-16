@@ -110,6 +110,7 @@
     <Compile Include="PlatformAStar.cs" />
     <Compile Include="Heuristics.cs" />
     <Compile Include="InputMethod.cs" />
+    <Compile Include="SubPlatformPathFinder.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Info.plist" />

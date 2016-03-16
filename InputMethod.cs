@@ -25,32 +25,35 @@ namespace awkwardsimulator
         }
 
         abstract protected Tuple <Input, Input> _inputs ();
+
+        abstract public void Update (GameState state);
     }
 
     class HumanInput : InputMethod {
-        public HumanInput(GameState state) : base(state) {
+        InputMethod aiUpdater;
+
+        public HumanInput(GameState state, InputMethod aiUpdater) : base(state) {
+            this.aiUpdater = aiUpdater;
         }
 
         override protected Tuple<Input, Input> _inputs() {
             return ReadKeyboardInputs (Keyboard.GetState());
         }
 
-        private Tuple<Input, Input> ReadKeyboardInputs(KeyboardState newKeyboardState) {
-            bool left1, right1, up1, left2, right2, up2;
-            left1 = right1 = up1 = left2 = right2 = up2 = false;
+        private static Tuple<Input, Input> ReadKeyboardInputs(KeyboardState newKeyboardState) {
+            return Tuple.Create (ReadKeyboardInput(newKeyboardState, Keys.A,    Keys.D,     Keys.W ),
+                                 ReadKeyboardInput(newKeyboardState, Keys.Left, Keys.Right, Keys.Up));
+        }
 
-            if (newKeyboardState.IsKeyDown (Keys.A    )) { left1  = true; }
-            if (newKeyboardState.IsKeyDown (Keys.D    )) { right1 = true; }
-            if (newKeyboardState.IsKeyDown (Keys.W    )) { up1   = true; }
+        public static Input ReadKeyboardInput(KeyboardState newKeyboardState, Keys a, Keys d, Keys w) {
+            return new Input (
+                newKeyboardState.IsKeyDown (a),
+                newKeyboardState.IsKeyDown (d),
+                newKeyboardState.IsKeyDown (w));
+        }
 
-            if (newKeyboardState.IsKeyDown (Keys.Left )) { left2  = true; }
-            if (newKeyboardState.IsKeyDown (Keys.Right)) { right2 = true; }
-            if (newKeyboardState.IsKeyDown (Keys.Up   )) { up2    = true; }
-
-            Input input1 = new Input (left1, right1, up1);
-            Input input2 = new Input (left2, right2, up2);
-
-            return Tuple.Create (input1, input2);
+        override public void Update (GameState state) {
+            aiUpdater.Update (state); // For path drawing
         }
     }
 
@@ -62,14 +65,12 @@ namespace awkwardsimulator
             this.ai1 = ai1;
             this.ai2 = ai2;
         }
-
-        abstract public void Update (GameState state);
     }
 
-    class SingleAiInput : AiInput {
+    class SynchronizedAiInput : AiInput {
         protected Task<Input> fAi1, fAi2;
 
-        public SingleAiInput(AI ai1, AI ai2, GameState state) : base(ai1, ai2, state) {
+        public SynchronizedAiInput(AI ai1, AI ai2, GameState state) : base(ai1, ai2, state) {
             startFAis(state);
         }
 
@@ -84,6 +85,30 @@ namespace awkwardsimulator
 
         override public void Update(GameState state) {
             if (fAi1.IsCompleted && fAi2.IsCompleted) startFAis (state);
+        }
+    }
+
+    class HalfHumanAiInput : AiInput {
+        protected Task<Input> fAi1;
+
+        public HalfHumanAiInput(AI ai1, GameState state) : base(ai1, null, state) {
+            startFAis(state);
+        }
+
+        protected void startFAis(GameState state) {
+            fAi1 = Task.Factory.StartNew<Input> (() => ai1.nextInput (state));
+        }
+
+        override protected Tuple <Input, Input> _inputs() {
+            var keyboard = Keyboard.GetState ();
+
+            return ai1.pId == PlayerId.P1 ?
+                Tuple.Create (fAi1.Result, HumanInput.ReadKeyboardInput(keyboard, Keys.Left, Keys.Right, Keys.Up)) :
+                Tuple.Create(HumanInput.ReadKeyboardInput(keyboard, Keys.Left, Keys.Right, Keys.Up), fAi1.Result);
+        }
+
+        override public void Update(GameState state) {
+            if (fAi1.IsCompleted) startFAis (state);
         }
     }
 

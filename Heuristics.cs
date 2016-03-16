@@ -58,13 +58,13 @@ namespace awkwardsimulator
         protected float statusWrap(GameState state, float s) {
             float healthScore  = System.Math.Abs(state.Health);
 
-            var healthWeight = 0f;
+            var healthWeight = 150f;
 
             var score = s  + (healthWeight * healthScore);
 
             if (state.PlayStatus.isDied () ||
                 state.Player(pId).BottomBoundary < state.Platforms.Min(x => x.TopBoundary)) {
-                score = GameState.Width;
+                score = 5*GameState.Width;
             } else if (state.PlayStatus.isWon ()) {
                 score = 0;
             }

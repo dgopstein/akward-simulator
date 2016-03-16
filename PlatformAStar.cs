@@ -170,7 +170,7 @@ namespace awkwardsimulator
         }
 
 
-        private static bool isLineOfSight(List<Platform> plats, GameObject go1, GameObject go2) {
+        protected static bool isLineOfSight(List<Platform> plats, GameObject go1, GameObject go2) {
             // We expect to intersect the start/end platforms, but no others
 
             var otherPlats = plats.FindAll (p => p != go1 && p != go2);
@@ -199,7 +199,7 @@ namespace awkwardsimulator
 
         const int MaxReachX = 20;
         public static readonly int MaxReachY = 15;
-        private static bool adjacent(List<Platform> plats, GameObject go1, GameObject go2) {
+        protected static bool adjacent(List<Platform> plats, GameObject go1, GameObject go2) {
 //            var dist = Vector2.Subtract (go1.SurfaceCenter, go2.SurfaceCenter);
 //            var closeEnough = Math.Abs (dist.X) <= MaxReachX && Math.Abs (dist.Y) <= MaxReachY;
 
@@ -212,7 +212,7 @@ namespace awkwardsimulator
             return closeEnough && isLineOfSight (plats, go1, go2); //TODO add element
         }
 
-        private bool unreachable(List<Platform> platforms, Player player, GameObject plat) {
+        protected bool unreachable(List<Platform> platforms, Player player, GameObject plat) {
             var ret = false;
 
             var vert = plat.SurfaceCenter.Y - player.BottomBoundary;

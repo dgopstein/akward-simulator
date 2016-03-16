@@ -34,9 +34,7 @@ namespace awkwardsimulator
 
 		// load any non-graphic related content.  Calling base.Initialize will enumerate through any components
 		/// and initialize them as well.
-        AiInput aiInput;
         AI ai1, ai2;
-        HumanInput humanInput;
         InputMethod inputMethod;
 
 		protected override void Initialize ()
@@ -49,17 +47,17 @@ namespace awkwardsimulator
 
             history = new List<GameState> ();
 
-            humanInput = new HumanInput (state);
 
 //            ai1 = new NullAI (state, PlayerId.P1);
             ai1 = new AStar (state, PlayerId.P1, new WaypointHeuristic (state, PlayerId.P1));
             ai2 = new AStar (state, PlayerId.P2, new WaypointHeuristic (state, PlayerId.P2));
-//            aiInput = new ListAiInput (
-            aiInput = new SingleAiInput (
-                ai1, ai2, state);
 
-//            inputMethod = humanInput;
-            inputMethod = aiInput;
+
+            inputMethod = new ListAiInput (ai1, ai2, state);
+//            inputMethod = new SynchronizedAiInput (ai1, ai2, state);
+//            inputMethod = new HalfHumanAiInput (ai2, state);
+            inputMethod = new HumanInput (state, inputMethod);
+
 
 			base.Initialize ();
 		}
@@ -103,7 +101,7 @@ namespace awkwardsimulator
 //                Debug.WriteLine ("{0}", inputs.Item2);
                 state = forwardModel.nextState (state, inputs.Item1, inputs.Item2);
 
-                aiInput.Update (state); // Always update AiInput because it calculates pretty pictures
+                inputMethod.Update (state); // Always update AiInput because it calculates pretty pictures
 
                 history.Add (state);
             }

@@ -167,8 +167,8 @@ namespace awkwardsimulator
             StateNode parentStub = new StateNode (null, Input.Noop, origState);
             addChildrenToOpenSet(openSet, parentStub, origState, heuristic);
 
-            int maxIters = 10;
-            int nRepetitions = 4;
+            int maxIters = 30;
+            int nRepetitions = 3;
 
             StateNode best;
 
