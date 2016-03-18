@@ -4,6 +4,7 @@ using StateNode = awkwardsimulator.AStarNode<awkwardsimulator.GameState, System.
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using System.Linq;
+using C5;
 
 
 namespace awkwardsimulator
@@ -61,18 +62,18 @@ namespace awkwardsimulator
 
     public class CombinedAi
     {
-        protected SortedDictionary<double, StateNode> allPaths;
+        protected TreeDictionary<double, StateNode> allPaths;
         CombinedHeuristic heuristic;
         ForwardModel forwardModel;
 
         public CombinedAi (GameState state) {
             this.heuristic = new CombinedHeuristic (state);
             this.forwardModel = new ForwardModel(state);
-            this.allPaths = new SortedDictionary<double, StateNode> ();
+            this.allPaths = new TreeDictionary<double, StateNode> ();
         }
 
         public List<Tuple<double, List<Tuple<Tuple<Input, Input>, GameState>>>> AllPaths() {
-            List<KeyValuePair<double,StateNode>> myPaths;
+            List<C5.KeyValuePair<double,StateNode>> myPaths;
             lock(allPaths) {
                 myPaths = allPaths.ToList();
             }
@@ -88,7 +89,7 @@ namespace awkwardsimulator
             return h;
         }
 
-        void addChildrenToOpenSet(SortedDictionary<double, StateNode> dict,
+        void addChildrenToOpenSet(TreeDictionary<double, StateNode> dict,
             StateNode parent, GameState state, CombinedHeuristic heuristic) {
 
             var parentScore = stateNodeScorer (heuristic, parent);
@@ -105,15 +106,15 @@ namespace awkwardsimulator
         }
 
         public List<Tuple<Input, Input>> nextInputsList(GameState state) {
-            var openSet = new SortedDictionary<double, StateNode>(); // Known, but unexplored
-            var closedSet = new SortedDictionary<double, StateNode>(); // Fully explored
+            var openSet = new TreeDictionary<double, StateNode>(); // Known, but unexplored
+            var closedSet = new TreeDictionary<double, StateNode>(); // Fully explored
 
             //            stateNodeScorer = scorerGenerator (heuristic);
 
             StateNode parentStub = new StateNode (null, Tuple.Create(Input.Noop, Input.Noop), state);
             addChildrenToOpenSet(openSet, parentStub, state, heuristic);
 
-            int maxIters = 30;
+            int maxIters = 100;
             int nRepetitions = 3;
 
             StateNode best;
@@ -136,7 +137,7 @@ namespace awkwardsimulator
                 addChildrenToOpenSet(openSet, best, resultState, heuristic);
 
                 var stateNode = new StateNode (best, bestNextMove, resultState);
-                var score = stateNodeScorer (heuristic, stateNode);
+                var score = AStar.addNoise(stateNodeScorer (heuristic, stateNode));
 
                 closedSet.Add(score, stateNode);
 

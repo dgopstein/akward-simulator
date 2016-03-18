@@ -10,6 +10,7 @@ using StateNodeScorer = System.Func<awkwardsimulator.AStarNode<awkwardsimulator.
 using SD.Tools.Algorithmia.GeneralDataStructures;
 using MoreLinq;
 using Microsoft.Xna.Framework;
+using C5;
 
 namespace awkwardsimulator
 {
@@ -82,14 +83,14 @@ namespace awkwardsimulator
 
     public class AStar : AI
     {
-        protected SortedDictionary<double, StateNode> allPaths;
+        protected TreeDictionary<double, StateNode> allPaths;
 
         public AStar (GameState state, PlayerId pId, Heuristic heuristic) : base(state, pId, heuristic) {
-            allPaths = new SortedDictionary<double, StateNode> ();
+            allPaths = new TreeDictionary<double, StateNode> ();
         }
 
         override public List<Tuple<double, List<Tuple<Input, GameState>>>> BestPaths(int n) {
-            List<KeyValuePair<double,StateNode>> myPaths;
+            List<C5.KeyValuePair<double,StateNode>> myPaths;
             lock(allPaths) {
                 myPaths = allPaths.Take (n).ToList();
             }
@@ -98,7 +99,7 @@ namespace awkwardsimulator
         }
 
         override public List<Tuple<double, List<Tuple<Input, GameState>>>> AllPaths() {
-            List<KeyValuePair<double,StateNode>> myPaths;
+            List<C5.KeyValuePair<double,StateNode>> myPaths;
             lock(allPaths) {
                 myPaths = allPaths.ToList();
             }
@@ -107,7 +108,7 @@ namespace awkwardsimulator
         }
 
         static int uniqueId = 1;
-        const int noisePrecision = 1000;
+        const int noisePrecision = 10000;
         public static double addNoise(double f) {
             double ret = Math.Truncate(f * noisePrecision) / noisePrecision; // remove fractional noise
             ret += (0.0001 * (1.0 / noisePrecision)) * (uniqueId++ % noisePrecision); // add marginal unique id to avoid collisions
@@ -124,7 +125,7 @@ namespace awkwardsimulator
  
 
 //        Profiler prof = new Profiler ("addChildren", 3000, 3);
-        void addChildrenToOpenSet(SortedDictionary<double, StateNode> dict,
+        void addChildrenToOpenSet(TreeDictionary<double, StateNode> dict,
                                   StateNode parent, GameState state, Heuristic heuristic) {
 //            prof.Start ();
 
@@ -145,8 +146,8 @@ namespace awkwardsimulator
 
         override public List<Input> nextInputList (GameState origState, PlayerId pId, Heuristic heuristic)
         {
-            var openSet = new SortedDictionary<double, StateNode>(); // Known, but unexplored
-            var closedSet = new SortedDictionary<double, StateNode>(); // Fully explored
+            var openSet = new TreeDictionary<double, StateNode>(); // Known, but unexplored
+            var closedSet = new TreeDictionary<double, StateNode>(); // Fully explored
 
 //            stateNodeScorer = scorerGenerator (heuristic);
 

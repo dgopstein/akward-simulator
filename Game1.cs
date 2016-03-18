@@ -57,6 +57,8 @@ namespace awkwardsimulator
 //            inputMethod = new SynchronizedAiInput (ai1, ai2, state);
 //            inputMethod = new HalfHumanAiInput (ai2, state);
             inputMethod = new HumanInput (state, inputMethod);
+            inputMethod = new CombinedAiInput (ai1, ai2, state);
+
 
 
 			base.Initialize ();
