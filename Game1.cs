@@ -148,6 +148,8 @@ namespace awkwardsimulator
 
 
             drawing.DrawPaths (((CombinedAiInput)inputMethod).Ai.AllPaths().Select(t =>
+                Tuple.Create(t.Item1, t.Item2.Select(e => e.Item2.P1.SurfaceCenter))));
+            drawing.DrawPaths (((CombinedAiInput)inputMethod).Ai.AllPaths().Select(t =>
                 Tuple.Create(t.Item1, t.Item2.Select(e => e.Item2.P2.SurfaceCenter))));
 //            drawing.DrawPaths (ai2.AllPaths().Select(t =>
 //                Tuple.Create(t.Item1, t.Item2.Select(e => e.Item2.P2.SurfaceCenter))));
