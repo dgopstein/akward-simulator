@@ -57,7 +57,7 @@ namespace awkwardsimulator
 //            inputMethod = new SynchronizedAiInput (ai1, ai2, state);
 //            inputMethod = new HalfHumanAiInput (ai2, state);
             inputMethod = new HumanInput (state, inputMethod);
-            inputMethod = new CombinedAiInput (ai1, ai2, state);
+            inputMethod = new CombinedAiInput (state);
 
 
 
@@ -147,8 +147,10 @@ namespace awkwardsimulator
             drawing.DrawPath (history.Select (s => s.P2.Coords + (Player.Size *.5f)), Color.Thistle, 2);
 
 
-            drawing.DrawPaths (ai2.AllPaths().Select(t =>
+            drawing.DrawPaths (((CombinedAiInput)inputMethod).Ai.AllPaths().Select(t =>
                 Tuple.Create(t.Item1, t.Item2.Select(e => e.Item2.P2.SurfaceCenter))));
+//            drawing.DrawPaths (ai2.AllPaths().Select(t =>
+//                Tuple.Create(t.Item1, t.Item2.Select(e => e.Item2.P2.SurfaceCenter))));
 //            drawing.DrawPath (ai1.AllPaths().First().Item2.Select(e => e.Item2.P1.SurfaceCenter),
 //                Color.WhiteSmoke, 3);
 			

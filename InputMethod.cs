@@ -90,10 +90,11 @@ namespace awkwardsimulator
 
     class CombinedAiInput : InputMethod {
         CombinedAi ai;
+        public CombinedAi Ai { get { return ai; } }
 
         protected Task<Tuple<Input, Input>> fAi;
 
-        public CombinedAiInput(AI ai1, AI ai2, GameState state) : base(state) {
+        public CombinedAiInput(GameState state) : base(state) {
             ai = new CombinedAi (state);
             startFAis(state);
         }
