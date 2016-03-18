@@ -1,10 +1,12 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using System.Diagnostics;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace awkwardsimulator
 {
-    public class Util {
+    public static class Util {
 
         public const float FIXED_DELTA_TIME = 0.2f; //TODO needs to be removed
 
@@ -50,6 +52,10 @@ namespace awkwardsimulator
 
         public static bool SameDirection(Vector2 a, Vector2 b) {
             return CosineSimilarity (a, b) > 0;
+        }
+
+        public static List<Tuple<A, B>> CartesianProduct<A, B>(this List<A> firstList, List<B> secondList) {
+            return firstList.SelectMany (x => secondList, (x, y) => Tuple.Create (x, y)).ToList();
         }
     }
 

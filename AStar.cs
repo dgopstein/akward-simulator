@@ -11,8 +11,6 @@ using SD.Tools.Algorithmia.GeneralDataStructures;
 using MoreLinq;
 using Microsoft.Xna.Framework;
 
-
-
 namespace awkwardsimulator
 {
     public class AStarNode<P, T> {
@@ -108,33 +106,21 @@ namespace awkwardsimulator
             return myPaths.Select(sn => Tuple.Create(sn.Key, sn.Value.ToPath())).ToList();
         }
 
-        int uniqueId = 1;
-        private double addNoise(double f) {
-            double ret = Math.Truncate(f * 1000) / 1000; // remove fractional noise
-            ret += (0.0000001f * uniqueId++); // add marginal unique id to avoid collisions
+        static int uniqueId = 1;
+        const int noisePrecision = 1000;
+        public static double addNoise(double f) {
+            double ret = Math.Truncate(f * noisePrecision) / noisePrecision; // remove fractional noise
+            ret += (0.0001 * (1.0 / noisePrecision)) * (uniqueId++ % noisePrecision); // add marginal unique id to avoid collisions
             return ret;
         }
 
-//        protected virtual StateNodeScorer scorerGenerator(Heuristic heuristic) {
-//            StateNodeScorer scorer = (s, pId) => {
-//                float h = (float)heuristic.Score (s.Value);
-//
-//                h += .1f * s.Depth(); // discourage long paths
-//
-//                return addNoise(h);
-//            };
-//
-//            return scorer;
-//        }
-
-        protected virtual double stateNodeScorer(Heuristic heuristic, StateNode node) {
+        protected static double stateNodeScorer(Heuristic heuristic, StateNode node) {
             float h = (float)heuristic.Score (node.Value);
 
             h += .1f * node.Depth(); // discourage long paths
 
-            return addNoise(h);
+            return h;
         }
-
  
 
 //        Profiler prof = new Profiler ("addChildren", 3000, 3);
@@ -157,7 +143,7 @@ namespace awkwardsimulator
 
 //        protected StateNodeScorer stateNodeScorer;
 
-        override public List<Input> nextInputs (GameState origState, PlayerId pId, Heuristic heuristic)
+        override public List<Input> nextInputList (GameState origState, PlayerId pId, Heuristic heuristic)
         {
             var openSet = new SortedDictionary<double, StateNode>(); // Known, but unexplored
             var closedSet = new SortedDictionary<double, StateNode>(); // Fully explored

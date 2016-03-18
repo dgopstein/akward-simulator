@@ -32,19 +32,18 @@ namespace awkwardsimulator
         }
 
         protected GameState nextState(GameState state, Input move, int nSteps = 1) {
-            return nextState(state, move, predictPartnerInput(state), nSteps);
+            return pId == PlayerId.P1 ?
+                nextState (forwardModel, state, move, predictPartnerInput (state), nSteps) :
+                nextState (forwardModel, state, predictPartnerInput (state), move, nSteps);
         }
 
-        protected GameState nextState(GameState game, Input thisPlayerMove, Input otherPlayerMove, int nSteps = 1) {
+        public static GameState nextState(ForwardModel forwardModel, GameState game,
+            Input p1move, Input p2move, int nSteps = 1) {
             GameState lastState = game;
 
             int intermediateSteps = 1; // set to match a reasonable Gameloop#humanInputDelayFrames() value...
             for (int i = 0; i < intermediateSteps; i++) {
-                if (pId == PlayerId.P1) {
-                    lastState = forwardModel.nextState(lastState, thisPlayerMove, otherPlayerMove, nSteps);
-                } else {
-                    lastState = forwardModel.nextState(lastState, otherPlayerMove, thisPlayerMove, nSteps);
-                }
+                lastState = forwardModel.nextState(lastState, p1move, p2move, nSteps);
             }
 
             return lastState;
@@ -52,21 +51,21 @@ namespace awkwardsimulator
 
         abstract protected Input predictPartnerInput (GameState state);
 
-        abstract public List<Input> nextInputs(GameState state, PlayerId pId, Heuristic heuristic);
+        abstract public List<Input> nextInputList(GameState state, PlayerId pId, Heuristic heuristic);
 
-        public List<Input> nextInputs (GameState origState) {
-            return nextInputs (origState, pId, heuristic);
+        public List<Input> nextInputList (GameState origState) {
+            return nextInputList (origState, pId, heuristic);
         }
 
         public Input nextInput(GameState origState) {
-            return nextInputs (origState).First ();
+            return nextInputList (origState).First ();
         }
     }
 
     public class NullAI : AI {
         public NullAI(GameState state, PlayerId pId) : base(state, pId, new LinearHeuristic(pId)) { }
 
-        override public List<Input> nextInputs(GameState state, PlayerId pId, Heuristic heuristic) {
+        override public List<Input> nextInputList(GameState state, PlayerId pId, Heuristic heuristic) {
             return new List<Input>() { new Input () };
         }
 

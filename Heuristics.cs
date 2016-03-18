@@ -17,7 +17,7 @@ namespace awkwardsimulator
         abstract public float EstimateScore (GameState state, Input move);
 
         private static readonly float diagonangle = (float)Math.Sqrt(2)/2;
-        private static readonly Dictionary<Input, Vector2> moveVectors =
+        public static readonly Dictionary<Input, Vector2> moveVectors =
             new Dictionary<Input, Vector2>(){
             { Input.Noop, new Vector2(0, 0) },
             { Input.Up, new Vector2(0, 1) },
@@ -28,8 +28,12 @@ namespace awkwardsimulator
         };
 
 //        Profiler prof = new Profiler ("EstimateScore", 30000, 3);
-        private Vector2 gravity = new Vector2 (0, -PlatformAStar.MaxReachY);
+        public static readonly Vector2 gravVector = new Vector2 (0, -PlatformAStar.MaxReachY);
         protected float EstimateScore(GameState state, Input move, Vector2 target) {
+            return EstimateScore (this.pId, state, move, target);
+        }
+
+        public static float EstimateScore(PlayerId pId, GameState state, Input move, Vector2 target) {
 //            prof.Start ();
 
             float similarity;
@@ -39,7 +43,7 @@ namespace awkwardsimulator
             } else {
                 var player = state.Player (pId);
 
-                Vector2 gravOffset = state.IsGrounded (player) ? Vector2.Zero : gravity;
+                Vector2 gravOffset = state.IsGrounded (player) ? Vector2.Zero : gravVector;
 
                 Vector2 targetVector = Vector2.Subtract (target, player.Target + gravOffset);
 
@@ -55,7 +59,7 @@ namespace awkwardsimulator
             return -similarity;
         }
 
-        protected float statusWrap(GameState state, float s) {
+        public float statusWrap(GameState state, float s) {
             float healthScore  = System.Math.Abs(state.Health);
 
             var healthWeight = 150f;
@@ -87,6 +91,10 @@ namespace awkwardsimulator
         }
 
         private float PlatformPathDistance(GameState state, PlayerId pId, GameObject platform) {
+            return PlatformPathDistance (this.pas, state, pId, platform);
+        }
+
+        private static float PlatformPathDistance(PlatformAStar pas, GameState state, PlayerId pId, GameObject platform) {
             var path = pas.PlatformPath (state.Player (pId), state.Goal).SkipWhile(x => x != platform).ToArray();
 
             float dist = 0f;
@@ -104,16 +112,17 @@ namespace awkwardsimulator
 
 
         override public float Score(GameState state) {
-            Player player = state.Player (pId);
-
             GameObject next = NextPlatform (state);
 
-            var dist =
-                Vector2.Distance (player.SurfaceCenter, next.Target) +
-                PlatformPathDistance (state, pId, next);
+            var dist = PlayerDistance(pas, state, pId, next);
             
             return statusWrap(state, dist);
 //            return dist;
+        }
+
+        public static float PlayerDistance(PlatformAStar pas, GameState state, PlayerId pId, GameObject target) {
+            return Vector2.Distance (state.Player(pId).SurfaceCenter, target.Target) +
+                           PlatformPathDistance (pas, state, pId, target);
         }
     }
 

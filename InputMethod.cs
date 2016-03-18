@@ -88,6 +88,29 @@ namespace awkwardsimulator
         }
     }
 
+    class CombinedAiInput : InputMethod {
+        CombinedAi ai;
+
+        protected Task<Tuple<Input, Input>> fAi;
+
+        public CombinedAiInput(AI ai1, AI ai2, GameState state) : base(state) {
+            ai = new CombinedAi (state);
+            startFAis(state);
+        }
+
+        protected void startFAis(GameState state) {
+            fAi = Task.Factory.StartNew<Tuple<Input, Input>> (() => ai.nextInputsList (state).First());
+        }
+
+        override protected Tuple <Input, Input> _inputs() {
+            return fAi.Result;
+        }
+
+        override public void Update(GameState state) {
+            if (fAi.IsCompleted) startFAis (state);
+        }
+    }
+
     class HalfHumanAiInput : AiInput {
         protected Task<Input> fAi1;
 
@@ -117,10 +140,10 @@ namespace awkwardsimulator
         protected Task<List<Input>> fAi1, fAi2;
 
         protected void startFAi1(GameState state) {
-            fAi1 = Task.Factory.StartNew<List<Input>>(() => ai1.nextInputs (state));
+            fAi1 = Task.Factory.StartNew<List<Input>>(() => ai1.nextInputList (state));
         }
         protected void startFAi2(GameState state) {
-            fAi2 = Task.Factory.StartNew<List<Input>> (() => ai2.nextInputs (state));
+            fAi2 = Task.Factory.StartNew<List<Input>> (() => ai2.nextInputList (state));
         }
 
         public ListAiInput(AI ai1, AI ai2, GameState state) : base(ai1, ai2, state) {

@@ -111,6 +111,7 @@
     <Compile Include="Heuristics.cs" />
     <Compile Include="InputMethod.cs" />
     <Compile Include="SubPlatformPathFinder.cs" />
+    <Compile Include="CombinedAi.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Info.plist" />
