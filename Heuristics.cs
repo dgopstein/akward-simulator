@@ -28,7 +28,7 @@ namespace awkwardsimulator
         };
 
 //        Profiler prof = new Profiler ("EstimateScore", 30000, 3);
-        public static readonly Vector2 gravVector = new Vector2 (0, -PlatformAStar.MaxReachY);
+        public static readonly Vector2 gravVector = new Vector2 (0, -PlatformUtil.MaxReachY);
         protected float EstimateScore(GameState state, Input move, Vector2 target) {
             return EstimateScore (this.pId, state, move, target);
         }

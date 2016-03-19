@@ -158,8 +158,8 @@ namespace awkwardsimulator
 			
             // Jump height
             drawing.DrawLine(
-                new Vector2(p2.LeftBoundary , p2.TopBoundary+PlatformAStar.remainingJumpDist(p2)),
-                new Vector2(p2.RightBoundary, p2.TopBoundary+PlatformAStar.remainingJumpDist(p2)),
+                new Vector2(p2.LeftBoundary , p2.TopBoundary+PlatformUtil.remainingJumpDist(p2)),
+                new Vector2(p2.RightBoundary, p2.TopBoundary+PlatformUtil.remainingJumpDist(p2)),
                 Color.Fuchsia, 6
             );
 

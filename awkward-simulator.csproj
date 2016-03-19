@@ -115,6 +115,9 @@
     <Compile Include="InputMethod.cs" />
     <Compile Include="SubPlatformPathFinder.cs" />
     <Compile Include="CombinedAi.cs" />
+    <Compile Include="CombinedHeuristic.cs" />
+    <Compile Include="CombinedPlatformAStar.cs" />
+    <Compile Include="PlatformUtil.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Info.plist" />
