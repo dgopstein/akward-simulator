@@ -45,8 +45,6 @@ namespace awkwardsimulator
         }
 
 
-
-
         Dictionary<Tuple<Player, GameObject>, List<GameObject>> paths =
             new Dictionary<Tuple<Player, GameObject>, List<GameObject>> ();
 
@@ -58,7 +56,7 @@ namespace awkwardsimulator
             if (paths.ContainsKey(tup)) {
                 path = paths[tup];
             } else {
-                var startPlat = nearestReachablePlatform (start, Platforms);
+                var startPlat = PlatformUtil.nearestReachablePlatform (start, Platforms);
 
                 var endReachablePlatforms = Platforms.FindAll (p => PlatformUtil.adjacent (Platforms, p, end));
 
@@ -101,21 +99,5 @@ namespace awkwardsimulator
 
             return best.ToPath().Select(tup => tup.Item2).ToList();
         }
-
-
-        private Platform nearestReachablePlatform(Player player, List<Platform> platforms) {
-            // Eliminate platforms we've fallen below
-            var lowerPlats = platforms.FindAll (plat => !PlatformUtil.unreachable(platforms, player, plat));
-
-            Platform nearest;
-            if (lowerPlats.Count > 0) {
-                nearest = PlatformUtil.nearestPlatform (player.SurfaceCenter, lowerPlats);
-            } else {
-                nearest = platforms.First ();
-            }
-
-            return nearest;
-        }
     }
 }
-

@@ -115,6 +115,22 @@ namespace awkwardsimulator
 
             return ret;
         }
+
+        public static Platform nearestReachablePlatform(Player player, List<Platform> platforms) {
+            // Eliminate platforms we've fallen below
+            var lowerPlats = platforms.FindAll (plat => !PlatformUtil.unreachable(platforms, player, plat));
+
+            Platform nearest;
+            if (lowerPlats.Count > 0) {
+                nearest = nearestPlatform (player.SurfaceCenter, lowerPlats);
+            } else {
+                nearest = platforms.First ();
+            }
+
+            return nearest;
+        }
+
+
     }
 }
 

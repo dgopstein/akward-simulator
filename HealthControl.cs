@@ -5,8 +5,12 @@ namespace awkwardsimulator
 {
     public class HealthControl
     {
-        private const float minSafeDistance = 10.0f;
-        private const float maxSafeDistance = 2.0f * minSafeDistance;
+        public const float minSafeDistance = 10.0f;
+        public const float maxSafeDistance = 2.0f * minSafeDistance;
+
+        public static float IdealDistance { get { return (minSafeDistance + maxSafeDistance) / 2f; } }
+        public static float SafeWindowSize{ get { return maxSafeDistance - minSafeDistance; } }
+
         private const float rampWidth = 1.5f;
         private const float minDamagePerSecond = 0.001f;
         private const float maxDamagePerSecond = 0.004f;
@@ -38,9 +42,7 @@ namespace awkwardsimulator
                 newHealth = Util.clamp(oldHealth + d * ((float) Math.Sign(outOfBounds)) * Util.FIXED_DELTA_TIME, LOW, HIGH);
             }
             else if (Math.Abs(oldHealth - IDEAL) > 0.0001) {
-                float midPoint = (maxSafeDistance + minSafeDistance) / 2.0f;
-                float windowSize = (maxSafeDistance - minSafeDistance);
-                newHealth = Util.moveTowards(oldHealth, IDEAL, healRate * ((windowSize/2) - Math.Abs(midPoint - dist)) * Util.FIXED_DELTA_TIME);
+                newHealth = Util.moveTowards(oldHealth, IDEAL, healRate * ((SafeWindowSize/2) - Math.Abs(IdealDistance - dist)) * Util.FIXED_DELTA_TIME);
             }
 
             return 2*newHealth - 1; // scale health from [-1, 1]

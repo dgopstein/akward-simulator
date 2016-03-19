@@ -57,6 +57,10 @@ namespace awkwardsimulator
         public static List<Tuple<A, B>> CartesianProduct<A, B>(this List<A> firstList, List<B> secondList) {
             return firstList.SelectMany (x => secondList, (x, y) => Tuple.Create (x, y)).ToList();
         }
+
+        public static HashSet<T> ToHashSet<T>(this IEnumerable<T> source) {
+            return new HashSet<T>(source);
+        }
     }
 
     public class Profiler {
