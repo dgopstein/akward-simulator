@@ -91,15 +91,15 @@ namespace awkwardsimulator
         }
 
         private float PlatformPathDistance(GameState state, PlayerId pId, GameObject platform) {
-            return PlatformPathDistance (this.pas, state, pId, platform);
+            return PlatformPathDistance (pas.PlatformPath (state.Player (pId), state.Goal), platform);
         }
 
-        private static float PlatformPathDistance(PlatformAStar pas, GameState state, PlayerId pId, GameObject platform) {
-            var path = pas.PlatformPath (state.Player (pId), state.Goal).SkipWhile(x => x != platform).ToArray();
+        public static float PlatformPathDistance(IEnumerable<GameObject> path, GameObject platform) {
+            var remainingPath = path.SkipWhile(x => x != platform).ToArray();
 
             float dist = 0f;
-            for (int i = 0; i < path.Count () - 1; i++) {
-                dist += path [i].Distance (path [i + 1]);
+            for (int i = 0; i < remainingPath.Count () - 1; i++) {
+                dist += remainingPath [i].Distance (remainingPath [i + 1]);
             }
 
             return dist;
@@ -122,7 +122,7 @@ namespace awkwardsimulator
 
         public static float PlayerDistance(PlatformAStar pas, GameState state, PlayerId pId, GameObject target) {
             return Vector2.Distance (state.Player(pId).SurfaceCenter, target.Target) +
-                           PlatformPathDistance (pas, state, pId, target);
+                PlatformPathDistance (pas.PlatformPath (state.Player (pId), state.Goal), target);
         }
     }
 

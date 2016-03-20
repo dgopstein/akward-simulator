@@ -1,29 +1,53 @@
 ﻿using System;
-using Microsoft.Xna.Framework;
 using System.Linq;
+
+using Microsoft.Xna.Framework;
+
+using GobjPair = System.Tuple<awkwardsimulator.GameObject, awkwardsimulator.GameObject>;
+
 
 namespace awkwardsimulator
 {
     public class CombinedHeuristic {
-        PlatformAStar pas1;
-        PlatformAStar pas2;
+        CombinedPlatformAStar cpas;
 
         public CombinedHeuristic(GameState state) {
-            this.pas1 = new PlatformAStar(state.Platforms);
-            this.pas2 = new PlatformAStar(state.Platforms);
+            this.cpas = new CombinedPlatformAStar(state.Platforms);
+        }
+
+//        private float CombinedPlatformPathDistance(CombinedPlatformAStar cpas,
+//            GameState state, GameObject target) {
+//            var path = cpas.CombinedPlatformPath (state.P1, state.P2, state.Goal, state.Goal)
+//                .SkipWhile(x => x.Item1 != target || x.Item2 != target).ToArray();
+//
+//            float dist = 0f;
+//            for (int i = 0; i < path.Count () - 1; i++) {
+//                dist += path [i].Item1.Distance (path [i + 1].Item1);
+//                dist += path [i].Item1.Distance (path [i + 1].Item1);
+//            }
+//
+//            return dist;
+//        }
+
+        public float CombinedDistance(CombinedPlatformAStar cpas,
+            GameState state, GameObject next1, GameObject next2) {
+
+            var combinedPath = cpas.CombinedPlatformPath (state.P1, state.P2, state.Goal, state.Goal);
+
+            return Vector2.Distance (state.P1.SurfaceCenter, next1.Target) +
+                   Vector2.Distance (state.P2.SurfaceCenter, next2.Target) +
+                WaypointHeuristic.PlatformPathDistance(combinedPath.Select(x => x.Item1), next1) +
+                WaypointHeuristic.PlatformPathDistance(combinedPath.Select(x => x.Item2), next2);
         }
 
         public float Score(GameState state) {
             Player p1 = state.P1;
             Player p2 = state.P2;
 
-            GameObject next1 = pas1.NextPlatform (p1, state.Goal);
-            GameObject next2 = pas2.NextPlatform (p2, state.Goal);
+            GobjPair next = cpas.NextPlatform (p1, p2, state.Goal, state.Goal);
 
-            var dist =
-                WaypointHeuristic.PlayerDistance (pas1, state, PlayerId.P1, next1) +
-                WaypointHeuristic.PlayerDistance (pas2, state, PlayerId.P2, next2);
-
+            var dist = CombinedDistance(cpas, state, next.Item1, next.Item2);
+                
             return statusWrap(state, dist);
         }
 

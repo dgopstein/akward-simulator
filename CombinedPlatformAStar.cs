@@ -52,7 +52,7 @@ namespace awkwardsimulator
         }
 
         public Tuple<GameObject, GameObject> NextPlatform(Player player1, Player player2, GameObject end1, GameObject end2) {
-            var path = CombinedPlatformPath (end1, end2, player1, player2);
+            var path = CombinedPlatformPath (player1, player2, end1, end2);
 
             Tuple<GameObject, GameObject> next;
 
@@ -78,7 +78,7 @@ namespace awkwardsimulator
             new Dictionary<Tuple<Player, Player, GameObject, GameObject>, List<Tuple<GameObject, GameObject>>> ();
 
         public List<Tuple<GameObject, GameObject>> CombinedPlatformPath(
-                GameObject end1, GameObject end2, Player start1, Player start2) {
+            Player start1, Player start2, GameObject end1, GameObject end2) {
 
             var cacheKey = Tuple.Create (start1, start2, end1, end2);
 
