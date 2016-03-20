@@ -9,7 +9,7 @@ using System.Reactive.Linq;
 
 namespace awkwardsimulator
 {
-    abstract class InputMethod {
+    public abstract class InputMethod {
         public Input input1 = new Input(), input2 = new Input();
 
         public InputMethod(GameState state) {
@@ -29,7 +29,7 @@ namespace awkwardsimulator
         abstract public void Update (GameState state);
     }
 
-    class HumanInput : InputMethod {
+    public class HumanInput : InputMethod {
         InputMethod aiUpdater;
 
         public HumanInput(GameState state, InputMethod aiUpdater) : base(state) {
@@ -57,7 +57,7 @@ namespace awkwardsimulator
         }
     }
 
-    abstract class AiInput : InputMethod {
+    public abstract class AiInput : InputMethod {
         public AI ai1, ai2;
 
 
@@ -67,7 +67,7 @@ namespace awkwardsimulator
         }
     }
 
-    class SynchronizedAiInput : AiInput {
+    public class SynchronizedAiInput : AiInput {
         protected Task<Input> fAi1, fAi2;
 
         public SynchronizedAiInput(AI ai1, AI ai2, GameState state) : base(ai1, ai2, state) {
@@ -88,11 +88,13 @@ namespace awkwardsimulator
         }
     }
 
-    class CombinedAiInput : InputMethod {
+    public class CombinedAiInput : InputMethod {
         CombinedAi ai;
         public CombinedAi Ai { get { return ai; } }
 
         protected Task<Tuple<Input, Input>> fAi;
+
+        public CombinedHeuristic Heuristic { get { return ai.Heuristic; } }
 
         public CombinedAiInput(GameState state) : base(state) {
             ai = new CombinedAi (state);
@@ -112,7 +114,7 @@ namespace awkwardsimulator
         }
     }
 
-    class HalfHumanAiInput : AiInput {
+    public class HalfHumanAiInput : AiInput {
         protected Task<Input> fAi1;
 
         public HalfHumanAiInput(AI ai1, GameState state) : base(ai1, null, state) {
@@ -136,7 +138,7 @@ namespace awkwardsimulator
         }
     }
 
-    class ListAiInput : AiInput {
+    public class ListAiInput : AiInput {
         List<Input> inputQ1, inputQ2;
         protected Task<List<Input>> fAi1, fAi2;
 

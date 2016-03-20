@@ -320,10 +320,8 @@ namespace awkwardsimulator
             //new Color(000, 000, 000),
         };
 
-        public void DrawPaths(IEnumerable<Tuple<double, IEnumerable<Vector2>>> paths) {
+        public void DrawPaths(IEnumerable<Tuple<double, IEnumerable<Vector2>>> paths, int thickness = 2) {
             if (paths.Count() == 0) return;
-
-            int i = 0;
 
             var minH = paths.Min (x => x.Item1);
             var maxH = paths.Max (x => x.Item1);
@@ -334,7 +332,7 @@ namespace awkwardsimulator
 
                 var c = HeatmapColor(1 - h);
 
-                DrawPath (path, c, thickness: 2);
+                DrawPath (path, c, thickness: thickness);
             }
         }
 
@@ -390,12 +388,12 @@ namespace awkwardsimulator
         }
 
         private static List<Color> HeatmapColors = new List<Color>() {
-//            Color.Blue, Color.Cyan, Color.Green, Color.Yellow, Color.Red};
-            Color.Cyan, Color.Green, Color.Yellow, Color.Red};
+            Color.Blue, Color.Cyan, Color.Green, Color.Yellow, Color.Red};
+//            Color.Cyan, Color.Green, Color.Yellow, Color.Red};
 
         private static Color InterpolateColors(List<Color> colors, double value) {
             int nColors = colors.Count ();
-            int index = (int)Math.Truncate (value * (nColors - 1));
+            int index = (int)Math.Truncate (value * nColors);
             var distance = 1.0 / nColors;
             var d = (value % distance) / distance;
 
@@ -420,8 +418,20 @@ namespace awkwardsimulator
             return c;
         }
 
-        private static Color HeatmapColor(double v) {
+        public static Color HeatmapColor(double v) {
             return InterpolateColors(HeatmapColors, v);
+        }
+
+        public void DrawPathHeuristic(GameState state, CombinedAiInput cim) {
+            var combinedPath = cim.Heuristic.Path (state);
+
+            for (int i = 0; i < combinedPath.Count; i++) {
+                var val = i / (float)combinedPath.Count;
+                Debug.WriteLine ("val: {0}", val);
+                Color c = Drawing.HeatmapColor (val);
+                DrawCircle(2, combinedPath[i].Item1.Target, c);
+                DrawCircle(2, combinedPath[i].Item2.Target, c);
+            }
         }
 	}
 }

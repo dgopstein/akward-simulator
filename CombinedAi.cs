@@ -11,8 +11,10 @@ namespace awkwardsimulator
     public class CombinedAi
     {
         protected TreeDictionary<double, StateNode> allPaths;
-        CombinedHeuristic heuristic;
         ForwardModel forwardModel;
+
+        CombinedHeuristic heuristic;
+        public CombinedHeuristic Heuristic { get { return heuristic; } }
 
         public CombinedAi (GameState state) {
             this.heuristic = new CombinedHeuristic (state);

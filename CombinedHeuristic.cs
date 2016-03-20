@@ -4,12 +4,13 @@ using System.Linq;
 using Microsoft.Xna.Framework;
 
 using GobjPair = System.Tuple<awkwardsimulator.GameObject, awkwardsimulator.GameObject>;
+using System.Collections.Generic;
 
 
 namespace awkwardsimulator
 {
     public class CombinedHeuristic {
-        CombinedPlatformAStar cpas;
+        public CombinedPlatformAStar cpas;
 
         public CombinedHeuristic(GameState state) {
             this.cpas = new CombinedPlatformAStar(state.Platforms);
@@ -29,12 +30,17 @@ namespace awkwardsimulator
 //            return dist;
 //        }
 
+        public List<GobjPair> Path(GameState state) {
+            return cpas.CombinedPlatformPath (state.P1, state.P2, state.Goal, state.Goal);
+        }
+
         public float CombinedDistance(CombinedPlatformAStar cpas,
             GameState state, GameObject next1, GameObject next2) {
 
             var combinedPath = cpas.CombinedPlatformPath (state.P1, state.P2, state.Goal, state.Goal);
 
-            return Vector2.Distance (state.P1.SurfaceCenter, next1.Target) +
+            return 
+                   Vector2.Distance (state.P1.SurfaceCenter, next1.Target) +
                    Vector2.Distance (state.P2.SurfaceCenter, next2.Target) +
                 WaypointHeuristic.PlatformPathDistance(combinedPath.Select(x => x.Item1), next1) +
                 WaypointHeuristic.PlatformPathDistance(combinedPath.Select(x => x.Item2), next2);

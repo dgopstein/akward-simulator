@@ -110,7 +110,7 @@ namespace awkwardsimulator
 
             base.Update (gameTime);
 		}
-			
+
 		/// This is called when the game should draw itself.
 		protected override void Draw (GameTime gameTime)
 		{
@@ -141,7 +141,9 @@ namespace awkwardsimulator
 //            drawing.DrawPath (pas.PlatformPath(state.P1, state.Goal).Select (s => s.Target), Color.Maroon, 2);
 //            drawing.DrawCircle (2, ((WaypointHeuristic)ai1.Heuristic).NextPlatform(state).Target, Color.Crimson);
             drawing.DrawPath (pas.PlatformPath(state.P2, state.Goal).Select (s => s.Target), Color.Maroon, 2);
-            drawing.DrawCircle (2, ((WaypointHeuristic)ai2.Heuristic).NextPlatform(state).Target, Color.Crimson);
+//            drawing.DrawCircle (2, ((WaypointHeuristic)ai2.Heuristic).NextPlatform(state).Target, Color.Crimson);
+
+            drawing.DrawPathHeuristic (state, (CombinedAiInput)inputMethod);
 
 //            drawing.DrawPath (history.Select (s => s.P1.Coords), Color.Thistle, 2);
             drawing.DrawPath (history.Select (s => s.P2.Coords + (Player.Size *.5f)), Color.Thistle, 2);
@@ -170,6 +172,13 @@ namespace awkwardsimulator
             var c2 = Color.Black;
             drawing.DrawButtonArrow (state.P1, inputMethod.input1, c1);
             drawing.DrawButtonArrow (state.P2, inputMethod.input2, c2);
+
+            int n = 14;
+            drawing.DrawPaths (
+                Enumerable.Range(0, n).Select(x => Tuple.Create<double, IEnumerable<Vector2>>(x/(float)n,
+                    new List<Vector2>() { new Vector2((x+1)*10, 5), new Vector2((x+2)*10, 5)})
+                )
+            , 4);
 
 			spriteBatch.End();
             			
