@@ -392,23 +392,15 @@ namespace awkwardsimulator
 //            Color.Cyan, Color.Green, Color.Yellow, Color.Red};
 
         private static Color InterpolateColors(List<Color> colors, double value) {
-            int nColors = colors.Count ();
-            int index = (int)Math.Truncate (value * nColors);
-            var distance = 1.0 / nColors;
+            int nIndices = colors.Count () - 1;
+            int index = (int)Math.Truncate (value * nIndices);
+            var distance = 1.0 / nIndices;
             var d = (value % distance) / distance;
 
-            if (index == nColors) {
-                index = nColors - 1;
-                d = 1;
-            }
-
-            Debug.WriteLineIf (index < 0, String.Format("index: {0}, value: {1}", index, value));
+//            Debug.WriteLine ("color {0} - {1}/{2}", value, index, nColors);
 
             var low = colors [index];
-            var high = colors [index + (index == nColors - 1 ? 0 : 1)];
-
-//            Debug.WriteLine ("{2} {0} {1}", index, d, value);
-//            Debug.WriteLine ("{0} {1}", low, high);
+            var high = colors [index + (index == nIndices ? 0 : 1)];
 
             var c = new Color (
                 (byte) ((1 - d) * low.R + d * high.R),
@@ -427,9 +419,8 @@ namespace awkwardsimulator
 
             for (int i = 0; i < combinedPath.Count; i++) {
                 var val = i / (float)combinedPath.Count;
-                Debug.WriteLine ("val: {0}", val);
                 Color c = Drawing.HeatmapColor (val);
-                DrawCircle(2, combinedPath[i].Item1.Target, c);
+                DrawCircle(2, combinedPath[i].Item1.Target + new Vector2(0, 5), c);
                 DrawCircle(2, combinedPath[i].Item2.Target, c);
             }
         }
