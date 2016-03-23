@@ -337,12 +337,16 @@ namespace awkwardsimulator
         }
 
         public void DrawPath(IEnumerable<Vector2> paths, Color c, int thickness) {
+            DrawPath(paths.Select(v => Tuple.Create(c, v)), thickness);
+        }
+
+        public void DrawPath(IEnumerable<Tuple<Color, Vector2>> paths, int thickness) {
             var segments = paths.Zip(paths.Skip(1), (a, b) => Tuple.Create(a, b));
 
             foreach (var tup in segments) {
-                var v1 = RasterizeCoords (tup.Item1);
-                var v2 = RasterizeCoords (tup.Item2);
-                DrawLine(v1, v2, c, thickness);
+                var v1 = RasterizeCoords (tup.Item1.Item2);
+                var v2 = RasterizeCoords (tup.Item2.Item2);
+                DrawLine(v1, v2, tup.Item1.Item1, thickness);
             }
         }
 
@@ -432,8 +436,11 @@ namespace awkwardsimulator
             // Draw platform paths
             var platformPaths = cim.Heuristic.cpas.CombinedPlatformPath (
                                     state.P1, state.P2, state.Goal, state.Goal);
-            DrawPath (platformPaths.Select (tup => tup.Item1.Center + new Vector2(0, p1offset.Y + 2)), Color.Maroon, 2);
-            DrawPath (platformPaths.Select (tup => tup.Item2.Center + new Vector2(0, 2)), Color.Maroon, 2);
+            var nPlats = (float)platformPaths.Count;
+            DrawPath (platformPaths.Select ((tup, i) =>
+                Tuple.Create(HeatmapColor(i / nPlats), tup.Item1.Center + new Vector2(0, p1offset.Y + 2))), 2);
+            DrawPath (platformPaths.Select ((tup, i) =>
+                Tuple.Create(HeatmapColor(i / nPlats), tup.Item2.Center + new Vector2(0, 2))), 2);
 
             // Draw heatmapped hypothetical player paths
             DrawPaths (cim.Ai.AllPaths().Select(t =>
