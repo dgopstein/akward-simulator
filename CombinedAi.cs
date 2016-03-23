@@ -94,12 +94,12 @@ namespace awkwardsimulator
 
             } while(i++ < maxIters && !best.Value.PlayStatus.isWon() && openSet.Count > 0);
 
-            Debug.WriteLine ("closedSet size: {0}", closedSet.Count);
-            int k = 0;
-            foreach (var pth in closedSet) {
-                var pathStr = string.Join(", ", pth.Value.ToPath().Select(tup1 => tup1.Item1.Item1 + "|" + tup1.Item1.Item2));
-                Debug.WriteLine("closedSet[{0}]: {1} - {2}", k++, pth.Key, pathStr);
-            }
+//            Debug.WriteLine ("closedSet size: {0}", closedSet.Count);
+//            int k = 0;
+//            foreach (var pth in closedSet) {
+//                var pathStr = string.Join(", ", pth.Value.ToPath().Select(tup1 => tup1.Item1.Item1 + "|" + tup1.Item1.Item2));
+//                Debug.WriteLine("closedSet[{0}]: {1} - {2}", k++, pth.Key, pathStr);
+//            }
 
             lock (allPaths) { allPaths = closedSet; }
 

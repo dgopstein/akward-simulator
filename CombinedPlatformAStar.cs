@@ -20,8 +20,10 @@ namespace awkwardsimulator
 
         private List<Platform> Platforms { get { return platformGraph.Keys.Select(x => x.Item1).Distinct().ToList(); } }
 
-        private CombinedPlatformGraph BuildCombinedPlatformGraph(List<Platform> platforms) {
+        private static CombinedPlatformGraph BuildCombinedPlatformGraph(List<Platform> platforms) {
             var platGraph = PlatformUtil.BuildPlatformGraph (platforms);
+
+            Debug.Print ("PlatGraph: {0}", PlatformUtil.PlatGraphStr (platGraph));
 
             var cross =
                 from pair1 in platGraph
@@ -132,7 +134,10 @@ namespace awkwardsimulator
             paths.Add(combinedPlatformHeuristic(root, end1, end2), root);
             var best = root;
 
-            for (int i = 0; i < maxIters && best.Value != endPair && paths.Count > 0; i++) {
+            for (int i = 0; i < maxIters &&
+                !(PlatformUtil.adjacent(Platforms, best.Value.Item1, end1) &&
+                  PlatformUtil.adjacent(Platforms, best.Value.Item2, end2)) &&
+                paths.Count > 0; i++) {
                 best.Children = PlatformGraph [best.Value].ToDictionary (x => x, x => new StateNode(best, x, x));
 
                 foreach (var c in best.Children) {

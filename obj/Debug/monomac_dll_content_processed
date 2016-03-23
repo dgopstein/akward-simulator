@@ -1,6 +1,6 @@
-/Users/dgopstein/nyu/awkward_simulator/packages/MonoGame.Framework.MacOS.3.4.0.459/lib/net45/MonoGame.Framework.dll
-/Users/dgopstein/nyu/awkward_simulator/packages/MonoGame.Framework.MacOS.3.4.0.459/lib/net45/Tao.Sdl.dll
-/Users/dgopstein/nyu/awkward_simulator/packages/MonoGame.Framework.MacOS.3.4.0.459/lib/net45/OpenTK.dll
+/Users/dgopstein/nyu/awkward_simulator/packages/MonoGame.Framework.MacOS.3.5.0.1678/lib/net45/OpenTK.dll
+/Users/dgopstein/nyu/awkward_simulator/packages/MonoGame.Framework.MacOS.3.5.0.1678/lib/net45/Tao.Sdl.dll
+/Users/dgopstein/nyu/awkward_simulator/packages/MonoGame.Framework.MacOS.3.5.0.1678/lib/net45/MonoGame.Framework.dll
 /Users/dgopstein/nyu/awkward_simulator/packages/FarseerPhysics.MonoGame.Unofficial.3.5.0/lib/FarseerPhysics MonoGame.dll
 /Users/dgopstein/nyu/awkward_simulator/packages/OptimizedPriorityQueue.2.0.0/lib/net45/Priority Queue.dll
 /Users/dgopstein/nyu/awkward_simulator/packages/morelinq.1.4.0/lib/net35/MoreLinq.dll
@@ -10,3 +10,6 @@
 /Users/dgopstein/nyu/awkward_simulator/packages/SD.Tools.BCLExtensions.1.0.0/lib/SD.Tools.BCLExtensions.dll
 /Users/dgopstein/nyu/awkward_simulator/packages/SD.Tools.Algorithmia.1.1.0/lib/SD.Tools.Algorithmia.dll
 /Users/dgopstein/nyu/awkward_simulator/packages/C5.2.4.5828.26833/lib/net45/C5.dll
+/Users/dgopstein/nyu/awkward_simulator/packages/NUnit.2.5.10.11092/lib/nunit.framework.dll
+/Users/dgopstein/nyu/awkward_simulator/packages/NUnit.2.5.10.11092/lib/nunit.mocks.dll
+/Users/dgopstein/nyu/awkward_simulator/packages/NUnit.2.5.10.11092/lib/pnunit.framework.dll

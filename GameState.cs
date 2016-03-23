@@ -70,6 +70,10 @@ namespace awkwardsimulator
                 health: s.Health, platforms: s.platforms, goal: s.Goal)
 		{ }
 
+        public Platform Platform(string name) {
+            return Platforms.Find (p => p.Name == name);
+        }
+
 		public GameState Clone(
             Player p1 = null,
             Player p2 = null,

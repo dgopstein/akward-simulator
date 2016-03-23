@@ -44,15 +44,13 @@ namespace awkwardsimulator
         }
 
         public static string PlatListStr<T>(List<T> platforms) where T : GameObject {
-            return string.Join (", ", platforms.Select (x => x.Coords));
+            return string.Join (", ", platforms.Select (x => x.ToString()));
         }
 
         public static string PlatGraphStr(PlatformGraph platGraph) {
-            string s = "";
-            foreach (var entry in platGraph) {
-                s += String.Format ("{0}[{1}]    ", entry.Key.Coords, PlatListStr(entry.Value.ToList()));
-            }
-            return s;
+            return string.Join(", ", 
+                platGraph.Select(kv => 
+                    String.Format ("{0}[{1}]", kv.Key.ToString(), PlatListStr(kv.Value.ToList()))));
         }
 
         public static bool isLineOfSight(List<Platform> plats, GameObject go1, GameObject go2) {
@@ -82,7 +80,6 @@ namespace awkwardsimulator
         const int MaxReachX = 20;
         public static readonly int MaxReachY = 15;
         public static bool adjacent(List<Platform> plats, GameObject go1, GameObject go2) {
-
             var dists =
                 go1.Surface.SelectMany (a =>
                     go2.Surface.Select (b => Vector2.Subtract (a, b)));

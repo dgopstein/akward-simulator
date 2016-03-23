@@ -110,6 +110,7 @@ namespace awkwardsimulator
 
 	public class Platform : GameObject {
         private string name;
+        public string Name { get { return name; } }
 
         public Platform (Vector2 coords, Vector2 size) : base (coords, size) {}
         public Platform (string name, Vector2 coords, Vector2 size) : base (coords, size) {
