@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using System.Linq;
 using C5;
+using System.Diagnostics;
 
 namespace awkwardsimulator
 {
@@ -34,7 +35,7 @@ namespace awkwardsimulator
         protected static double stateNodeScorer(CombinedHeuristic heuristic, StateNode node) {
             float h = (float)heuristic.Score (node.Value);
 
-            h += .1f * node.Depth(); // discourage long paths
+//            h += .1f * node.Depth(); // discourage long paths
 
             return h;
         }
@@ -65,7 +66,7 @@ namespace awkwardsimulator
             addChildrenToOpenSet(openSet, parentStub, state, heuristic);
 
             int maxIters = 100;
-            int nRepetitions = 3;
+            int nRepetitions = 5;
 
             StateNode best;
 
@@ -92,6 +93,13 @@ namespace awkwardsimulator
                 closedSet.Add(score, stateNode);
 
             } while(i++ < maxIters && !best.Value.PlayStatus.isWon() && openSet.Count > 0);
+
+            Debug.WriteLine ("closedSet size: {0}", closedSet.Count);
+            int k = 0;
+            foreach (var pth in closedSet) {
+                var pathStr = string.Join(", ", pth.Value.ToPath().Select(tup1 => tup1.Item1.Item1 + "|" + tup1.Item1.Item2));
+                Debug.WriteLine("closedSet[{0}]: {1} - {2}", k++, pth.Key, pathStr);
+            }
 
             lock (allPaths) { allPaths = closedSet; }
 

@@ -157,14 +157,14 @@ namespace awkwardsimulator
             spriteBatch.DrawString(SpriteFont, status.ToString (), new Vector2(20, 20), Color.Black);
         }
 
-        public void DrawHeuristic(AI ai, GameState state, int x, int y) {
-            var heuristic = ai.Heuristic.Score(state);
-            var str = String.Format ("P{0}: {1:F1}", ai.thisPlayer(state).Id, heuristic);
+        public void DrawScore(PlayerId pId, float score, int x, int y) {
+//            var heuristic = ai.Heuristic.Score(state);
+            var str = String.Format ("score P{0}: {1:F1}", pId, score);
             spriteBatch.DrawString(SpriteFont, str, new Vector2(x, y), Color.DarkViolet);
         }
 
         public void DrawPos(Player p, int x, int y) {
-            var str = String.Format ("P{0}: {1:F1}", p.Id, p.Coords);
+            var str = String.Format ("coord P{0}: {1:F1}", p.Id, p.Coords);
             spriteBatch.DrawString(SpriteFont, str, new Vector2(x, y), Color.DarkViolet);
         }
 
@@ -414,16 +414,51 @@ namespace awkwardsimulator
             return InterpolateColors(HeatmapColors, v);
         }
 
-        public void DrawPathHeuristic(GameState state, CombinedAiInput cim) {
+        public void DrawMethodVisualizations(GameState state, CombinedAiInput cim) {
+            Vector2 p1offset = new Vector2 (0, 5);
+
+            DrawScore (PlayerId.P1, cim.Heuristic.Score(state), 20, 50);
+
             var combinedPath = cim.Heuristic.Path (state);
 
+            // Draw platform targets
             for (int i = 0; i < combinedPath.Count; i++) {
                 var val = i / (float)combinedPath.Count;
                 Color c = Drawing.HeatmapColor (val);
-                DrawCircle(2, combinedPath[i].Item1.Target + new Vector2(0, 5), c);
+                DrawCircle(2, combinedPath[i].Item1.Target + p1offset, c);
                 DrawCircle(2, combinedPath[i].Item2.Target, c);
             }
+
+            // Draw platform paths
+            var platformPaths = cim.Heuristic.cpas.CombinedPlatformPath (
+                                    state.P1, state.P2, state.Goal, state.Goal);
+            DrawPath (platformPaths.Select (tup => tup.Item1.Center + new Vector2(0, p1offset.Y + 2)), Color.Maroon, 2);
+            DrawPath (platformPaths.Select (tup => tup.Item2.Center + new Vector2(0, 2)), Color.Maroon, 2);
+
+            // Draw heatmapped hypothetical player paths
+            DrawPaths (cim.Ai.AllPaths().Select(t =>
+                Tuple.Create(t.Item1, t.Item2.Select(e => e.Item2.P1.SurfaceCenter))));
+            DrawPaths (cim.Ai.AllPaths().Select(t =>
+                Tuple.Create(t.Item1, t.Item2.Select(e => e.Item2.P2.SurfaceCenter))));
         }
+
+        public void DrawMethodVisualizations(GameState state, AiInput aim) {
+            DrawScore (aim.ai1.pId, aim.ai1.Heuristic.Score(state), 20, 50);
+            DrawScore (aim.ai2.pId, aim.ai2.Heuristic.Score(state), 20, 80);
+
+            if (aim.ai2.Heuristic is WaypointHeuristic) {
+                WaypointHeuristic heuristic = (WaypointHeuristic)aim.ai2.Heuristic;
+                DrawPath (heuristic.pas.PlatformPath (state.P2, state.Goal).Select (s => s.Target), Color.Maroon, 2);
+                DrawCircle (2, heuristic.NextPlatform (state).Target, Color.Crimson);
+            }
+
+            // Draw heatmapped hypothetical player paths
+            DrawPaths (aim.ai2.AllPaths().Select(t =>
+                Tuple.Create(t.Item1, t.Item2.Select(e => e.Item2.P2.SurfaceCenter))));
+            DrawPath (aim.ai1.AllPaths().First().Item2.Select(e => e.Item2.P1.SurfaceCenter),
+                Color.WhiteSmoke, 3);
+        }
+
 	}
 }
 

@@ -44,8 +44,6 @@ namespace awkwardsimulator
 		{
             state = Level.Level1;
 
-            pas = new PlatformAStar (state.Platforms);
-
 			forwardModel = new ForwardModel (state);
 
             history = new List<GameState> ();
@@ -56,13 +54,14 @@ namespace awkwardsimulator
             ai2 = new AStar (state, PlayerId.P2, new WaypointHeuristic (state, PlayerId.P2));
 
 
-            listInputMethod = new ListAiInput (ai1, ai2, state);
+//            listInputMethod = new ListAiInput (ai1, ai2, state);
 //            inputMethod = new SynchronizedAiInput (ai1, ai2, state);
 //            inputMethod = new HalfHumanAiInput (ai2, state);
             combinedInputMethod = new CombinedAiInput (state);
             humanInputMethod = new HumanInput (state, combinedInputMethod);
 
-            inputMethod = humanInputMethod;
+//            inputMethod = humanInputMethod;
+            inputMethod = combinedInputMethod;
 
 			base.Initialize ();
 		}
@@ -85,12 +84,13 @@ namespace awkwardsimulator
 			drawing.DisposeTextures();
 		}
 
+        bool enableSpacePausing = true;
         bool spaceHeld = false;
         private bool isSpaceTapped(KeyboardState keyState) {
             bool ret  = keyState.IsKeyDown (Keys.Space) && !spaceHeld;
             spaceHeld = keyState.IsKeyDown (Keys.Space);
 
-            return ret || true;
+            return ret || !enableSpacePausing;
         }
 
 		// checking for collisions, gathering input, and playing audio.
@@ -135,32 +135,16 @@ namespace awkwardsimulator
             drawing.DrawHealth (state.Health);
 
             drawing.DrawPlayStatus (state.PlayStatus);
-            drawing.DrawHeuristic (ai1, state, 20, 50);
-            drawing.DrawHeuristic (ai2, state, 20, 80);
             drawing.DrawPos (state.P1, 20, 110);
             drawing.DrawPos (state.P2, 20, 140);
 
+            drawing.DrawMethodVisualizations (state, combinedInputMethod);
+            // drawing.DrawMethodVisualizations (state, listInputMethod);
 
-//            drawing.DrawPath (pas.PlatformPath(state.P1, state.Goal).Select (s => s.Target), Color.Maroon, 2);
-//            drawing.DrawCircle (2, ((WaypointHeuristic)ai1.Heuristic).NextPlatform(state).Target, Color.Crimson);
-            drawing.DrawPath (pas.PlatformPath(state.P2, state.Goal).Select (s => s.Target), Color.Maroon, 2);
-//            drawing.DrawCircle (2, ((WaypointHeuristic)ai2.Heuristic).NextPlatform(state).Target, Color.Crimson);
-
-            drawing.DrawPathHeuristic (state, combinedInputMethod);
-
-//            drawing.DrawPath (history.Select (s => s.P1.Coords), Color.Thistle, 2);
+            // Draw histories
+            // drawing.DrawPath (history.Select (s => s.P1.Coords), Color.Thistle, 2);
             drawing.DrawPath (history.Select (s => s.P2.Coords + (Player.Size *.5f)), Color.Thistle, 2);
 
-
-            drawing.DrawPaths (combinedInputMethod.Ai.AllPaths().Select(t =>
-                Tuple.Create(t.Item1, t.Item2.Select(e => e.Item2.P1.SurfaceCenter))));
-            drawing.DrawPaths (combinedInputMethod.Ai.AllPaths().Select(t =>
-                Tuple.Create(t.Item1, t.Item2.Select(e => e.Item2.P2.SurfaceCenter))));
-//            drawing.DrawPaths (ai2.AllPaths().Select(t =>
-//                Tuple.Create(t.Item1, t.Item2.Select(e => e.Item2.P2.SurfaceCenter))));
-//            drawing.DrawPath (ai1.AllPaths().First().Item2.Select(e => e.Item2.P1.SurfaceCenter),
-//                Color.WhiteSmoke, 3);
-			
             // Jump height
             drawing.DrawLine(
                 new Vector2(p2.LeftBoundary , p2.TopBoundary+PlatformUtil.remainingJumpDist(p2)),
@@ -171,6 +155,7 @@ namespace awkwardsimulator
             drawing.DrawPlayer (state.P1);
             drawing.DrawPlayer (state.P2);
 
+            // Draw Input movement direction arrows
             var c1 = Color.Black;
             var c2 = Color.Black;
             drawing.DrawButtonArrow (state.P1, inputMethod.input1, c1);

@@ -64,6 +64,7 @@ namespace awkwardsimulator
 
         }
 
+        public static readonly int DeathScore = 54321;
         public static float statusWrap(GameState state, float s) {
             float healthScore  = System.Math.Abs(state.Health);
 
@@ -76,7 +77,7 @@ namespace awkwardsimulator
             if (state.PlayStatus.isDied () ||
                 state.P1.BottomBoundary < minPlatHeight ||
                 state.P2.BottomBoundary < minPlatHeight) {
-                score = 5*GameState.Width;
+                score = DeathScore;
             } else if (state.PlayStatus.isWon ()) {
                 score = 0;
             }

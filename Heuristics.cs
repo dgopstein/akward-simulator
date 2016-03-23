@@ -79,7 +79,7 @@ namespace awkwardsimulator
 
     public class WaypointHeuristic : Heuristic {
 //        readonly GameState initialState;
-        readonly PlatformAStar pas;
+        public readonly PlatformAStar pas;
 
         public WaypointHeuristic(GameState initialState, PlayerId pId) : base(pId) {
 //            this.initialState = initialState;
