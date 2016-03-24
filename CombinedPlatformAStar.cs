@@ -89,8 +89,8 @@ namespace awkwardsimulator
             if (paths.ContainsKey(cacheKey)) {
                 path = paths[cacheKey];
             } else {
-                var startPlat1 = PlatformUtil.nearestReachablePlatform (start1, Platforms);
-                var startPlat2 = PlatformUtil.nearestReachablePlatform (start2, Platforms);
+                var startPlat1 = PlatformUtil.nearestReachablePlatform (start1, PlatformUtil.platsBelow(Platforms, start1));
+                var startPlat2 = PlatformUtil.nearestReachablePlatform (start2, PlatformUtil.platsBelow(Platforms, start2));
 
 //                var endReachablePlatforms1 = Platforms.FindAll (p => PlatformUtil.adjacent (Platforms, p, end1));
 //                var endReachablePlatforms2 = Platforms.FindAll (p => PlatformUtil.adjacent (Platforms, p, end2));
@@ -138,7 +138,8 @@ namespace awkwardsimulator
                 !(PlatformUtil.adjacent(Platforms, best.Value.Item1, end1) &&
                   PlatformUtil.adjacent(Platforms, best.Value.Item2, end2)) &&
                 paths.Count > 0; i++) {
-                best.Children = PlatformGraph [best.Value].ToDictionary (x => x, x => new StateNode(best, x, x));
+                best.Children = PlatformGraph [best.Value].ToDictionary (x => x,
+                    x => new StateNode(best, x, x));
 
                 foreach (var c in best.Children) {
                     var h = combinedPlatformHeuristic (c.Value, end1, end2);
@@ -149,6 +150,13 @@ namespace awkwardsimulator
 
                 best = paths.First().Value;
                 paths.Remove (paths.First().Key);
+            }
+
+            Debug.WriteLine ("paths size: {0}", paths.Count);
+            int k = 0;
+            foreach (var pth in paths.Reverse()) {
+                var pathStr = string.Join(", ", pth.Value.ToPath().Select(tup1 => tup1.Item1.Item1 + "|" + tup1.Item1.Item2));
+                Debug.WriteLine("paths[{0}]: {1} - {2}", k++, pth.Key, pathStr);
             }
 
             return best.ToPath().Select(tup => tup.Item2).ToList();

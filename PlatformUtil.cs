@@ -19,7 +19,11 @@ namespace awkwardsimulator
             return delta.Length ();
         }
 
-        public  static Platform nearestPlatform(Vector2 point, List<Platform> platforms) {
+        public static IEnumerable<Platform> platsBelow(IEnumerable<Platform> plats, GameObject obj) {
+            return plats.Where (x => x.SurfaceCenter.Y <= obj.SurfaceCenter.Y);
+        }
+
+        public  static Platform nearestPlatform(Vector2 point, IEnumerable<Platform> platforms) {
             return platforms.MinBy (plat => distanceScore(point, plat));
         }
 
@@ -62,16 +66,21 @@ namespace awkwardsimulator
                 Vector2 pt;
                 var bl = plat.BottomLeft;
                 var br = plat.BottomRight;
+                var tl = plat.TopLeft;
                 var tr = plat.TopRight;
-                var c1 = go1.Center;
-                var c2 = go2.Center;
+                var c1 = go1.Target;
+                var c2 = go2.Target;
 
                 var intersectBottom = LineTools.LineIntersect2(
                     ref bl, ref br, ref c1, ref c2, out pt);
                 var intersectRight = LineTools.LineIntersect2(
                     ref br, ref tr, ref c1, ref c2, out pt);
+//                var intersectTop = LineTools.LineIntersect2(
+//                    ref tr, ref tl, ref c1, ref c2, out pt);
+//                var intersectLeft = LineTools.LineIntersect2(
+//                    ref tl, ref bl, ref c1, ref c2, out pt);
 
-                return intersectBottom || intersectRight;
+                return intersectBottom || intersectRight;// || intersectTop || intersectLeft;
             });
 
             return 0 == nIntersections;
@@ -93,7 +102,7 @@ namespace awkwardsimulator
             return (float)Math.Pow (player.Velocity.Y, 2) / (2f * 50f); //TODO 50 is a guess...
         }
 
-        public static bool unreachable(List<Platform> platforms, Player player, GameObject plat) {
+        public static bool unreachable(IEnumerable<Platform> platforms, Player player, GameObject plat) {
             var ret = false;
 
             var vert = plat.SurfaceCenter.Y - player.BottomBoundary;
@@ -113,12 +122,12 @@ namespace awkwardsimulator
             return ret;
         }
 
-        public static Platform nearestReachablePlatform(Player player, List<Platform> platforms) {
+        public static Platform nearestReachablePlatform(Player player, IEnumerable<Platform> platforms) {
             // Eliminate platforms we've fallen below
-            var lowerPlats = platforms.FindAll (plat => !PlatformUtil.unreachable(platforms, player, plat));
+            var lowerPlats = platforms.Where (plat => !PlatformUtil.unreachable(platforms, player, plat));
 
             Platform nearest;
-            if (lowerPlats.Count > 0) {
+            if (lowerPlats.Count() > 0) {
                 nearest = nearestPlatform (player.SurfaceCenter, lowerPlats);
             } else {
                 nearest = platforms.First ();

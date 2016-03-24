@@ -99,7 +99,7 @@ namespace awkwardsimulator
             return Util.euclideanDistance (p.Center, goal.Coords) <= goal.Radius;
         }
 
-        public static bool IsGrounded(List<Platform> platforms, Player player) {
+        public static bool IsGrounded(IEnumerable<Platform> platforms, Player player) {
             return platforms.Any (plat => {
 
                 var horizontal =
