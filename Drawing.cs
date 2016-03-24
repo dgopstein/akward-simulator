@@ -438,9 +438,9 @@ namespace awkwardsimulator
                                     state.P1, state.P2, state.Goal, state.Goal);
             var nPlats = (float)platformPaths.Count;
             DrawPath (platformPaths.Select ((tup, i) =>
-                Tuple.Create(HeatmapColor(i / nPlats), tup.Item1.Center + new Vector2(0, p1offset.Y + 2))), 2);
+                Tuple.Create(HeatmapColor(i / nPlats), tup.Item1.Target + new Vector2(0, p1offset.Y))), 2);
             DrawPath (platformPaths.Select ((tup, i) =>
-                Tuple.Create(HeatmapColor(i / nPlats), tup.Item2.Center + new Vector2(0, 2))), 2);
+                Tuple.Create(HeatmapColor(i / nPlats), tup.Item2.Target)), 2);
 
             // Draw heatmapped hypothetical player paths
             DrawPaths (cim.Ai.AllPaths().Select(t =>

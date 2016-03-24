@@ -42,7 +42,7 @@ namespace awkwardsimulator
 
 		protected override void Initialize ()
 		{
-            state = Level.Level1;
+            state = Level.Level2;
 
 			forwardModel = new ForwardModel (state);
 
