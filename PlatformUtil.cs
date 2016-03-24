@@ -43,7 +43,7 @@ namespace awkwardsimulator
             return platGraph;                
         }
 
-        public static string PlatListStr<T>(List<T> platforms) where T : GameObject {
+        public static string PlatListStr<T>(IEnumerable<T> platforms) where T : GameObject {
             return string.Join (", ", platforms.Select (x => x.ToString()));
         }
 

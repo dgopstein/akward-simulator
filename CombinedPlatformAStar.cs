@@ -92,16 +92,16 @@ namespace awkwardsimulator
                 var startPlat1 = PlatformUtil.nearestReachablePlatform (start1, Platforms);
                 var startPlat2 = PlatformUtil.nearestReachablePlatform (start2, Platforms);
 
-                var endReachablePlatforms1 = Platforms.FindAll (p => PlatformUtil.adjacent (Platforms, p, end1));
-                var endReachablePlatforms2 = Platforms.FindAll (p => PlatformUtil.adjacent (Platforms, p, end2));
+//                var endReachablePlatforms1 = Platforms.FindAll (p => PlatformUtil.adjacent (Platforms, p, end1));
+//                var endReachablePlatforms2 = Platforms.FindAll (p => PlatformUtil.adjacent (Platforms, p, end2));
+//
+//                Debug.WriteLineIf (endReachablePlatforms1.Count == 0, "No platforms within reach of the 1st goal!");
+//                Debug.WriteLineIf (endReachablePlatforms2.Count == 0, "No platforms within reach of the 2nd goal!");
+//
+//                var end1Plat = PlatformUtil.nearestPlatform (end1.Center, endReachablePlatforms1);
+//                var end2Plat = PlatformUtil.nearestPlatform (end2.Center, endReachablePlatforms2);
 
-                Debug.WriteLineIf (endReachablePlatforms1.Count == 0, "No platforms within reach of the 1st goal!");
-                Debug.WriteLineIf (endReachablePlatforms2.Count == 0, "No platforms within reach of the 2nd goal!");
-
-                var end1Plat = PlatformUtil.nearestPlatform (end1.Center, endReachablePlatforms1);
-                var end2Plat = PlatformUtil.nearestPlatform (end2.Center, endReachablePlatforms2);
-
-                path = runAStar (end1Plat, end2Plat, startPlat1, startPlat2).Select(p2g).ToList();
+                path = runAStar (startPlat1, startPlat2, end1, end2).Select(p2g).ToList();
 
                 path.Add(Tuple.Create(end1, end2));
 
@@ -111,7 +111,7 @@ namespace awkwardsimulator
             return path;
         }
 
-        double combinedPlatformHeuristic(StateNode node, Platform end1, Platform end2) {
+        double combinedPlatformHeuristic(StateNode node, GameObject end1, GameObject end2) {
             var endDist1 = Vector2.Distance (node.Value.Item1.SurfaceCenter, end1.SurfaceCenter);
             var endDist2 = Vector2.Distance (node.Value.Item2.SurfaceCenter, end2.SurfaceCenter);
 
@@ -121,27 +121,27 @@ namespace awkwardsimulator
         }
 
         private List<Tuple<Platform, Platform>> runAStar(
-            Platform endReachable1, Platform endReachable2, Platform start1, Platform start2) {
+            Platform start1, Platform start2, GameObject end1, GameObject end2) {
 
             int maxIters = 20;
 
             var paths = new SortedDictionary<double, StateNode>();
 
             var startPair = Tuple.Create (start1, start2);
-            var endPair = Tuple.Create (endReachable1, endReachable2);
+//            var endPair = Tuple.Create (end1, end2);
 
             var root = new StateNode (null, startPair, startPair);
-            paths.Add(combinedPlatformHeuristic(root, endReachable1, endReachable2), root);
+            paths.Add(combinedPlatformHeuristic(root, end1, end2), root);
             var best = root;
 
             for (int i = 0; i < maxIters &&
-                !(best.Value.Item1 == endReachable1 &&
-                  best.Value.Item2 == endReachable2) &&
+                !(PlatformUtil.adjacent(Platforms, best.Value.Item1, end1) &&
+                  PlatformUtil.adjacent(Platforms, best.Value.Item2, end2)) &&
                 paths.Count > 0; i++) {
                 best.Children = PlatformGraph [best.Value].ToDictionary (x => x, x => new StateNode(best, x, x));
 
                 foreach (var c in best.Children) {
-                    var h = combinedPlatformHeuristic (c.Value, endReachable1, endReachable2);
+                    var h = combinedPlatformHeuristic (c.Value, end1, end2);
                     if (!paths.ContainsKey(h)) {
                         paths.Add (h, c.Value);
                     }
