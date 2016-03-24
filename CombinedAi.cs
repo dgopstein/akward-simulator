@@ -56,11 +56,52 @@ namespace awkwardsimulator
             }
         }
 
+//        public TreeDictionary<double, IEnumerable<B>> AStar<A, B>(Func<B, AStarNode<A, B>> nextState, A state) {
+//            var openSet = new TreeDictionary<double, B>(); // Known, but unexplored
+//            var closedSet = new TreeDictionary<double, B>(); // Fully explored
+//
+//            AStarNode<A, B> parentStub = new AStarNode<A, B> (null, null, state);
+//            addChildrenToOpenSet(openSet, parentStub, state, heuristic);
+//
+//            int maxIters = 100;
+//            int nRepetitions = 5;
+//
+//            AStarNode<A, B> best;
+//
+//            int i = 0;
+//            do {
+//                var bestKV = openSet.First ();
+//                openSet.Remove(bestKV.Key);
+//
+//                best = bestKV.Value;
+//
+//                var bestNextMove = best.Input;
+//
+//                // repeat the same input a few times
+//                B resultState = best.Value;
+//                for (int j = 0; j < nRepetitions; j++) {
+//                    resultState = nextState(new AStarNode<A, B>(best, bestNextMove, resultState));
+//                }
+//
+//                addChildrenToOpenSet(openSet, best, resultState, heuristic);
+//
+//                var stateNode = new AStarNode<A, B> (best, bestNextMove, resultState);
+//                var score = AStar.addNoise(stateNodeScorer (heuristic, stateNode));
+//
+//                closedSet.Add(score, stateNode);
+//
+//            } while(i++ < maxIters && closedSet.First().Key > 0 && openSet.Count > 0);
+//
+//            return closedSet;
+//        }
+//
+//        public List<Tuple<Input, Input>> nextInputsList2(GameState state) {
+//        
+//        }
+
         public List<Tuple<Input, Input>> nextInputsList(GameState state) {
             var openSet = new TreeDictionary<double, StateNode>(); // Known, but unexplored
             var closedSet = new TreeDictionary<double, StateNode>(); // Fully explored
-
-            //            stateNodeScorer = scorerGenerator (heuristic);
 
             StateNode parentStub = new StateNode (null, Tuple.Create(Input.Noop, Input.Noop), state);
             addChildrenToOpenSet(openSet, parentStub, state, heuristic);
