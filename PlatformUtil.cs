@@ -51,6 +51,10 @@ namespace awkwardsimulator
             return string.Join (", ", platforms.Select (x => x.ToString()));
         }
 
+        public static string PlatPairListStr<T>(IEnumerable<Tuple<T, T>> platforms) where T : GameObject {
+            return string.Join(", ", platforms.Select(tup1 => tup1.Item1 + "|" + tup1.Item2));
+        }
+
         public static string PlatGraphStr(PlatformGraph platGraph) {
             return string.Join(", ", 
                 platGraph.Select(kv => 

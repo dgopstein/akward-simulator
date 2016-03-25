@@ -40,11 +40,11 @@ namespace awkwardsimulator
         CombinedAiInput combinedInputMethod;
         HumanInput humanInputMethod;
 
-		protected override void Initialize ()
-		{
-            state = Level.Level2;
+        protected void Initialize (GameState level)
+        {
+            state = level;
 
-			forwardModel = new ForwardModel (state);
+            forwardModel = new ForwardModel (state);
 
             history = new List<GameState> ();
 
@@ -62,6 +62,10 @@ namespace awkwardsimulator
 
 //            inputMethod = humanInputMethod;
             inputMethod = combinedInputMethod;
+        }
+
+        protected override void Initialize () {
+            Initialize(Level.Level1);
 
 			base.Initialize ();
 		}
@@ -100,6 +104,10 @@ namespace awkwardsimulator
 
             if (keyState.IsKeyDown (Keys.Escape)) {
                 Exit ();
+            } else if (keyState.IsKeyDown (Keys.D1)) {
+                Initialize (Level.Level1);
+            } else if (keyState.IsKeyDown (Keys.D2)) {
+                Initialize (Level.Level2);
             } else if (isSpaceTapped(keyState)) {
                 Tuple<Input, Input> inputs = inputMethod.Inputs ();
 

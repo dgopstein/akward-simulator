@@ -141,23 +141,24 @@ namespace awkwardsimulator
                 best.Children = PlatformGraph [best.Value].ToDictionary (x => x,
                     x => new StateNode(best, x, x));
 
+                Debug.Print ("Children: {0} - {1}", best.Value.Item1 + "|" + best.Value.Item2,
+                    PlatformUtil.PlatPairListStr(best.Children.Values.Select(x => x.Value)));
+                
                 foreach (var c in best.Children) {
                     var h = combinedPlatformHeuristic (c.Value, end1, end2);
-                    if (!paths.ContainsKey(h)) {
-                        paths.Add (h, c.Value);
-                    }
+                    paths.Add (AStar.addNoise(h), c.Value);
                 }
 
                 best = paths.First().Value;
                 paths.Remove (paths.First().Key);
             }
 
-            Debug.WriteLine ("paths size: {0}", paths.Count);
-            int k = 0;
-            foreach (var pth in paths.Reverse()) {
-                var pathStr = string.Join(", ", pth.Value.ToPath().Select(tup1 => tup1.Item1.Item1 + "|" + tup1.Item1.Item2));
-                Debug.WriteLine("paths[{0}]: {1} - {2}", k++, pth.Key, pathStr);
-            }
+//            Debug.WriteLine ("paths size: {0}", paths.Count);
+//            int k = 0;
+//            foreach (var pth in paths.Reverse()) {
+//                var pathStr = string.Join(", ", pth.Value.ToPath().Select(tup1 => tup1.Item1.Item1 + "|" + tup1.Item1.Item2));
+//                Debug.WriteLine("paths[{0}]: {1} - {2}", k++, pth.Key, pathStr);
+//            }
 
             return best.ToPath().Select(tup => tup.Item2).ToList();
         }

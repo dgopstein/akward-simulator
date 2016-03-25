@@ -20,7 +20,7 @@ namespace awkwardsimulator
         }
 
         [Test()]
-        public void PlatformAdjacency() {
+        public void PlatformAdjacency1() {
             var level = Level.Level1;
 
 //            var a = level.Platform ("a");
@@ -43,6 +43,25 @@ namespace awkwardsimulator
         }
 
         [Test()]
+        public void PlatformAdjacency2() {
+            var level = Level.Level2;
+
+            //            var a = level.Platform ("a");
+            GameObject b = level.Platform ("b");
+            GameObject c = level.Platform ("c");
+            GameObject d = level.Platform ("d");
+            GameObject goal = level.Goal;
+
+            var list = new List<Tuple<bool, GameObject, GameObject>> () {
+                Tuple.Create (false, d, goal),
+            };
+
+            foreach (var tup in list) {
+                Assert.AreEqual (tup.Item1,  PlatformUtil.adjacent(level.Platforms, tup.Item2, tup.Item3));
+            }
+        }
+
+        [Test()]
         public void CombinedPlatformPath() {
             var level = Level.Level1;
 
@@ -54,6 +73,19 @@ namespace awkwardsimulator
 
             Assert.AreEqual (expected, PlatformUtil.PlatListStr(path.Select(x => x.Item1)));
             Assert.AreEqual (expected, PlatformUtil.PlatListStr(path.Select(x => x.Item2)));
+        }
+
+        [Test()]
+        public void CombinedPlatformPath2() {
+            var level = Level.Level2;
+
+            var cpas = new CombinedPlatformAStar (level.Platforms);
+
+            var path = cpas.CombinedPlatformPath (level.P1, level.P2, level.Goal, level.Goal);
+
+            string expected = "b|c, d|e, f|g, h|a, {X:80 Y:80}|{X:80 Y:80}";
+
+            Assert.AreEqual (expected, PlatformUtil.PlatPairListStr (path));
         }
 
     }
