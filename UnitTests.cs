@@ -88,6 +88,24 @@ namespace awkwardsimulator
             Assert.AreEqual (expected, PlatformUtil.PlatPairListStr (path));
         }
 
+        [Test()]
+        public void PlatsBelow() {
+            var level = Level.Level1;
+
+            var ab = PlatformUtil.PlatListStr(PlatformUtil.platsBelow (level.Platforms, level.P1));
+            var expectedAB = "a, b";
+            Assert.AreEqual (expectedAB, ab);
+
+            var abcd = PlatformUtil.PlatListStr(PlatformUtil.platsBelow (
+                level.Platforms, level.P1.Clone(new Microsoft.Xna.Framework.Vector2(54, 1000))));
+            var expectedABCD = "a, b, c, d";
+            Assert.AreEqual (expectedABCD, abcd);
+
+            var ab2 = PlatformUtil.PlatListStr(PlatformUtil.platsBelow (
+                level.Platforms, level.P1.Clone(new Microsoft.Xna.Framework.Vector2(53.92445f, 13.60124f))));
+            var expectedAB2 = "";
+            Assert.AreEqual (expectedAB2, ab2);
+        }
     }
 }
 

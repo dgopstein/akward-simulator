@@ -106,7 +106,7 @@ namespace awkwardsimulator
         }
 
         override protected Tuple <Input, Input> _inputs() {
-            return fAi.Result;
+                      return fAi.Result;
         }
 
         override public void Update(GameState state) {

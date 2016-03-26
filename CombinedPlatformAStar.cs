@@ -89,8 +89,18 @@ namespace awkwardsimulator
             if (paths.ContainsKey(cacheKey)) {
                 path = paths[cacheKey];
             } else {
-                var startPlat1 = PlatformUtil.nearestReachablePlatform (start1, PlatformUtil.platsBelow(Platforms, start1));
-                var startPlat2 = PlatformUtil.nearestReachablePlatform (start2, PlatformUtil.platsBelow(Platforms, start2));
+//                Debug.Print ("p2: {0}", start2);
+//                Debug.Print("platsBelow 1: {0}", PlatformUtil.PlatListStr(PlatformUtil.platsBelow (Platforms, start1)));
+//                Debug.Print("platsBelow 2: {0}", PlatformUtil.PlatListStr(PlatformUtil.platsBelow (Platforms, start2)));
+
+                var platsBelow1 = PlatformUtil.platsBelow (Platforms, start1);
+                var platsBelow2 = PlatformUtil.platsBelow (Platforms, start2);
+
+                var plats1 = platsBelow1.Count () > 0 ? platsBelow1 : Platforms;
+                var plats2 = platsBelow2.Count () > 0 ? platsBelow2 : Platforms;
+
+                var startPlat1 = PlatformUtil.nearestReachablePlatform (start1, plats1);
+                var startPlat2 = PlatformUtil.nearestReachablePlatform (start2, plats2);
 
 //                var endReachablePlatforms1 = Platforms.FindAll (p => PlatformUtil.adjacent (Platforms, p, end1));
 //                var endReachablePlatforms2 = Platforms.FindAll (p => PlatformUtil.adjacent (Platforms, p, end2));
@@ -101,11 +111,11 @@ namespace awkwardsimulator
 //                var end1Plat = PlatformUtil.nearestPlatform (end1.Center, endReachablePlatforms1);
 //                var end2Plat = PlatformUtil.nearestPlatform (end2.Center, endReachablePlatforms2);
 
-                path = runAStar (startPlat1, startPlat2, end1, end2).Select(p2g).ToList();
+                path = runAStar (startPlat1, startPlat2, end1, end2).Select (p2g).ToList ();
 
-                path.Add(Tuple.Create(end1, end2));
+                path.Add (Tuple.Create (end1, end2));
 
-                paths[cacheKey] = path;
+                paths [cacheKey] = path;
             }
 
             return path;
@@ -141,8 +151,8 @@ namespace awkwardsimulator
                 best.Children = PlatformGraph [best.Value].ToDictionary (x => x,
                     x => new StateNode(best, x, x));
 
-                Debug.Print ("Children: {0} - {1}", best.Value.Item1 + "|" + best.Value.Item2,
-                    PlatformUtil.PlatPairListStr(best.Children.Values.Select(x => x.Value)));
+//                Debug.Print ("Children: {0} - {1}", best.Value.Item1 + "|" + best.Value.Item2,
+//                    PlatformUtil.PlatPairListStr(best.Children.Values.Select(x => x.Value)));
                 
                 foreach (var c in best.Children) {
                     var h = combinedPlatformHeuristic (c.Value, end1, end2);
