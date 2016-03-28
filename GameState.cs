@@ -116,6 +116,10 @@ namespace awkwardsimulator
             return IsGrounded (Platforms, player);
         }
 
+        public float lowestPlatformTop() {
+            return Platforms.Min (p => p.TopBoundary);
+        }
+
         public PlayStatus PlayStatus { get {
                 PlayStatus status;
 
@@ -125,9 +129,9 @@ namespace awkwardsimulator
                     status = new Died { cause = "awkwardness" };
                 } else if (Health <= -1) {
                     status = new Died { cause = "loneliness" };
-                } else if (P1.Y < 0) {
+                } else if (P1.SurfaceCenter.Y < lowestPlatformTop() && p1.Velocity.Y <= 0) {
                     status = new Died { cause = "p1 fell" };
-                } else if (P2.Y < 0) {
+                } else if (P2.SurfaceCenter.Y < lowestPlatformTop() && p2.Velocity.Y <= 0) {
                     status = new Died { cause = "p2 fell" };
                 } else {
                     status = new Playing ();

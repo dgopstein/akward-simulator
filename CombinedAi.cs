@@ -47,9 +47,16 @@ namespace awkwardsimulator
             foreach (var input in Input.All.CartesianProduct(Input.All)) {
                 var stateNode = new StateNode (parent, input, state);
 
+//                var target1 = state.Goal;
+//                var target2 = state.Goal;
+
+                var targets = heuristic.cpas.NextPlatform (state.P1, state.P2, state.Goal, state.Goal);
+                var target1 = targets.Item1;
+                var target2 = targets.Item2;
+
                 var score = parentScore +
                     heuristic.EstimateScore (state, input.Item1, input.Item2,
-                        state.Goal.Target, state.Goal.Target);
+                        target1.Target, target2.Target);
 
                 var noiseyScore = AStar.addNoise (score);
                 dict.Add (noiseyScore, stateNode);
