@@ -4,3 +4,4 @@ bin/
 output.mlpd
 mprof-report.txt*
 .DS_Store
+TestResult.xml

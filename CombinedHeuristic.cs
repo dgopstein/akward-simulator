@@ -68,7 +68,7 @@ namespace awkwardsimulator
         public static float statusWrap(GameState state, float s) {
             float healthScore  = System.Math.Abs(state.Health);
 
-            var healthWeight = 0;
+            var healthWeight = 1;
 
             var score = s  + (healthWeight * healthScore);
 
