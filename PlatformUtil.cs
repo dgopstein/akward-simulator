@@ -47,6 +47,29 @@ namespace awkwardsimulator
             return platGraph;                
         }
 
+        public static IEnumerable<Platform> Subdivide(float largest, Platform plat) {
+            var nDivs = Math.Ceiling (plat.W / largest);
+            var newWidth = plat.W / nDivs;
+
+            var subDivPlats = new List<Platform> ();
+            float offset = 0;
+            for (int i = 0; i < nDivs; i++) {
+                var name = plat.Name + "_" + i;
+                var coords = new Vector2(plat.X + offset, plat.Y);
+                var size = new Vector2((float)newWidth, (float)plat.H);
+
+                offset += (float)newWidth;
+
+                subDivPlats.Add (new Platform(name, coords, size));
+            }
+
+            return subDivPlats;
+        }
+
+        public static IEnumerable<Platform> Subdivide(IEnumerable<Platform> plats, float largest = 10f) {
+            return plats.SelectMany(p => Subdivide(largest, p));
+        }
+
         public static string PlatListStr<T>(IEnumerable<T> platforms) where T : GameObject {
             return string.Join (", ", platforms.Select (x => x.ToString()));
         }

@@ -34,13 +34,13 @@ namespace awkwardsimulator
                 new Platform("a", new Vector2(80f, 10f), new Vector2(5f, 50f)),
 
                 new Platform("b", new Vector2(40f, 10f), new Vector2(40f, 5f)),
-                new Platform("c", new Vector2(80f, 10f), new Vector2(30f, 5f)),
+                new Platform("c", new Vector2(85f, 10f), new Vector2(30f, 5f)),
 
                 new Platform("d", new Vector2(60f, 25f), new Vector2(20f, 5f)),
                 new Platform("e", new Vector2(95f, 25f), new Vector2(30f, 5f)),
 
                 new Platform("f", new Vector2(40f, 40f), new Vector2(30f, 5f)),
-                new Platform("g", new Vector2(80f, 40f), new Vector2(30f, 5f)),
+                new Platform("g", new Vector2(85f, 40f), new Vector2(30f, 5f)),
 
                 new Platform("h", new Vector2(60f, 55f), new Vector2(20f, 5f)),
                 new Platform("i", new Vector2(95f, 55f), new Vector2(30f, 5f)),

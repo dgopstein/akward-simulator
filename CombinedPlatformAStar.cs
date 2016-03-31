@@ -39,7 +39,8 @@ namespace awkwardsimulator
         }
 
         public CombinedPlatformAStar(List<Platform> platforms) {
-            this.platformGraph = BuildCombinedPlatformGraph (platforms);
+            var subdivPlats = PlatformUtil.Subdivide (platforms);
+            this.platformGraph = BuildCombinedPlatformGraph (subdivPlats.ToList());
         }
 
         private bool shouldGoNext(Player player, GameObject plat0, GameObject plat1) {

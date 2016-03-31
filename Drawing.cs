@@ -404,11 +404,21 @@ namespace awkwardsimulator
 
         }
 
+        private void DrawPlatformSubdivisions(IEnumerable<Platform> plats) {
+            var c = Color.DarkGray;
+            foreach (var plat in PlatformUtil.Subdivide (plats)) {
+                DrawLine (plat.TopLeft, plat.BottomLeft, c, 2);
+                DrawLine (plat.TopRight, plat.BottomRight, c, 2);
+            }
+        }
+
         public void DrawMethodVisualizations(GameState state, CombinedAiInput cim) {
             Vector2 p1offset = new Vector2 (0, 5);
 
 
             DrawScore (PlayerId.P1, cim.Heuristic.Score(state), 20, 50);
+
+            DrawPlatformSubdivisions (state.Platforms);
 
             var combinedPath = cim.Heuristic.Path (state);
 
