@@ -400,8 +400,13 @@ namespace awkwardsimulator
             return InterpolateColors(HeatmapColors, v);
         }
 
+        void DrawPlatformTargets(GameObject plat1, GameObject plat2, Color c) {
+
+        }
+
         public void DrawMethodVisualizations(GameState state, CombinedAiInput cim) {
             Vector2 p1offset = new Vector2 (0, 5);
+
 
             DrawScore (PlayerId.P1, cim.Heuristic.Score(state), 20, 50);
 
@@ -411,9 +416,10 @@ namespace awkwardsimulator
             for (int i = 0; i < combinedPath.Count; i++) {
                 var val = i / (float)combinedPath.Count;
                 Color c = Drawing.HeatmapColor (val);
-                DrawCircle(2, combinedPath[i].Item1.Target + p1offset, c);
-                DrawCircle(2, combinedPath[i].Item2.Target, c);
+                DrawCircle(2, combinedPath [i].Item1.Target + p1offset, c);
+                DrawCircle(2, combinedPath [i].Item2.Target, c);
             }
+
 
             // Draw platform paths
             var platformPaths = cim.Heuristic.cpas.CombinedPlatformPath (
@@ -423,6 +429,11 @@ namespace awkwardsimulator
                 Tuple.Create(HeatmapColor(i / nPlats), tup.Item1.Target + new Vector2(0, p1offset.Y))), 2);
             DrawPath (platformPaths.Select ((tup, i) =>
                 Tuple.Create(HeatmapColor(i / nPlats), tup.Item2.Target)), 2);
+
+            // Draw target platforms
+            var nextPlats = cim.Heuristic.cpas.NextPlatform(state.P1, state.P2, state.Goal, state.Goal);
+            DrawCircle(1, nextPlats.Item1.Target + p1offset, Color.BlanchedAlmond);
+            DrawCircle(1, nextPlats.Item2.Target, Color.BlanchedAlmond);
 
             // Draw heatmapped hypothetical player paths
             DrawPaths (cim.Ai.AllPaths().AsEnumerable().Reverse().Take(2).Select(t =>

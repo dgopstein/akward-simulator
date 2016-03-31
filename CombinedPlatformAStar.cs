@@ -61,8 +61,8 @@ namespace awkwardsimulator
             if (path.Count == 1) {
                 next = path.First ();
             } else {
-                next = shouldGoNext(player1, path[0].Item1, path[1].Item1) &&
-                       shouldGoNext(player2, path[0].Item2, path[1].Item2) ? path[0] : path[1];
+                next = shouldGoNext(player1, path[0].Item1, path[1].Item1) ||
+                       shouldGoNext(player2, path[0].Item2, path[1].Item2) ? path[1] : path[0];
             }
 
             return next;
