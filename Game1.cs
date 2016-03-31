@@ -42,7 +42,11 @@ namespace awkwardsimulator
 
         protected void Initialize (GameState level)
         {
+
             state = level;
+
+//            state = level.Clone(p1: new Player (1, new Vector2 (90, 36)),
+//                                p2: new Player (2, new Vector2 (90, 45)));
 
             forwardModel = new ForwardModel (state);
 
@@ -65,7 +69,7 @@ namespace awkwardsimulator
         }
 
         protected override void Initialize () {
-            Initialize(Level.Level1);
+            Initialize(Level.Level2);
 
 			base.Initialize ();
 		}

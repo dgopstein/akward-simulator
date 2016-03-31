@@ -2,30 +2,25 @@
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
   <MonoDevelop.Ide.Workbench ActiveDocument="UnitTests.cs">
     <Files>
-      <File FileName="Game1.cs" Line="1" Column="1" />
-      <File FileName="Drawing.cs" Line="437" Column="24" />
-      <File FileName="packages/MonoGame.Framework.MacOS.3.5.0.1678/readme.txt" Line="1" Column="1" />
-      <File FileName="Level.cs" Line="1" Column="1" />
-      <File FileName="GameState.cs" Line="132" Column="48" />
-      <File FileName="UnitTests.cs" Line="106" Column="32" />
-      <File FileName="InputMethod.cs" Line="109" Column="2" />
-      <File FileName="CombinedHeuristic.cs" Line="71" Column="33" />
-      <File FileName="CombinedPlatformAStar.cs" Line="169" Column="3" NotebookId="1" />
-      <File FileName="CombinedAi.cs" Line="55" Column="28" NotebookId="1" />
+      <File FileName="Game1.cs" Line="46" Column="33" />
+      <File FileName="Drawing.cs" Line="449" Column="14" />
+      <File FileName="GameState.cs" Line="35" Column="9" />
+      <File FileName="UnitTests.cs" Line="78" Column="24" />
+      <File FileName="InputMethod.cs" Line="111" Column="14" />
+      <File FileName="CombinedHeuristic.cs" Line="41" Column="45" />
+      <File FileName="Level.cs" Line="13" Column="56" />
+      <File FileName="CombinedPlatformAStar.cs" Line="129" Column="110" NotebookId="1" />
+      <File FileName="CombinedAi.cs" Line="171" Column="33" NotebookId="1" />
       <File FileName="GameObject.cs" Line="1" Column="1" NotebookId="1" />
       <File FileName="PlatformAStar.cs" Line="1" Column="1" NotebookId="1" />
-      <File FileName="PlatformUtil.cs" Line="129" Column="9" NotebookId="1" />
+      <File FileName="PlatformUtil.cs" Line="40" Column="46" NotebookId="1" />
+      <File FileName="Main.cs" Line="46" Column="3" NotebookId="1" />
+      <File FileName="AI.cs" Line="31" Column="18" NotebookId="1" />
     </Files>
     <Pads>
       <Pad Id="MonoDevelop.NUnit.TestPad">
         <State name="__root__">
-          <Node name="awkward-simulator" expanded="True">
-            <Node name="awkward-simulator" expanded="True">
-              <Node name="awkwardsimulator" expanded="True">
-                <Node name="UnitTests" expanded="True" selected="True" />
-              </Node>
-            </Node>
-          </Node>
+          <Node name="awkward-simulator" expanded="True" />
         </State>
       </Pad>
     </Pads>

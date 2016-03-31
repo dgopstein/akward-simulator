@@ -4,6 +4,7 @@ using NUnit.Framework;
 using PlatGraph = System.Collections.Generic.Dictionary<awkwardsimulator.Platform, System.Collections.Generic.HashSet<awkwardsimulator.Platform>>;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Xna.Framework;
 
 namespace awkwardsimulator
 {
@@ -14,7 +15,7 @@ namespace awkwardsimulator
         public void PlatformGraphLevel1() {
             PlatGraph generated = PlatformUtil.BuildPlatformGraph (Level.Level1.Platforms);
 
-            string expected = "a[b], b[a, d], c[d], d[b, c]";
+            string expected = "a[a, b], b[a, b, d], c[c, d], d[b, c, d]";
 
             Assert.AreEqual (expected, PlatformUtil.PlatGraphStr(generated));
         }
@@ -23,7 +24,7 @@ namespace awkwardsimulator
         public void PlatformAdjacency1() {
             var level = Level.Level1;
 
-//            var a = level.Platform ("a");
+            var a = level.Platform ("a");
             GameObject b = level.Platform ("b");
             GameObject c = level.Platform ("c");
             GameObject d = level.Platform ("d");
@@ -73,6 +74,13 @@ namespace awkwardsimulator
 
             Assert.AreEqual (expected, PlatformUtil.PlatListStr(path.Select(x => x.Item1)));
             Assert.AreEqual (expected, PlatformUtil.PlatListStr(path.Select(x => x.Item2)));
+
+            path = cpas.CombinedPlatformPath (
+                new Player(1, new Vector2(90, 36)),
+                new Player(2, new Vector2(90, 45)),
+                level.Goal, level.Goal);
+            expected = "d|c, c|c, {X:105 Y:70}|{X:105 Y:70}";
+            Assert.AreEqual (expected, PlatformUtil.PlatPairListStr (path));
         }
 
         [Test()]
@@ -82,9 +90,8 @@ namespace awkwardsimulator
             var cpas = new CombinedPlatformAStar (level.Platforms);
 
             var path = cpas.CombinedPlatformPath (level.P1, level.P2, level.Goal, level.Goal);
-
-            string expected = "b|c, d|e, f|g, h|a, {X:80 Y:80}|{X:80 Y:80}";
-
+//            string expected = "b|c, d|e, f|g, h|a, {X:80 Y:80}|{X:80 Y:80}";
+            string expected = "b|c, d|e, d|g, f|a, h|a, {X:80 Y:80}|{X:80 Y:80}";
             Assert.AreEqual (expected, PlatformUtil.PlatPairListStr (path));
         }
 

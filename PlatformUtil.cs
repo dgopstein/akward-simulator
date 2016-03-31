@@ -37,7 +37,7 @@ namespace awkwardsimulator
             foreach (var plat1 in platforms) {
                 HashSet<Platform> hs = new HashSet<Platform> ();
                 foreach (var plat2 in platforms) {
-                    if (plat1 != plat2 && adjacent (platforms, plat1, plat2)) {
+                    if (/*plat1 != plat2 &&*/ adjacent (platforms, plat1, plat2)) {
                         hs.Add (plat2);
                     }
                 }

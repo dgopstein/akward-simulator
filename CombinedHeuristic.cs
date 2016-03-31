@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 
 using GobjPair = System.Tuple<awkwardsimulator.GameObject, awkwardsimulator.GameObject>;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 
 namespace awkwardsimulator

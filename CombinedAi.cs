@@ -168,8 +168,8 @@ namespace awkwardsimulator
             var deRooted = path.Count > 1 ? path.Skip (1) : path; // Ignore the root node
 
 
-            Debug.Print("bestPath1: {0}", moveListStr(deRooted.Select(x => x.Item1.Item1)));
-            Debug.Print("bestPath2: {0}", moveListStr(deRooted.Select(x => x.Item1.Item2)));
+//            Debug.Print("bestPath1: {0}", moveListStr(deRooted.Select(x => x.Item1.Item1)));
+//            Debug.Print("bestPath2: {0}", moveListStr(deRooted.Select(x => x.Item1.Item2)));
 
             var res = deRooted
                 .SelectMany (t => Enumerable.Repeat(t.Item1,nRepetitions)).ToList();

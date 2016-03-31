@@ -27,10 +27,10 @@ namespace awkwardsimulator
 
             var cross =
                 from pair1 in platGraph
-                            from pair2 in platGraph
-                            from target1 in pair1.Value
-                            from target2 in pair2.Value
-                            select Tuple.Create (Tuple.Create (pair1.Key, pair2.Key), Tuple.Create (target1, target2));
+                from pair2 in platGraph
+                from target1 in pair1.Value
+                from target2 in pair2.Value
+                select Tuple.Create (Tuple.Create (pair1.Key, pair2.Key), Tuple.Create (target1, target2));
 
             Dictionary<PlatPair, HashSet<PlatPair>> dict = cross.GroupBy (x => x.Item1)
                 .ToDictionary(x => x.Key, x=> x.Select(y => y.Item2).ToHashSet());
@@ -102,18 +102,17 @@ namespace awkwardsimulator
                 var startPlat1 = PlatformUtil.nearestReachablePlatform (start1, plats1);
                 var startPlat2 = PlatformUtil.nearestReachablePlatform (start2, plats2);
 
-//                var endReachablePlatforms1 = Platforms.FindAll (p => PlatformUtil.adjacent (Platforms, p, end1));
-//                var endReachablePlatforms2 = Platforms.FindAll (p => PlatformUtil.adjacent (Platforms, p, end2));
-//
+                Debug.Print ("startPlat1: {0}", startPlat1);
+                Debug.Print ("startPlat2: {0}", startPlat2);
+
 //                Debug.WriteLineIf (endReachablePlatforms1.Count == 0, "No platforms within reach of the 1st goal!");
 //                Debug.WriteLineIf (endReachablePlatforms2.Count == 0, "No platforms within reach of the 2nd goal!");
-//
-//                var end1Plat = PlatformUtil.nearestPlatform (end1.Center, endReachablePlatforms1);
-//                var end2Plat = PlatformUtil.nearestPlatform (end2.Center, endReachablePlatforms2);
 
                 path = runAStar (startPlat1, startPlat2, end1, end2).Select (p2g).ToList ();
 
                 path.Add (Tuple.Create (end1, end2));
+
+                Debug.Print ("ppls: {0}", PlatformUtil.PlatPairListStr (path));
 
                 paths [cacheKey] = path;
             }
@@ -127,7 +126,13 @@ namespace awkwardsimulator
 
             var platDist = Vector2.Distance (node.Value.Item1.Center, node.Value.Item2.Center);
 
-            return endDist1 + endDist2 + 5 * Math.Abs (HealthControl.IdealDistance - platDist);
+            // Arbitrary values
+            var healthWeight = 5;
+            var depthWeight = 30;
+
+            return endDist1 + endDist2 +
+                healthWeight * Math.Abs (HealthControl.IdealDistance - platDist) +
+                depthWeight * node.Depth();
         }
 
         private List<Tuple<Platform, Platform>> runAStar(
@@ -138,7 +143,6 @@ namespace awkwardsimulator
             var paths = new SortedDictionary<double, StateNode>();
 
             var startPair = Tuple.Create (start1, start2);
-//            var endPair = Tuple.Create (end1, end2);
 
             var root = new StateNode (null, startPair, startPair);
             paths.Add(combinedPlatformHeuristic(root, end1, end2), root);
@@ -151,8 +155,6 @@ namespace awkwardsimulator
                 best.Children = PlatformGraph [best.Value].ToDictionary (x => x,
                     x => new StateNode(best, x, x));
 
-//                Debug.Print ("Children: {0} - {1}", best.Value.Item1 + "|" + best.Value.Item2,
-//                    PlatformUtil.PlatPairListStr(best.Children.Values.Select(x => x.Value)));
                 
                 foreach (var c in best.Children) {
                     var h = combinedPlatformHeuristic (c.Value, end1, end2);
@@ -163,12 +165,6 @@ namespace awkwardsimulator
                 paths.Remove (paths.First().Key);
             }
 
-//            Debug.WriteLine ("paths size: {0}", paths.Count);
-//            int k = 0;
-//            foreach (var pth in paths.Reverse()) {
-//                var pathStr = string.Join(", ", pth.Value.ToPath().Select(tup1 => tup1.Item1.Item1 + "|" + tup1.Item1.Item2));
-//                Debug.WriteLine("paths[{0}]: {1} - {2}", k++, pth.Key, pathStr);
-//            }
 
             return best.ToPath().Select(tup => tup.Item2).ToList();
         }

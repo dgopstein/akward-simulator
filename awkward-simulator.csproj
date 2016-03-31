@@ -33,7 +33,7 @@
     <EnablePackageSigning>false</EnablePackageSigning>
     <CustomCommands>
       <CustomCommands>
-        <Command type="AfterBuild" command="nunit-console ${TargetFile}" pauseExternalConsole="True" />
+        <Command type="Custom" name="Test Job" command="nunit-console ${TargetFile}" pauseExternalConsole="True" />
       </CustomCommands>
     </CustomCommands>
   </PropertyGroup>
