@@ -146,9 +146,6 @@ namespace awkwardsimulator
             drawing.DrawPos (state.P1, 20, 110);
             drawing.DrawPos (state.P2, 20, 140);
 
-            drawing.DrawMethodVisualizations (state, combinedInputMethod);
-            // drawing.DrawMethodVisualizations (state, listInputMethod);
-
             // Draw histories
             // drawing.DrawPath (history.Select (s => s.P1.Coords), Color.Thistle, 2);
             drawing.DrawPath (history.Select (s => s.P2.Coords + (Player.Size *.5f)), Color.Thistle, 2);
@@ -162,6 +159,9 @@ namespace awkwardsimulator
 
             drawing.DrawPlayer (state.P1);
             drawing.DrawPlayer (state.P2);
+
+            drawing.DrawMethodVisualizations (state, combinedInputMethod);
+            // drawing.DrawMethodVisualizations (state, listInputMethod);
 
             // Draw Input movement direction arrows
             var c1 = Color.Black;

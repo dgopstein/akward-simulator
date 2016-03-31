@@ -300,25 +300,7 @@ namespace awkwardsimulator
 
             return texture;
         }
-        Color[] colors = new Color[] {
-            new Color(255, 255, 000),
-            new Color(255, 127, 000),
-            new Color(255, 000, 255),
-            new Color(255, 000, 127),
-            new Color(127, 255, 000),
-            new Color(000, 255, 255),
-            new Color(000, 255, 127),
-            new Color(127, 000, 255),
-            new Color(000, 127, 255),
-            new Color(70, 70, 70)
-            //new Color(255, 000, 000),
-            //new Color(127, 000, 000),
-            //new Color(000, 255, 000),
-            //new Color(000, 127, 000),
-            //new Color(000, 000, 255),
-            //new Color(000, 000, 127),
-            //new Color(000, 000, 000),
-        };
+
 
         public void DrawPaths(IEnumerable<Tuple<double, IEnumerable<Vector2>>> paths, int thickness = 2) {
             if (paths.Count() == 0) return;
@@ -443,9 +425,19 @@ namespace awkwardsimulator
                 Tuple.Create(HeatmapColor(i / nPlats), tup.Item2.Target)), 2);
 
             // Draw heatmapped hypothetical player paths
-            DrawPaths (cim.Ai.AllPaths().Select(t =>
+            DrawPaths (cim.Ai.AllPaths().AsEnumerable().Reverse().Take(2).Select(t =>
                 Tuple.Create(t.Item1, t.Item2.Select(e => e.Item2.P1.SurfaceCenter))));
-            DrawPaths (cim.Ai.AllPaths().Select(t =>
+
+            int i2 = 0;
+            foreach (var path in cim.Ai.AllPaths().Take(1)) {
+                var score = path.Item1;
+                var coords1 = path.Item2.Last ().Item2.P1.SurfaceCenter;
+                var coords2 = path.Item2.Last ().Item2.P1.SurfaceCenter;
+
+                Debug.Print ("nextPath1: {0}", CombinedAi.moveListStr(path.Item2.Select(x => x.Item1.Item1)));
+                Debug.Print ("nextPath2: {0}", CombinedAi.moveListStr(path.Item2.Select(x => x.Item1.Item2)));
+            }
+            DrawPaths (cim.Ai.AllPaths().AsEnumerable().Reverse().Take(2).Select(t =>
                 Tuple.Create(t.Item1, t.Item2.Select(e => e.Item2.P2.SurfaceCenter))));
         }
 

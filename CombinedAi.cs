@@ -29,15 +29,27 @@ namespace awkwardsimulator
                 myPaths = allPaths.ToList();
             }
 
-            return myPaths.Select(sn => Tuple.Create(sn.Key, sn.Value.ToPath())).ToList();
+            return myPaths.Select(sn => Tuple.Create(sn.Key, sn.Value.ToPath().Skip(1).ToList())).ToList();
+        }
+
+        protected static double pathScore(StateNode node) {
+            if (node.Parent == null) {
+                return 0;
+            } else {
+                return Vector2.Distance (node.Value.P1.Center, node.Parent.Value.P1.Center) +
+                       Vector2.Distance (node.Value.P2.Center, node.Parent.Value.P2.Center) +
+                       pathScore(node.Parent);
+            }
         }
 
         protected static double stateNodeScorer(CombinedHeuristic heuristic, StateNode node) {
-            float h = (float)heuristic.Score (node.Value);
+            double h = heuristic.Score (node.Value);
+
+            h += pathScore (node);
 
 //            h += .1f * node.Depth(); // discourage long paths
 
-            return h;
+            return (float)h;
         }
 
         void addChildrenToOpenSet(TreeDictionary<double, StateNode> dict,
@@ -116,31 +128,31 @@ namespace awkwardsimulator
             int maxIters = 100;
             int nRepetitions = 5;
 
-            StateNode best;
+            StateNode bestOpen;
 
             int i = 0;
             do {
-                var bestKV = openSet.First ();
-                openSet.Remove(bestKV.Key);
+                var bestOpenKV = openSet.First ();
+                openSet.Remove(bestOpenKV.Key);
 
-                best = bestKV.Value;
+                bestOpen = bestOpenKV.Value;
 
-                var bestNextMove = best.Input;
+                var bestNextMove = bestOpen.Input;
 
                 // repeat the same input a few times
-                GameState resultState = best.Value;
+                GameState resultState = bestOpen.Value;
                 for (int j = 0; j < nRepetitions; j++) {
                     resultState = AStar.nextState(forwardModel, resultState, bestNextMove.Item1, bestNextMove.Item2);
                 }
 
-                addChildrenToOpenSet(openSet, best, resultState, heuristic);
+                addChildrenToOpenSet(openSet, bestOpen, resultState, heuristic);
 
-                var stateNode = new StateNode (best, bestNextMove, resultState);
+                var stateNode = new StateNode (bestOpen, bestNextMove, resultState);
                 var score = AStar.addNoise(stateNodeScorer (heuristic, stateNode));
 
                 closedSet.Add(score, stateNode);
 
-            } while(i++ < maxIters && !best.Value.PlayStatus.isWon() && openSet.Count > 0);
+            } while(i++ < maxIters && !closedSet.First().Value.Value.PlayStatus.isWon() && openSet.Count > 0);
 
 //            Debug.WriteLine ("closedSet size: {0}", closedSet.Count);
 //            int k = 0;
@@ -151,14 +163,22 @@ namespace awkwardsimulator
 
             lock (allPaths) { allPaths = closedSet; }
 
-            var path = best.ToPath ();
+            var path = closedSet.First().Value.ToPath ();
 
             var deRooted = path.Count > 1 ? path.Skip (1) : path; // Ignore the root node
+
+
+            Debug.Print("bestPath1: {0}", moveListStr(deRooted.Select(x => x.Item1.Item1)));
+            Debug.Print("bestPath2: {0}", moveListStr(deRooted.Select(x => x.Item1.Item2)));
 
             var res = deRooted
                 .SelectMany (t => Enumerable.Repeat(t.Item1,nRepetitions)).ToList();
 
             return res;
+        }
+
+        public static string moveListStr(IEnumerable<Input> moves) {
+            return string.Join ("", moves.Select (i => i.shortString()));
         }
     }
 }

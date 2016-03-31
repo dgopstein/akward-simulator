@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Diagnostics;
 
 
 namespace awkwardsimulator
@@ -106,7 +107,9 @@ namespace awkwardsimulator
         }
 
         override protected Tuple <Input, Input> _inputs() {
-                      return fAi.Result;
+            var inputs = fAi.Result;
+            Debug.Print ("inputs: {0}, {1}", inputs.Item1, inputs.Item2);
+            return inputs;
         }
 
         override public void Update(GameState state) {
