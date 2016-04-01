@@ -84,7 +84,7 @@ namespace awkwardsimulator
                     String.Format ("{0}[{1}]", kv.Key.ToString(), PlatListStr(kv.Value.ToList()))));
         }
 
-        public static bool isLineOfSight(List<Platform> plats, GameObject go1, GameObject go2) {
+        private static bool isLineOfSight(List<Platform> plats, GameObject go1, GameObject go2) {
             // We expect to intersect the start/end platforms, but no others
 
             var otherPlats = plats.FindAll (p => p != go1 && p != go2);
@@ -113,6 +113,44 @@ namespace awkwardsimulator
             return 0 == nIntersections;
         }
 
+        private static bool isLineOfSightAccessible(List<Platform> plats, GameObject start, GameObject end) {
+            // We expect to intersect the start/end platforms, but no others
+
+            var otherPlats = plats.FindAll (p => p != start && p != end);
+
+            var areIntersections = otherPlats.Any(plat => {
+                Vector2 pt;
+                var bl = plat.BottomLeft;
+                var br = plat.BottomRight;
+                var tl = plat.TopLeft;
+                var tr = plat.TopRight;
+                var c1 = start.Target;
+//                var c2 = end.Target;
+
+                var targets = new List<Vector2>() {
+                    start.TopLeft + Player.Size,
+                    start.TopRight + Player.Size*new Vector2(-1, 1)
+                };
+
+                var hasAccessibleSide = targets.Any(c2 => {
+                    var intersectBottom = LineTools.LineIntersect2(
+                            ref bl, ref br, ref c1, ref c2, out pt);
+                    var intersectRight = LineTools.LineIntersect2(
+                        ref br, ref tr, ref c1, ref c2, out pt);
+                    var intersectTop = LineTools.LineIntersect2(
+                        ref tr, ref tl, ref c1, ref c2, out pt);
+                    var intersectLeft = LineTools.LineIntersect2(
+                        ref tl, ref bl, ref c1, ref c2, out pt);
+
+                    return intersectBottom || intersectRight || intersectTop || intersectLeft;
+                });
+
+                return hasAccessibleSide;
+            });
+
+            return !areIntersections;
+        }
+
         const int MaxReachX = 20;
         public static readonly int MaxReachY = 15;
         public static bool adjacent(List<Platform> plats, GameObject go1, GameObject go2) {
@@ -122,7 +160,7 @@ namespace awkwardsimulator
 
             var closeEnough = dists.Any (d => Math.Abs (d.X) <= MaxReachX && Math.Abs (d.Y) <= MaxReachY);
 
-            return closeEnough && isLineOfSight (plats, go1, go2); //TODO add element
+            return closeEnough && isLineOfSightAccessible (plats, go1, go2); //TODO add element
         }
 
         public static float remainingJumpDist(Player player) {
