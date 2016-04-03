@@ -113,7 +113,7 @@ namespace awkwardsimulator
 
                 path.Add (Tuple.Create (end1, end2));
 
-                Debug.Print ("ppls: {0}", PlatformUtil.PlatPairListStr (path));
+//                Debug.Print ("ppls: {0}", PlatformUtil.PlatPairListStr (path));
 
                 paths [cacheKey] = path;
             }
@@ -139,7 +139,7 @@ namespace awkwardsimulator
         private List<Tuple<Platform, Platform>> runAStar(
             Platform start1, Platform start2, GameObject end1, GameObject end2) {
 
-            int maxIters = 20;
+            int maxIters = 200;
 
             var paths = new SortedDictionary<double, StateNode>();
 
@@ -168,10 +168,9 @@ namespace awkwardsimulator
                 paths.Remove (paths.First().Key);
             }
 
-            foreach (var p in paths.Take(5).Reverse()) {
-                Debug.Print ("good path: {0}", PlatformUtil.PlatPairListStr (p.Value.ToPath().Select(tup => tup.Item2)));
-            }
-
+//            foreach (var p in paths.Take(5).Reverse()) {
+//                Debug.Print ("good path: {0}", PlatformUtil.PlatPairListStr (p.Value.ToPath().Select(tup => tup.Item2)));
+//            }
 
             return best.ToPath().Select(tup => tup.Item2).ToList();
         }
