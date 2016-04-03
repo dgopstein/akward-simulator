@@ -118,32 +118,33 @@ namespace awkwardsimulator
         public void LineOfSight() {
             var plats = PlatformUtil.Subdivide (Level.Level2.Platforms);
 
-            var b_3 = plats.First(p => p.Name == "b_2");
-            var d_1 = plats.First(p => p.Name == "d_1");
+            var b3 = plats.First(p => p.Name == "b2");
+            var d1 = plats.First(p => p.Name == "d1");
 
-            Assert.IsFalse(PlatformUtil.isLineOfSight (plats, b_3, d_1));
+            Assert.IsFalse(PlatformUtil.isLineOfSight (plats, b3, d1));
 
-            var c_0 = plats.First(p => p.Name == "c_0");
+            var c0 = plats.First(p => p.Name == "c0");
 
-            Assert.IsFalse(PlatformUtil.isLineOfSight (plats, c_0, d_1));
+            Assert.IsFalse(PlatformUtil.isLineOfSight (plats, c0, d1));
         }
 
         [Test()]
         public void Adjacent() {
             var plats = PlatformUtil.Subdivide (Level.Level2.Platforms);
 
-            var b_1 = plats.First(p => p.Name == "b_1");
-            var b_3 = plats.First(p => p.Name == "b_2");
-            var c_0 = plats.First(p => p.Name == "c_0");
-            var d_0 = plats.First(p => p.Name == "d_0");
-            var d_1 = plats.First(p => p.Name == "d_1");
+            var b1 = plats.First(p => p.Name == "b1");
+            var b2 = plats.First(p => p.Name == "b2");
+            var b3 = plats.First(p => p.Name == "b3");
+            var c0 = plats.First(p => p.Name == "c0");
+            var d0 = plats.First(p => p.Name == "d0");
+            var d1 = plats.First(p => p.Name == "d1");
 
-            Assert.IsFalse(PlatformUtil.adjacent (plats, b_3, d_1));
-            Assert.IsFalse(PlatformUtil.adjacent (plats, c_0, d_1));
-            Assert.IsFalse(PlatformUtil.adjacent (plats, b_3, c_0));
+            Assert.IsFalse(PlatformUtil.adjacent (plats, b3, d1));
+            Assert.IsFalse(PlatformUtil.adjacent (plats, c0, d1));
+            Assert.IsFalse(PlatformUtil.adjacent (plats, b3, c0));
 
-            Assert.IsTrue(PlatformUtil.adjacent (plats, b_1, d_0));
-            Assert.IsTrue(PlatformUtil.adjacent (plats, b_2, b_1));
+            Assert.IsTrue(PlatformUtil.adjacent (plats, b1, d0));
+            Assert.IsTrue(PlatformUtil.adjacent (plats, b2, b1));
         }
     }
 }

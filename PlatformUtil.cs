@@ -55,7 +55,7 @@ namespace awkwardsimulator
             var subDivPlats = new List<Platform> ();
             float offset = 0;
             for (int i = 0; i < nDivs; i++) {
-                var name = plat.Name + "_" + i;
+                var name = plat.Name + "" + i;
                 var coords = new Vector2(plat.X + offset, plat.Y);
                 var size = new Vector2((float)newWidth, (float)plat.H);
 
