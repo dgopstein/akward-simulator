@@ -6,6 +6,7 @@ using FarseerPhysics.Common;
 
 using PlatformGraph = System.Collections.Generic.Dictionary<awkwardsimulator.Platform, System.Collections.Generic.HashSet<awkwardsimulator.Platform>>;
 using MoreLinq;
+using System.Diagnostics;
 
 namespace awkwardsimulator
 {
@@ -84,83 +85,111 @@ namespace awkwardsimulator
                     String.Format ("{0}[{1}]", kv.Key.ToString(), PlatListStr(kv.Value.ToList()))));
         }
 
-        private static bool isLineOfSight(List<Platform> plats, GameObject go1, GameObject go2) {
+        public static bool isLineOfSight(IEnumerable<Platform> plats, GameObject go1, GameObject go2) {
             // We expect to intersect the start/end platforms, but no others
-
-            var otherPlats = plats.FindAll (p => p != go1 && p != go2);
-
-            var nIntersections = otherPlats.Count(plat => {
-                Vector2 pt;
-                var bl = plat.BottomLeft;
-                var br = plat.BottomRight;
-                var tl = plat.TopLeft;
-                var tr = plat.TopRight;
-                var c1 = go1.Target;
-                var c2 = go2.Target;
-
-                var intersectBottom = LineTools.LineIntersect2(
-                    ref bl, ref br, ref c1, ref c2, out pt);
-                var intersectRight = LineTools.LineIntersect2(
-                    ref br, ref tr, ref c1, ref c2, out pt);
-//                var intersectTop = LineTools.LineIntersect2(
-//                    ref tr, ref tl, ref c1, ref c2, out pt);
-//                var intersectLeft = LineTools.LineIntersect2(
-//                    ref tl, ref bl, ref c1, ref c2, out pt);
-
-                return intersectBottom || intersectRight;// || intersectTop || intersectLeft;
-            });
-
-            return 0 == nIntersections;
+            var otherPlats = plats.Where (p => p != go1 && p != go2);
+        
+            return isLineOfSight (otherPlats, go1.Target, go2.Target);
         }
 
-        private static bool isLineOfSightAccessible(List<Platform> plats, GameObject start, GameObject end) {
-            // We expect to intersect the start/end platforms, but no others
 
-            var otherPlats = plats.FindAll (p => p != start && p != end);
-
-            var areIntersections = otherPlats.Any(plat => {
-                Vector2 pt;
+        public static bool isLineOfSight(IEnumerable<Platform> plats, Vector2 target1, Vector2 target2) {
+            var hasIntersections = plats.Any(plat => {
                 var bl = plat.BottomLeft;
                 var br = plat.BottomRight;
                 var tl = plat.TopLeft;
                 var tr = plat.TopRight;
-                var c1 = start.Target;
-//                var c2 = end.Target;
 
-                var targets = new List<Vector2>() {
-                    start.TopLeft + Player.Size,
-                    start.TopRight + Player.Size*new Vector2(-1, 1)
+                var sides = new List<Tuple<Vector2, Vector2>>() {
+                    Tuple.Create(bl, br),
+                    Tuple.Create(br, tr),
+                    Tuple.Create(tr, tl),
+                    Tuple.Create(tl, bl)
                 };
 
-                var hasAccessibleSide = targets.Any(c2 => {
-                    var intersectBottom = LineTools.LineIntersect2(
-                            ref bl, ref br, ref c1, ref c2, out pt);
-                    var intersectRight = LineTools.LineIntersect2(
-                        ref br, ref tr, ref c1, ref c2, out pt);
-                    var intersectTop = LineTools.LineIntersect2(
-                        ref tr, ref tl, ref c1, ref c2, out pt);
-                    var intersectLeft = LineTools.LineIntersect2(
-                        ref tl, ref bl, ref c1, ref c2, out pt);
+                Vector2 pt;
+                var anyIntersections = sides.Any(tup => {
+                    var c1 = tup.Item1;
+                    var c2 = tup.Item2;
 
-                    return intersectBottom || intersectRight || intersectTop || intersectLeft;
+//                    var isOnLine = 
+//                        LineTools.DistanceBetweenPointAndLineSegment(ref target1, ref c1, ref c2) < 0.01 ||
+//                        LineTools.DistanceBetweenPointAndLineSegment(ref target2, ref c1, ref c2) < 0.01 ;
+      
+                    var intersectsLine = LineTools.LineIntersect2(
+                        ref c1, ref c2, ref target1, ref target2, out pt);
+
+                    return intersectsLine; // || isOnLine;
                 });
 
-                return hasAccessibleSide;
+                return anyIntersections;
             });
 
-            return !areIntersections;
+            return !hasIntersections;
         }
+
+//        private static bool isLineOfSightAccessible(List<Platform> plats, GameObject start, GameObject end) {
+//            // We expect to intersect the start/end platforms, but no others
+//
+//            var otherPlats = plats.FindAll (p => p != start && p != end);
+//
+//            var areIntersections = otherPlats.Any(plat => {
+//                Vector2 pt;
+//                var bl = plat.BottomLeft;
+//                var br = plat.BottomRight;
+//                var tl = plat.TopLeft;
+//                var tr = plat.TopRight;
+//                var c1 = start.Target;
+////                var c2 = end.Target;
+//
+//                var targets = new List<Vector2>() {
+//                    end.TopLeft,// + Player.Size,
+//                    end.TopRight,// + Player.Size*new Vector2(-1, 1)
+//                };
+//
+//                var intersectsAllEntries = targets.All(c2 => {
+//                    var intersectBottom = LineTools.LineIntersect2(
+//                        ref bl, ref br, ref c1, ref c2, out pt);
+//                    var intersectRight = LineTools.LineIntersect2(
+//                        ref br, ref tr, ref c1, ref c2, out pt);
+//                    var intersectTop = LineTools.LineIntersect2(
+//                        ref tr, ref tl, ref c1, ref c2, out pt);
+//                    var intersectLeft = LineTools.LineIntersect2(
+//                        ref tl, ref bl, ref c1, ref c2, out pt);
+//
+//                    return intersectBottom || intersectRight || intersectTop || intersectLeft;
+//                });
+//
+//                return intersectsAllEntries;
+//            });
+//
+//            return !areIntersections;
+//        }
 
         const int MaxReachX = 20;
         public static readonly int MaxReachY = 15;
-        public static bool adjacent(List<Platform> plats, GameObject go1, GameObject go2) {
-            var dists =
-                go1.Surface.SelectMany (a =>
-                    go2.Surface.Select (b => Vector2.Subtract (a, b)));
+        public static bool adjacent(IEnumerable<Platform> plats, GameObject start, GameObject end) {
 
-            var closeEnough = dists.Any (d => Math.Abs (d.X) <= MaxReachX && Math.Abs (d.Y) <= MaxReachY);
+            var surfaceCross =
+                start.ExitSurface.SelectMany (a =>
+                    end.AccessSurface.Select (b => Tuple.Create(a + Player.Size * new Vector2(0, 1), b)));
 
-            return closeEnough && isLineOfSightAccessible (plats, go1, go2); //TODO add element
+            var closeAndVisibleEnough = surfaceCross.Any (tup => {
+                var a = tup.Item1;
+                var b = tup.Item2;
+                var dist = Vector2.Subtract (a, b);
+                var closeEnough = Math.Abs (dist.X) <= MaxReachX && Math.Abs (dist.Y) <= MaxReachY;
+                var topLeftVisible =  isLineOfSight(plats, a, b);
+                var topRightVisible = isLineOfSight(plats, a, b);
+
+                if (start.ToString() + " " + end.ToString() == "c_0 d_1") {
+                    Console.WriteLine("v1sab1l1ty: {0}->{1} - {2}, {3}, {4}", start, end, closeEnough, topLeftVisible, topRightVisible);
+                }
+
+                return closeEnough && (topLeftVisible || topRightVisible);
+            });
+
+            return closeAndVisibleEnough; //TODO add element
         }
 
         public static float remainingJumpDist(Player player) {

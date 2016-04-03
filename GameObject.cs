@@ -23,10 +23,24 @@ namespace awkwardsimulator
 
         virtual public List<Vector2> Surface { get {
                 return new List<Vector2> () {
-                    new Vector2 (X, Y + H),
-                    new Vector2 (X + W, Y + H)
+                    TopLeft,
+                    TopRight
             };
         } }
+
+        virtual public List<Vector2> AccessSurface { get {
+                return new List<Vector2> () {
+                TopLeft + Player.Size * new Vector2 (-1, 1),
+                TopRight + Player.Size
+            };
+        } }
+
+        virtual public List<Vector2> ExitSurface { get {
+                return new List<Vector2> () {
+                    TopLeft  + new Vector2 (0.1f, 0),
+                    TopRight + new Vector2(-0.1f, 0)
+                };
+            } }
 
         public Vector2 BottomLeft  { get { return new Vector2 (X    , Y    ); } }
         public Vector2 BottomRight { get { return new Vector2 (X + W, Y    ); } }
@@ -150,6 +164,13 @@ namespace awkwardsimulator
         override public List<Vector2> Surface { get {
                 return Corners;
         } }
+        override public List<Vector2> AccessSurface { get {
+                return Surface;
+        } }
+        override public List<Vector2> ExitSurface { get {
+                return Surface;
+        } }
+
     }
 }
 

@@ -103,8 +103,8 @@ namespace awkwardsimulator
                 var startPlat1 = PlatformUtil.nearestReachablePlatform (start1, plats1);
                 var startPlat2 = PlatformUtil.nearestReachablePlatform (start2, plats2);
 
-                Debug.Print ("startPlat1: {0}", startPlat1);
-                Debug.Print ("startPlat2: {0}", startPlat2);
+//                Debug.Print ("startPlat1: {0}", startPlat1);
+//                Debug.Print ("startPlat2: {0}", startPlat2);
 
 //                Debug.WriteLineIf (endReachablePlatforms1.Count == 0, "No platforms within reach of the 1st goal!");
 //                Debug.WriteLineIf (endReachablePlatforms2.Count == 0, "No platforms within reach of the 2nd goal!");
@@ -159,11 +159,17 @@ namespace awkwardsimulator
                 
                 foreach (var c in best.Children) {
                     var h = combinedPlatformHeuristic (c.Value, end1, end2);
-                    paths.Add (AStar.addNoise(h), c.Value);
+                    if (!paths.ContainsKey (h)) {
+                        paths.Add (h, c.Value);
+                    }
                 }
 
                 best = paths.First().Value;
                 paths.Remove (paths.First().Key);
+            }
+
+            foreach (var p in paths.Take(5).Reverse()) {
+                Debug.Print ("good path: {0}", PlatformUtil.PlatPairListStr (p.Value.ToPath().Select(tup => tup.Item2)));
             }
 
 

@@ -66,6 +66,11 @@ namespace awkwardsimulator
 
 //            inputMethod = humanInputMethod;
             inputMethod = combinedInputMethod;
+
+            CombinedPlatformAStar cpas = new CombinedPlatformAStar (level.Platforms);
+            cpas.CombinedPlatformPath (level.P1, level.P2, level.Goal, level.Goal);
+//            Environment.Exit (1);
+
         }
 
         protected override void Initialize () {

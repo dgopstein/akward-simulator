@@ -108,7 +108,7 @@ namespace awkwardsimulator
         }
 
         static int uniqueId = 1;
-        const int noisePrecision = 10000;
+        const int noisePrecision = 100000;
         public static double addNoise(double f) {
             double ret = Math.Truncate(f * noisePrecision) / noisePrecision; // remove fractional noise
             ret += (0.0001 * (1.0 / noisePrecision)) * (uniqueId++ % noisePrecision); // add marginal unique id to avoid collisions

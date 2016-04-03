@@ -83,17 +83,17 @@ namespace awkwardsimulator
             Assert.AreEqual (expected, PlatformUtil.PlatPairListStr (path));
         }
 
-        [Test()]
-        public void CombinedPlatformPath2() {
-            var level = Level.Level2;
-
-            var cpas = new CombinedPlatformAStar (level.Platforms);
-
-            var path = cpas.CombinedPlatformPath (level.P1, level.P2, level.Goal, level.Goal);
-//            string expected = "b|c, d|e, f|g, h|a, {X:80 Y:80}|{X:80 Y:80}";
-            string expected = "b|c, d|e, d|g, f|a, h|a, {X:80 Y:80}|{X:80 Y:80}";
-            Assert.AreEqual (expected, PlatformUtil.PlatPairListStr (path));
-        }
+//        [Test()]
+//        public void CombinedPlatformPath2() {
+//            var level = Level.Level2;
+//
+//            var cpas = new CombinedPlatformAStar (level.Platforms);
+//
+//            var path = cpas.CombinedPlatformPath (level.P1, level.P2, level.Goal, level.Goal);
+////            string expected = "b|c, d|e, f|g, h|a, {X:80 Y:80}|{X:80 Y:80}";
+//            string expected = "b|c, d|e, d|g, f|a, h|a, {X:80 Y:80}|{X:80 Y:80}";
+//            Assert.AreEqual (expected, PlatformUtil.PlatPairListStr (path));
+//        }
 
         [Test()]
         public void PlatsBelow() {
@@ -112,6 +112,38 @@ namespace awkwardsimulator
                 level.Platforms, level.P1.Clone(new Microsoft.Xna.Framework.Vector2(53.92445f, 13.60124f))));
             var expectedAB2 = "";
             Assert.AreEqual (expectedAB2, ab2);
+        }
+
+        [Test()]
+        public void LineOfSight() {
+            var plats = PlatformUtil.Subdivide (Level.Level2.Platforms);
+
+            var b_3 = plats.First(p => p.Name == "b_2");
+            var d_1 = plats.First(p => p.Name == "d_1");
+
+            Assert.IsFalse(PlatformUtil.isLineOfSight (plats, b_3, d_1));
+
+            var c_0 = plats.First(p => p.Name == "c_0");
+
+            Assert.IsFalse(PlatformUtil.isLineOfSight (plats, c_0, d_1));
+        }
+
+        [Test()]
+        public void Adjacent() {
+            var plats = PlatformUtil.Subdivide (Level.Level2.Platforms);
+
+            var b_1 = plats.First(p => p.Name == "b_1");
+            var b_3 = plats.First(p => p.Name == "b_2");
+            var c_0 = plats.First(p => p.Name == "c_0");
+            var d_0 = plats.First(p => p.Name == "d_0");
+            var d_1 = plats.First(p => p.Name == "d_1");
+
+            Assert.IsFalse(PlatformUtil.adjacent (plats, b_3, d_1));
+            Assert.IsFalse(PlatformUtil.adjacent (plats, c_0, d_1));
+            Assert.IsFalse(PlatformUtil.adjacent (plats, b_3, c_0));
+
+            Assert.IsTrue(PlatformUtil.adjacent (plats, b_1, d_0));
+            Assert.IsTrue(PlatformUtil.adjacent (plats, b_2, b_1));
         }
     }
 }
